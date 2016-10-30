@@ -1,3 +1,4 @@
 requests
 pytest
 NetworkX
+bs4

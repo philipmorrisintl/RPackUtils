@@ -21,9 +21,11 @@ class DepTreeBuilder(object):
         self._excludes = DEFAULT_PACKS.deep_copy()
         self.suggest = False
 
-    def build_from_install(self, path=None):
+    def build_from_install(self, library_path=None):
+        pim = PackInfoManager()
         if not path:
             path = os.getcwd()
+        pim.library_path = path
         folders = os.listdir(path)
         # Removing the packages to exclude
         folders = [x for x in folders if not x in self._excludes]
@@ -33,7 +35,8 @@ class DepTreeBuilder(object):
         folders = [x for x in folders if os.path.isdir(x)]
         # Gettingt Package information
         for folder in folders:
-            res = PackInfo.desc2dict(path=folder)
+            res = pim.desc2dict(folder)
+
 
 
 
