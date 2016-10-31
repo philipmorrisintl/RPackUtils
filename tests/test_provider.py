@@ -48,11 +48,11 @@ def local_provider_push():
     assert(pack.author)
     assert(pack.version)
     decision = choice(choices)
-    remove_package_example(uninstall=decision)
 
 def test_local_provider_push():
     for i in range(5):
         local_provider_push()
+    remove_package_example(uninstall=True)
 
 def test_local_provider_download():
     pack = PackInfo('test')

@@ -7,7 +7,7 @@ ppath = os.path.join(os.path.abspath(
 sys.path.append(ppath)
 
 pack_example_name = 'GenSA'
-pack_example_url = 'https://cran.r-project.org/src/contrib/GenSA_1.1.6.tar.gz'
+pack_example_url = 'http://cran.r-project.org/src/contrib/GenSA_1.1.6.tar.gz'
 pack_example_fp = os.path.join(os.path.dirname(__file__), 'PackTest.tar.gz')
 
 def download_package_example():
