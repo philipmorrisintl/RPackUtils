@@ -12,7 +12,7 @@ __email__ = "Sylvain.Gubian@pmi.com"
 
 import os
 import networkx as nx
-from packtool.packinfo import PackInfo
+from .packinfo import PackInfo
 
 class DepTreeBuilder(object):
 

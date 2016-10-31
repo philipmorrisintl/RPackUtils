@@ -46,26 +46,6 @@ base_packages = [
             'Matrix',
         ]
 
-def enum(**enums):
-    return type('Enum', (), enums)
-
-def mkdir_p(path):
-    try:
-        os.makedirs(path)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else: raise
-
-
-PackStatus = enum(
-        UNKNOWN=-1,
-        PARSED=0,
-        DOWNLOADED=1,
-        DOWNLOAD_FAILED=2,
-        INSTALLED=3,
-        INSTALLATION_FAILED=4)
-
 
 class PackNode(Node):
     def __init__(self, idt):

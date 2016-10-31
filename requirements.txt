@@ -2,3 +2,4 @@ requests
 pytest
 NetworkX
 bs4
+pygments
