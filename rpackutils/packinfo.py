@@ -63,13 +63,12 @@ def mkdir_p(path):
 
 
 PackStatus = enum(
-        PARSED=0,
         DOWNLOADED=1,
-        DOWNLOAD_FAILED=2,
-        INSTALLED=3,
-        INSTALL_FAILED=4,
-        NOT_FOUND=5,
-        INVALID=6,
+        DOWNLOAD_FAILED=-1,
+        DEPLOYED=2,
+        DEPLOY_FAILED=-2,
+        NOT_FOUND=-3,
+        INVALID=-4,
         )
 
 

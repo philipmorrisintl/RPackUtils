@@ -44,7 +44,7 @@ def local_provider_push():
     decision = choice(choices)
     p.push(pack, source=pack_example_fp, overwrite=decision)
     p.packinfo(pack)
-    assert(pack.status == Status.INSTALLED)
+    assert(pack.status == Status.DEPLOYED)
     assert(pack.author)
     assert(pack.version)
     decision = choice(choices)
@@ -59,4 +59,9 @@ def test_local_provider_download():
     p = Provider('Local')
     with pytest.raises(RuntimeError):
         p.download(pack)
+
+def test_local_provider_ls():
+    p = provider('Local')
+    pack_names = p.ls()
+    assert(len(pack_names) > 0)
 

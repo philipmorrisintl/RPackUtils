@@ -14,28 +14,41 @@ import os
 import networkx as nx
 from .packinfo import PackInfo
 
-class DepTreeBuilder(object):
+class DepTree(object):
 
     def __init__(self):
         self._g = nx.Graph()
-        self._excludes = DEFAULT_PACKS.deep_copy()
-        self.suggest = False
+        self.excludes = DEFAULT_PACKS.deep_copy()
+        self.provider = None
 
-    def build_from_install(self, library_path=None):
-        pim = PackInfoManager()
-        if not path:
-            path = os.getcwd()
-        pim.library_path = path
-        folders = os.listdir(path)
-        # Removing the packages to exclude
-        folders = [x for x in folders if not x in self._excludes]
-        # Getting the full path
-        folders = [os.path.join(path, x) for x in folders]
-        # Filtering, keeping only folders
-        folders = [x for x in folders if os.path.isdir(x)]
-        # Gettingt Package information
-        for folder in folders:
-            res = pim.desc2dict(folder)
+    def build(self, roots=None):
+        if self.provider is None:
+            self.provider = Provider('Local')
+            logger.warning('No provider specified, using Local as default')
+        if roots is None:
+            roots = p.ls()
+        for pack in roots:
+            # Get package information, call recursive tree build
+            self._add_node(pack)
+
+    def _add_node(self, pack_name):
+        pack = PackInfo(pack_name)
+        self.provider.packinfo(pack)
+        if pack.status < 0:
+            self._add_to_graph(pack)
+            return
+        if pack.has_childs():
+            for child in pack.childs:
+                self._add_node(child)
+        else:
+            self._add_to_graph(pack)
+
+    def _add_to_graph(self, pack):
+        # Adding pack object to the Graph
+        pass
+
+    def traverse(self, func, *args, **kargs):
+        pass
 
 
 

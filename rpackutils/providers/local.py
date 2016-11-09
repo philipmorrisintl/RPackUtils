@@ -36,6 +36,17 @@ class LocalProvider(AbstractProvider):
        if not os.path.exists(self.baseurl):
            raise(IOError, '{} folder does not exist'.format(self.baseurl))
 
+    def ls(self):
+        """ Returns the list of available packages from the provider
+        In this case, list of installed packages
+        """
+        path = os.environ['R_LIBS']
+        folders = os.listdir(path)
+        # Keeping valid packages (folder which contain DESCRIPTION file)
+        folders = [x for x in folders if os.exists(os.path.join(
+            path, x, 'DESCRIPTION'))]
+        return folders
+
     def download(self, pack, dest=None):
         raise NotImplementedError(
                 'Downloading package with Local provider is not implemented')
@@ -51,11 +62,11 @@ class LocalProvider(AbstractProvider):
                     shutil.rmtree(p, ignore_errors=False)
                 except Exception, e:
                     logger.info('Failed to uninstall previous version')
-                    pack.status = PackStatus.INSTALL_FAILED
+                    pack.status = PackStatus.DEPLOY_FAILED
                     pack.fullstatus = e
                     raise(RuntimeError, 'Installation of {} failed')
             else:
-                pack.status = PackStatus.INSTALLED
+                pack.status = PackStatus.DEPLOYED
                 pack.fullstatus = "Already installed package"
                 ts = os.path.getmtime(p)
                 pack.install_date = str(datetime.datetime.fromtimestamp(ts))
@@ -71,13 +82,13 @@ class LocalProvider(AbstractProvider):
         (out, err) = p.communicate()
         res = p.wait()
         if res !=0:
-            pack.status = PackStatus.INSTALL_FAILED
+            pack.status = PackStatus.DEPLOY_FAILED
             pack.fullstatus = err
             raise(RuntimeError, 'Installation of package {} failed'.format(
                 pack.fullname
                 ))
         else:
-            pack.status = PackStatus.INSTALLED
+            pack.status = PackStatus.DEPLOYED
             pack.fullstatus = out
             pack.install_date = str(datetime.datetime.now())
             logger.info('Installation of package {} DONE.'.format(
@@ -86,11 +97,20 @@ class LocalProvider(AbstractProvider):
     def packinfo(self, pack):
         p = os.path.join(self.baseurl, pack.name)
         if not os.path.exists(p):
+            logger.error('Package {} not FOUND'.format(pack.name))
             pack.status = PackStatus.NOT_FOUND
-            raise(IOError, 'Package not available')
+            pack.fullstatus = 'Package folder not found'
+            return
         descpath = os.path.join(p, 'DESCRIPTION')
+        if not os.path.exists(descpath):
+            logger.error('No DESCRIPTION file for package: {}'.format(
+                pack.name
+                ))
+            pack.status = PackStatus.INVALID
+            pack.fullstatus = 'No DESCRIPTION file found'
         try:
             update_from_desc(pack, descpath)
         except Exception, e:
             logger.error('Failed to get package information')
-
+            pack.status = PackStatus.INVALID
+            pack.fullstatus = 'Error: {}'.format(e)
