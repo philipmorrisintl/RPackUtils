@@ -29,9 +29,12 @@ class AbstractProvider(object):
     def packinfo(self, pack):
         pass
 
+    def ls(self):
+        pass
+
 
 class Provider(object):
-    def __init__(self, name):
+    def __init__(self, name, baseurl=None, repos=None, auth=None):
         self.name = name
         providers = [x[0][0:x[0].index('Provider')] for x in self.providers()]
         if name not in providers:

@@ -75,6 +75,7 @@ PackStatus = enum(
 class PackInfo(object):
     def __init__(self, name, version=None):
         self.name = name
+        self.filename = None
         self.version = version
         self.status = None
         self.install_date = None
@@ -90,10 +91,20 @@ class PackInfo(object):
     @property
     def fullname(self):
         if self.version:
-            return('{0}-{1}'.format(self.name, self.version))
+            return('{0}_{1}'.format(self.name, self.version))
         else:
             return self.name
 
+    @property
+    def filename(self):
+        if not self._filename:
+            return('{0}_{1}.tar.gz'.format(self.name, self.version))
+        else:
+            return self._filename
+
+    @filename.setter
+    def filename(self, value):
+        self._filename = value
 
 def update_from_desc(pack, filepath):
     if not os.path.exists(filepath):
