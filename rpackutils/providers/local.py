@@ -4,7 +4,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 ##############################################################################
-# -*- coding: utf-8 > -*-
+# -*- coding: utf-8 -*-
 __author__ = "Sylvain Gubian"
 __copyright__ = "Copyright 2016, PMP SA"
 __license__ = "GPL2.0"
