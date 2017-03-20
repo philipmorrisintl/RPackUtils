@@ -59,7 +59,7 @@ class ArtifactoryProvider(AbstractProvider):
     def push(self, pack, source, overwrite=False):
         logger.info('Pushing {0} to provider: {1} (repos: {2})...'.format(
             os.path.basename, self.name, self.repos))
-        availables = self.ls(full=)
+        availables = self.ls(full=True)
 
 
     def packinfo(self, pack):

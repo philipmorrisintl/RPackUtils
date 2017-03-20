@@ -15,27 +15,27 @@ from random import choice
 from rpackutils.packinfo import parse_description
 from rpackutils.packinfo import update_from_desc
 from rpackutils.packinfo import PackInfo
+from . import get_local_provider
 
 def test_parse_desc():
-    assert(os.environ['R_LIBS'])
-    path = os.environ['R_LIBS']
-    packages = os.listdir(path)
+    p = get_local_provider()
+    packages = os.listdir(p.repos)
     for i in range(20):
         pack_name = choice(packages)
-        fp = os.path.join(path, pack_name, 'DESCRIPTION')
+        fp = os.path.join(p.repos, pack_name, 'DESCRIPTION')
         d = parse_description(fp)
         assert(d['version'])
         assert(d['package'])
 
 def test_update_from_desc():
-    assert(os.environ['R_LIBS'])
-    path = os.environ['R_LIBS']
-    packages = os.listdir(path)
-    pack_name = choice(packages)
-    pack = PackInfo(pack_name)
-    fp = os.path.join(path, pack_name, 'DESCRIPTION')
-    update_from_desc(pack, fp)
-    assert(pack.version)
-    assert(pack.fullname)
+    p = get_local_provider()
+    packages = os.listdir(p.repos)
+    for i in range(20):
+        pack_name = choice(packages)
+        pack = PackInfo(pack_name)
+        fp = os.path.join(p.repos, pack_name, 'DESCRIPTION')
+        update_from_desc(pack, fp)
+        assert(pack.version)
+        assert(pack.filename)
 
 

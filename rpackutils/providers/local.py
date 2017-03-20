@@ -25,26 +25,28 @@ logger = logging.getLogger(__name__)
 
 class LocalProvider(AbstractProvider):
 
-    def __init__(self):
+    def __init__(self, baseurl, repos):
        AbstractProvider.__init__(self)
        self.name = 'Local'
-       if not os.environ['R_HOME']:
-           raise(NameError, 'R_HOME env variable not defined')
-       if not os.environ['R_LIBS']:
-           raise(NameError, 'R_LIBS env variable not defined')
-       self.baseurl = os.environ['R_LIBS']
+       self.baseurl = baseurl
+       self.repos = repos
        if not os.path.exists(self.baseurl):
-           raise(IOError, '{} folder does not exist'.format(self.baseurl))
+           raise(IOError,
+                 '{0} does not exists, not R install path defined'.format(
+                 self.baseurl))
+       if not os.path.exists(self.repos):
+           raise(IOError,
+                 '{0} does not exists, not R library folder defined'.format(
+                 self.repos))
 
     def ls(self):
         """ Returns the list of available packages from the provider
         In this case, list of installed packages
         """
-        path = os.environ['R_LIBS']
-        folders = os.listdir(path)
+        folders = os.listdir(self.repos)
         # Keeping valid packages (folder which contain DESCRIPTION file)
-        folders = [x for x in folders if os.exists(os.path.join(
-            path, x, 'DESCRIPTION'))]
+        folders = [x for x in folders if os.path.exists(os.path.join(
+            self.repos, x, 'DESCRIPTION'))]
         return folders
 
     def download(self, pack, dest=None):
@@ -54,7 +56,7 @@ class LocalProvider(AbstractProvider):
     def push(self, pack, source, overwrite=False):
         if not os.path.exists(source):
             raise(IOError, 'Package source not found for installation')
-        p = os.path.join(self.baseurl, pack.name)
+        p = os.path.join(self.repos, pack.name)
         if os.path.exists(p):
             # Package already exists but we reinstall
             if overwrite:
@@ -73,7 +75,7 @@ class LocalProvider(AbstractProvider):
                 return
 
         # If package already installed
-        cmd = os.path.join(os.environ['R_HOME'], 'bin', 'R')
+        cmd = os.path.join(self.baseurl, 'bin', 'R')
         p = subprocess.Popen(
                 [cmd, 'CMD', 'INSTALL', source],
                 stdout=subprocess.PIPE,
@@ -95,7 +97,7 @@ class LocalProvider(AbstractProvider):
                 pack.fullname))
 
     def packinfo(self, pack):
-        p = os.path.join(self.baseurl, pack.name)
+        p = os.path.join(self.repos, pack.name)
         if not os.path.exists(p):
             logger.error('Package {} not FOUND'.format(pack.name))
             pack.status = PackStatus.NOT_FOUND
@@ -110,6 +112,7 @@ class LocalProvider(AbstractProvider):
             pack.fullstatus = 'No DESCRIPTION file found'
         try:
             update_from_desc(pack, descpath)
+            pack.status = PackStatus.DEPLOYED
         except Exception, e:
             logger.error('Failed to get package information')
             pack.status = PackStatus.INVALID

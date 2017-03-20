@@ -2,6 +2,9 @@ import sys
 import os
 import requests
 import shutil
+
+from rpackutils.provider import Provider
+
 ppath = os.path.join(os.path.abspath(
     os.path.dirname(__file__)), '..', 'rpackutils')
 sys.path.append(ppath)
@@ -25,3 +28,12 @@ def remove_package_example(uninstall=True):
         if os.path.exists(p):
             shutil.rmtree(p)
 
+def get_local_provider():
+    assert(os.environ['R_HOME'])
+    assert(os.environ['R_LIBS'])
+    p = Provider(
+        'Local',
+        baseurl=os.environ['R_HOME'],
+        repos=os.environ['R_LIBS']
+    )
+    return p

@@ -10,6 +10,7 @@ __copyright__ = "Copyright 2016, PMP SA"
 __license__ = "GPL2.0"
 __email__ = "Sylvain.Gubian@pmi.com"
 
+import os
 import pytest
 from random import choice
 
@@ -20,6 +21,7 @@ from . import download_package_example
 from . import remove_package_example
 from . import pack_example_fp
 from . import pack_example_name
+from . import get_local_provider
 
 def test_provider_list():
     l = Provider.providers()
@@ -29,10 +31,6 @@ def test_wrong_provider():
     with pytest.raises(ValueError):
         p = Provider('Test')
 
-def test_local_provider_init():
-    p = Provider('Local')
-    assert(p.baseurl)
-
 def local_provider_push():
     choices = [True, False]
     decision = choice(choices)
@@ -40,7 +38,7 @@ def local_provider_push():
         remove_package_example(uninstall=decision)
     download_package_example()
     pack = PackInfo(pack_example_name)
-    p = Provider('Local')
+    p = get_local_provider()
     decision = choice(choices)
     p.push(pack, source=pack_example_fp, overwrite=decision)
     p.packinfo(pack)
@@ -50,18 +48,18 @@ def local_provider_push():
     decision = choice(choices)
 
 def test_local_provider_push():
-    for i in range(5):
+    for i in range(3):
         local_provider_push()
     remove_package_example(uninstall=True)
 
 def test_local_provider_download():
     pack = PackInfo('test')
-    p = Provider('Local')
+    p = get_local_provider()
     with pytest.raises(RuntimeError):
         p.download(pack)
 
 def test_local_provider_ls():
-    p = provider('Local')
+    p = get_local_provider()
     pack_names = p.ls()
     assert(len(pack_names) > 0)
 

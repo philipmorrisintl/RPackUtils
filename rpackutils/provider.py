@@ -34,14 +34,14 @@ class AbstractProvider(object):
 
 
 class Provider(object):
-    def __init__(self, name, baseurl=None, repos=None, auth=None):
+    def __init__(self, name, baseurl=None, repos=None):
         self.name = name
         providers = [x[0][0:x[0].index('Provider')] for x in self.providers()]
         if name not in providers:
             raise(ValueError, 'Provider {} not available'.format(name))
         index= providers.index(name)
         klass = self.providers()[index][1]
-        self.provider = klass()
+        self.provider = klass(baseurl, repos)
 
     @property
     def baseurl(self):
@@ -65,6 +65,9 @@ class Provider(object):
 
     def packinfo(self, pack):
         self.provider.packinfo(pack)
+
+    def ls(self):
+        return self.provider.ls()
 
 
 

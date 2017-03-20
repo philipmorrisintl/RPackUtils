@@ -11,14 +11,17 @@ __license__ = "GPL2.0"
 __email__ = "Sylvain.Gubian@pmi.com"
 
 import os
+import copy
 import networkx as nx
 from .packinfo import PackInfo
+from .packinfo import BASE_PACKAGES
+
 
 class DepTree(object):
 
     def __init__(self):
         self._g = nx.Graph()
-        self.excludes = DEFAULT_PACKS.deep_copy()
+        self.excludes = copy.deepcopy(BASE_PACKAGES)
         self.provider = None
 
     def build(self, roots=None):
@@ -26,29 +29,39 @@ class DepTree(object):
             self.provider = Provider('Local')
             logger.warning('No provider specified, using Local as default')
         if roots is None:
-            roots = p.ls()
+            roots = self.provider.ls()
         for pack in roots:
             # Get package information, call recursive tree build
             self._add_node(pack)
 
     def _add_node(self, pack_name):
+        if pack_name in self.excludes:
+            return
+        if pack_name in self._g.nodes():
+            return
         pack = PackInfo(pack_name)
         self.provider.packinfo(pack)
-        if pack.status < 0:
-            self._add_to_graph(pack)
-            return
-        if pack.has_childs():
-            for child in pack.childs:
-                self._add_node(child)
-        else:
-            self._add_to_graph(pack)
+        self._add_to_graph(pack)
+        if pack.has_depends:
+            for dep_name in pack.depends:
+                if dep_name in self.excludes:
+                    continue
+                self._add_node(dep_name)
+                self._connect(pack.name, dep_name, "depends")
+        if pack.has_imports:
+            for imp_name in pack.imports:
+                if imp_name in self.excludes:
+                    continue
+                self._add_node(imp_name)
+                self._connect(pack.name, imp_name, "imports")
 
     def _add_to_graph(self, pack):
         # Adding pack object to the Graph
-        pass
+        self._g.add_node(pack.name, pack.as_dict)
 
-    def traverse(self, func, *args, **kargs):
-        pass
+    def _connect(self, a, b, r):
+        self._g.add_edge(a, b, relation=r)
+
 
 
 
