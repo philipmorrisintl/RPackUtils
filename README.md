@@ -38,7 +38,7 @@ $ . bin/activate
 (RPackUtils) $
 ```
 
-4. Optionnaly lauch the unit tests
+4. Optionnaly launch the unit tests
 
 ```bash
 $ python setup.py build
