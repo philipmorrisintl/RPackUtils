@@ -338,7 +338,7 @@ TODO
 $ rpackm -h
 usage: rpackm [-h] [--input-repository INPUTREPO] [--version VERSION]
               --output-repository OUTPUTREPO [--procs PROCS]
-              [--config ARTIFACTORYCONFIG]
+              --config ARTIFACTORYCONFIG
 
 Download R packages from a specified repository (CRAN, Bioc) and upload them
 to Artifactory (mirror)
