@@ -2,7 +2,7 @@
 
 ## Introduction
 
-R package dependencies manager and mittoring tool for *Bioconductor* and
+R package dependencies manager and mirroring tool for *Bioconductor* and
 *CRAN* written in Python.  With **RPackUtils** you can:
 *  Install R packages in a reproducible manner with the control of packages
        versions and dependencies
