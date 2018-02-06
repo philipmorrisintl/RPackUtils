@@ -1,3 +1,10 @@
+###################################################################
+# This program is distributed in the hope that it will be useful, #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
+# GNU General Public License for more details.                    #
+###################################################################
+
 import os
 import errno
 import requests
@@ -5,12 +12,23 @@ import sys
 import argparse
 import subprocess
 import tempfile
+import multiprocessing
+import time
 
 from .graph import Graph
 from .graph import Node
 from .repos import RRepository
 from .repos import RRepositoryException
 from .artifactory import ArtifactoryHelper
+
+ARTIFACTORY_CONFIG_HELP = "File specifying the Artifactroy configuration.\n" \
+    "Sample content:\n" \
+    "\n" \
+    "[global]\n" \
+    "artifactory.url = \"https://artifactoryhost/artifactory\"" \
+    "artifactory.user = \"artiuser\"" \
+    "artifactory.pwd = \"***\"" \
+    "artifactory.cert = \"Certificate_Chain.pem\""
 
 base_packages = [
             'R',
@@ -45,6 +63,26 @@ base_packages = [
             'parallel',
             'Matrix',
         ]
+
+def enum(**enums):
+    return type('Enum', (), enums)
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+
+
+PackStatus = enum(
+        UNKNOWN=-1,
+        PARSED=0,
+        DOWNLOADED=1,
+        DOWNLOAD_FAILED=2,
+        INSTALLED=3,
+        INSTALLATION_FAILED=4)
 
 
 class PackNode(Node):
@@ -92,13 +130,14 @@ class PackNode(Node):
             self.idt, self.version, self.status, self.reponame))
 
 class DepsManager(object):
-    def __init__(self):
+    def __init__(self, artifactoryConfig=None):
         self._repos = {}
         self._processed = []
         self._nofound = []
         self._trace = True
         self._fun = None
         self._funargs = {}
+        self._artifactoryConfig = artifactoryConfig
 
     @property
     def fun(self):
@@ -136,7 +175,7 @@ class DepsManager(object):
     def repositories(self, v):
         for r in v:
             k = r.strip()
-            self._repos[k] = RRepository(k)
+            self._repos[k] = RRepository(k, self._artifactoryConfig)
 
     def repopack(self, p):
         for repo in self._repos:
@@ -165,9 +204,11 @@ class DepsManager(object):
             node.packurl = self._repos[repo].packurl(node.idt)
             node.reponame = repo
             deps = [x for x in deps if x not in base_packages]
+            
             for dep in deps:
                 depnode = PackNode(dep)
                 self.processnode(depnode)
+                
             print('Processing node: {0}...'.format(node.idt))
             self._fun(node, self._funargs)
             self._processed.append(node.idt)
@@ -186,13 +227,12 @@ class DepsManager(object):
             DepsManager.applyfun2node(child, fun=fun, *a, **k)
         fun(n, *a, **k)
 
-    @staticmethod
-    def tree(packages, repos=['R-3.1.2', 'Bioc-3.0', 'R-local'], useref=False):
+    def tree(self, packages, repos=['R-3.1.2', 'Bioc-3.0', 'R-local'], useref=False):
         g = Graph()
         notfound = []
         rrepos = {}
         for repo in repos:
-            rrepos[repo] = RRepository(repo)
+            rrepos[repo] = RRepository(repo, self._artifactoryConfig)
         for pack in packages:
             print('----------------------------------------------------------')
             print('Processing package: {0}'.format(pack))
@@ -240,16 +280,50 @@ class DepsManager(object):
                 notfound.append(pack)
         return g, notfound
 
-    @staticmethod
-    def installpack(n, args):
+    def download(self, n, args):
+        # print('====> Downloading package: {0}'.format(n.idt))
+        if args['with_r_cmd']:
+            if args['rlibpath'] is not None:
+                lib_path_cmd = '--library {0}'.format(args['rlibpath'])
+            else:
+                lib_path_cmd = ''
+            if args['prefix'] is None:
+                prefix = ''
+            else:
+                prefix = args['prefix']
+            cmd_filepath = os.path.join(args['dest'], 'install.sh')
+            if os.path.exists(cmd_filepath):
+                f = open(cmd_filepath, 'a+')
+            else:
+                f = open(cmd_filepath, 'x')
+            cmd = '{0} CMD INSTALL {1} {2}'.format(
+                os.path.join(args['rhome'], 'bin', 'R'),
+                lib_path_cmd,
+                os.path.join(prefix, '{0}_{1}.tar.gz'.format(
+                    n.idt, n.version))
+            )
+            f.write(cmd)
+            f.write('\n')
+            f.close()
+        repo = RRepository(n.reponame)
+        filepath = repo.download(n.idt, os.path.join(args['dest'],
+                '{0}_{1}.tar.gz'.format(n.idt, n.version)))
+        if os.path.exists(filepath):
+            n.status = PackStatus.DOWNLOADED
+        else:
+            n.status = PackStatus.DOWNLOAD_FAILED
+            print('Failed to download package: {0}'.format(
+                n.idt))
+            sys.exit(-1)
+        
+
+    def installpack(self, n, args):
         rlibpath = args['rlibpath']
         rhome = args['rhome']
         print('====> Instaling package: {0}'.format(n.idt))
-        DepsManager._installpack(n, rhome, rlibpath)
+        self._installpack(n, rhome, rlibpath)
 
-
-    @staticmethod
-    def _installpack(n, rhome, rlibpath):
+    def _installpack(self, n, rhome, rlibpath):
         if rlibpath is not None:
             path = rlibpath
         else:
@@ -259,7 +333,7 @@ class DepsManager(object):
             print('Package: {0} already installed'.format(n.idt))
             n.status = PackStatus.INSTALLED
             return
-        repo = RRepository(n.reponame)
+        repo = RRepository(n.reponame, self._artifactoryConfig)
         filepath = repo.download(n.idt)
         if os.path.exists(filepath):
             n.status = PackStatus.DOWNLOADED
@@ -323,7 +397,7 @@ def showadditionalactions():
 
 def rpacks_install():
     parser = argparse.ArgumentParser(
-            description='Installing packages based on a list of packages')
+            description='Install packages based on a list of packages')
     parser.add_argument(
             '--repositories',
             dest='repos',
@@ -353,20 +427,31 @@ def rpacks_install():
             required=True,
             help='Comma separated package names to install',
             ) and None
-
+    parser.add_argument(
+            '--config',
+            dest='artifactoryConfig',
+            action='store',
+            default=None,
+            required=True,
+            help=ARTIFACTORY_CONFIG_HELP,
+            ) and None
+    
     args = parser.parse_args()
     repos = [x.strip() for x in args.repos.split(',')]
     rlibpath = args.rlibpath
     rhome = args.rhome
     packages = [x.strip() for x in args.packages.split(',')]
+    artifactoryConfig = None
+    if args.artifactoryConfig is not None:
+        artifactoryConfig = args.artifactoryConfig
     # Check some parameters
     checkrhome(rhome)
     checkrlibpath(rlibpath)
     welcome(rhome, repos)
 
-    dm = DepsManager()
+    dm = DepsManager(artifactoryConfig)
     dm.repositories = repos
-    dm.fun = DepsManager.installpack
+    dm.fun = dm.installpack
     dm.funargs = {'rlibpath': rlibpath, 'rhome': rhome}
     for pack in packages:
         n = PackNode(pack)
@@ -374,11 +459,9 @@ def rpacks_install():
     if dm.notfound:
         tracenotfound(dm.notfound)
 
-
-
 def rpacks_clone():
     parser = argparse.ArgumentParser(
-            description='Installing R packages list based on a existing installation')
+            description='Install R packages based on an existing environments (clone)')
     parser.add_argument(
             '--repositories',
             dest='repos',
@@ -407,12 +490,23 @@ def rpacks_clone():
             default=None,
             help='Path to the R library path used as reference',
             ) and None
+    parser.add_argument(
+            '--config',
+            dest='artifactoryConfig',
+            action='store',
+            default=None,
+            required=True,
+            help=ARTIFACTORY_CONFIG_HELP,
+            ) and None
 
     args = parser.parse_args()
     repos = [x.strip() for x in args.repos.split(',')]
     rlibpath = args.rlibpath
     rhome = args.rhome
     rlibpathref = args.rlibpathref
+    artifactoryConfig = None
+    if args.artifactoryConfig is not None:
+        artifactoryConfig = args.artifactoryConfig
     # Check some parameters
     checkrhome(rhome)
     checkrlibpath(rlibpath)
@@ -421,9 +515,9 @@ def rpacks_clone():
     packages = os.listdir(rlibpathref)
     packages = [x for x in packages]
 
-    dm = DepsManager()
+    dm = DepsManager(artifactoryConfig)
     dm.repositories = repos
-    dm.fun = DepsManager.installpack
+    dm.fun = dm.installpack
     dm.funargs = {'rlibpath': rlibpath, 'rhome': rhome}
     for pack in packages:
         n = PackNode(pack)
@@ -432,15 +526,15 @@ def rpacks_clone():
         tracenotfound(dm.notfound)
 
     print('Building dependency tree...')
-    g, notfound = DepsManager.tree(packages, repos, useref=True)
+    g, notfound = dm.tree(packages, repos, useref=True)
     tracenotfound(notfound)
-    DepsManager.applyfun2graph(g, fun=DepsManager.installpack,
+    DepsManager.applyfun2graph(g, fun=dm.installpack,
             rhome=rhome, rlibpath=rlibpath)
     showadditionalactions()
 
 def rpacks_query():
     parser = argparse.ArgumentParser(
-            description='Query repositories about a package or a list of packages')
+            description='Search accross repositories for a package or a list of packages')
     parser.add_argument(
             '--repositories',
             dest='repos',
@@ -456,9 +550,20 @@ def rpacks_query():
             required=True,
             help='Comma separated package names to install',
             ) and None
+    parser.add_argument(
+            '--config',
+            dest='artifactoryConfig',
+            action='store',
+            default=None,
+            required=True,
+            help=ARTIFACTORY_CONFIG_HELP,
+            ) and None
     args = parser.parse_args()
     repos = [x.strip() for x in args.repos.split(',')]
     packages = [x.strip() for x in args.packages.split(',')]
+    artifactoryConfig = None
+    if args.artifactoryConfig is not None:
+        artifactoryConfig = args.artifactoryConfig
     if not repos:
         print('Repository is not provided')
         sys.exit(-1)
@@ -466,7 +571,7 @@ def rpacks_query():
         print('No package name provided')
     rrepos = {}
     for repo in repos:
-        rrepos[repo] = RRepository(repo)
+        rrepos[repo] = RRepository(repo, artifactoryConfig)
     for pack in packages:
         found = False
         for repo in repos:
@@ -482,3 +587,98 @@ def rpacks_query():
                 print('-------------------------------------')
                 print('Package: {0} not found in repositories: {1}'.format(
                     pack, str(repos)))
+
+def rpacks_download():
+    parser = argparse.ArgumentParser(
+            description=('Download R packages and resolved dependencies'))
+    parser.add_argument(
+            '--repositories',
+            dest='repos',
+            action='store',
+            default='R-3.1.2,Bioc-3.0,R-local,R-Data-0.1',
+            help='Comma separated list of repositories. Default are: R-3.1.2, Bioc-3.0, R-local,R-Data-0.1',
+            ) and None
+    parser.add_argument(
+            '--packages',
+            dest='packages',
+            action='store',
+            default=None,
+            required=True,
+            help='Comma separated package names to install',
+            ) and None
+    parser.add_argument(
+            '--config',
+            dest='artifactoryConfig',
+            action='store',
+            default=None,
+            required=True,
+            help=ARTIFACTORY_CONFIG_HELP,
+            ) and None
+    parser.add_argument(
+            '--with-R-cmd',
+            dest='with_r_cmd',
+            action='store_true',
+            default=None,
+            required=False,
+            help='Print to the console the R command to install them',
+            ) and None
+    parser.add_argument(
+            '--R-home',
+            dest='rhome',
+            action='store',
+            default=None,
+            help='Path to the installation to use',
+            ) and None
+    parser.add_argument(
+            '--R-lib-path',
+            dest='rlibpath',
+            action='store',
+            default=None,
+            required=True,
+            help='Path to the R library path where to install packages',
+            ) and None
+    parser.add_argument(
+            '--prefix',
+            dest='prefix',
+            action='store',
+            default=None,
+            help='Path to the location where R packages have been downloaded', 
+            ) and None
+    parser.add_argument(
+            '--dest',
+            dest='dest',
+            action='store',
+            default=None,
+            help=('Path to the folder where packages are downloaded. If not'
+                  'provided, working folder will be used.'), 
+            ) and None
+    args = parser.parse_args()
+    if args.with_r_cmd is not None and args.rhome is None:
+        print('You must specify the --R-home when using --with-R-cmd')
+        sys.exit(-1)
+    repos = [x.strip() for x in args.repos.split(',')]
+    packages = [x.strip() for x in args.packages.split(',')]
+    artifactoryConfig = None
+    dest = args.dest
+    if args.dest is None:
+        dest = os.getcwd()
+    if args.artifactoryConfig is not None:
+        artifactoryConfig = args.artifactoryConfig
+    if not repos:
+        print('Repository is not provided')
+        sys.exit(-1)
+    dm = DepsManager(artifactoryConfig)
+    dm.repositories = repos
+    dm.fun = dm.download
+    dm.funargs = {'rlibpath': args.rlibpath, 'rhome': args.rhome,
+                  'with_r_cmd': args.with_r_cmd, 'prefix': args.prefix,
+                  'dest': dest}
+    starttime = time.time()
+    for pack in packages:
+        node = PackNode(pack)
+        dm.processnode(node)
+    endtime = time.time()
+    timeelapsed = int(endtime - starttime)
+    print('Time elapsed: {0} seconds.'.format(timeelapsed))
+    if dm.notfound:
+        tracenotfound(dm.notfound)

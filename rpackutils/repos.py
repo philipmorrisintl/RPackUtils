@@ -1,3 +1,10 @@
+###################################################################
+# This program is distributed in the hope that it will be useful, #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
+# GNU General Public License for more details.                    #
+###################################################################
+
 import os
 import re
 import shutil
@@ -11,9 +18,10 @@ class RRepositoryException(Exception):
     pass
 
 class RRepository(object):
-    def __init__(self, version):
+    def __init__(self, version, artifactoryConfig=None):
         self._repversion = version
-        self._ah = ArtifactoryHelper(self._repversion)
+        self._artifactoryConfig = artifactoryConfig
+        self._ah = ArtifactoryHelper(self._repversion, artifactoryConfig)
         self._packs = {}
         self.initialize()
 
@@ -21,7 +29,6 @@ class RRepository(object):
     def packages(self):
         ''' Get the list of available packages '''
         return self._packs.keys()
-
 
     def package_version(self, name):
         ''' Get the version of a package '''
@@ -98,6 +105,7 @@ class RRepository(object):
         except tarfile.ReadError:
             print('!!!! ERROR when reading tarfile for pack: {0}'.format(
                 pack))
+            print('!!!! tarfile: {0}'.format(dest[1]))
             return pack, self.package_version(pack), []
         descpath = os.path.join(folder, pack, 'DESCRIPTION')
         if not os.path.exists(descpath):
@@ -110,12 +118,13 @@ class RRepository(object):
         shutil.rmtree(folder)
         return RRepository.parse_descfile(content)
 
-    def download(self, pack):
+    def download(self, pack, dest=None):
         version = self.package_version(pack)
         filename = '{0}_{1}{2}'.format(pack, version, '.tar.gz')
-        dest = tempfile.mkstemp()
-        self._ah.download(filename, dest[1])
-        return dest[1]
+        if dest is None:
+            dest = tempfile.mkstemp()[1]
+        self._ah.download(filename, dest)
+        return dest
 
     @staticmethod
     def parse_descfile(content):

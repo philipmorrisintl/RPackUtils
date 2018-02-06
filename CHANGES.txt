@@ -1,25 +1,76 @@
+0.1.4
+-----
+
+- RPACU-14 Support Bioconductor mirroring, new strategy to fetch packages versions
+- new command to list BIOC releases 'rpackbioc'
+
+0.1.3
+-----
+
+- RPACU-12 implement parallel downloads and Artifactory deployments
+- RPACU-12 rpackmran is now way faster thanks to the mutiprocessing
+implementation
+
+0.1.2
+-----
+
+- RPACU-11 FIX the cURL command used to deploy to Artifactory
+
+0.1.1
+-----
+
+- RPACU-10 Added rpackl function for listing dependencies
+
+0.1.0
+-----
+
+- RPACU-9 Get Artifactory SSL Certificate and credentials from a file
+- Add the wheel package to the dependencies list to build binary packages
+
+0.0.9
+-----
+
+- RPACU-7 Adjust the python module to work with new Artifactory service user settings
+
+0.0.8
+-----
+
+- RPACU-8 Support SSL while connection to Artifactory
+
+0.0.7
+-----
+
+- RPACU-2 Add support to mirror CRAN
+
 0.0.6
 -----
+
 - Fix tree method not found anymore in DepsManager
+
 0.0.5
 -----
+
 - Fix issue with wrong package name exception
 
 0.0.4
 -----
+
 - Fix alphabetical ordering in version number that has to be numerical one.
 
 0.0.3
 -----
+
 - Updated default repositories
 
 0.0.2
 -----
+
 - Version that is using Artifactory repositories. It has the following features:
 Quering the repositories for pacakges, install packages from name and from a reference installation
 
 0.0.1
 -----
+
 - Initial version. This version was downloading packages from CRAN and BioC 
 and building the dependency tree based on a cloned version of R library installation.
 

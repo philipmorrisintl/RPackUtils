@@ -1,4 +1,5 @@
-requests==2.2.1
+requests
 pytest
-NetworkX
 bs4
+configparser
+wheel

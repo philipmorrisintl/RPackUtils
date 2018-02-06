@@ -1,12 +1,16 @@
+###################################################################
+# This program is distributed in the hope that it will be useful, #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
+# GNU General Public License for more details.                    #
+###################################################################
+
 import os
 import pytest
-from rpackutils.mirror import download_cran_packs
-from rpackutils.mirror import get_cran_packs_list
-from rpackutils.mirror import get_bioc_packs_list
-from rpackutils.mirror import deploy_cran_packs
+from rpackutils.mirror_cran import MirrorCRAN
 
-CRAN_DOWNLOAD_PATH='/tmp/R_PACKAGES_3.2.2'
-BIOC_DOWNLOAD_PATH='/tmp/BIOC_PACKAGES_3.2'
+# CRAN_DOWNLOAD_PATH='/home/sgubian/tmp/R_PACKAGES_3.2.2'
+# BIOC_DOWNLOAD_PATH='/home/sgubian/tmp/BIOC_PACKAGES_3.2'
 
 # @pytest.fixture
 # def test_cran_packs_list():
