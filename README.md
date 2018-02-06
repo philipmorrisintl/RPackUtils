@@ -232,7 +232,7 @@ optional arguments:
 Search for the package *ggplot2* inside the Artifactory repository *R-3.1.2*.
 
 ```bash
-$ rpackq --config="/gpfshpc/software/RPackUtils/rpackutils.conf" \
+$ rpackq --config="~/rpackutils.conf" \
          --repositories="R-3.1.2" \
          --packages="ggplot2"
 -------------------------------------
@@ -355,10 +355,10 @@ optional arguments:
   --procs PROCS         Number of parallel downloads and uploads, default=10
   --config ARTIFACTORYCONFIG
                         File specifying the Artifactroy configuration. Sample
-                        content: [global] artifactory.url = "https://rd-
-                        artifactory.app.pmi/artifactory"artifactory.user = "s
-                        -rd-atlassian"artifactory.pwd = "***"artifactory.cert
-                        = "/gpfshpc/data/certs/GTS_PKI_Certificate_Chain.pem"
+                        content: [global] artifactory.url =
+                        "https://artifactoryhost/artifactory"artifactory.user
+                        = "artiuser"artifactory.pwd = "***"artifactory.cert =
+                        "Certificate_Chain.pem"
 
 ```
 

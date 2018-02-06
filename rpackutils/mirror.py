@@ -21,10 +21,10 @@ ARTIFACTORY_CONFIG_HELP = "File specifying the Artifactroy configuration.\n" \
     "Sample content:\n" \
     "\n" \
     "[global]\n" \
-    "artifactory.url = \"https://rd-artifactory.app.pmi/artifactory\"" \
-    "artifactory.user = \"s-rd-atlassian\"" \
+    "artifactory.url = \"https://artifactoryhost/artifactory\"" \
+    "artifactory.user = \"artiuser\"" \
     "artifactory.pwd = \"***\"" \
-    "artifactory.cert = \"/gpfshpc/data/certs/GTS_PKI_Certificate_Chain.pem\""
+    "artifactory.cert = \"Certificate_Chain.pem\""
 
 def rpacks_bioc():
     parser = argparse.ArgumentParser(
