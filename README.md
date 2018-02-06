@@ -266,6 +266,15 @@ optional arguments:
                         "Certificate_Chain.pem"
 ```
 
+Install the *tmod* package.
+
+```bash
+$ rpacki --repositories R-3.2.2 \
+         --R-lib-path /foo/bar/R-3.2.2/lib64/R/library/ \
+         --R-home /foo/bar/R-3.2.2/ \
+         --packages tmod
+```
+
 TODO
 
 ### rpackc
@@ -296,7 +305,26 @@ optional arguments:
 
 ```
 
-TODO
+Let's clone an existing R environment.
+
+| Reference R environment | /foo/bar/R-3.1.2       |
+| R environment clone     | /foo/bar/R-3.1.2-CLONE |
+
+
+```bash
+$ rpackc --conf="~/rpackutils.conf"
+    --R-lib-path="/foo/bar/R-3.1.2-CLONE/lib64/R/library" \
+    --R-lib-refpath="/foo/bar/R-3.1.2/lib64/R/library \
+    --R-home="/foo/bar/R-3.1.2-CLONE" \
+    --repositories="R-3.1.2,Bioc-3.0,R-local,R-Data-0.1,Bioc-3.2"
+```
+
+The Artifactory repositories used in this example:
+
+* R-3.1.2 is a mirror of CRAN
+* Bioc-3.0 and Bioc-3.2 are mirrors of Bioconductor realeases
+* R-local is a custom repository holding home-made R packages
+* R-Data-0.1 repo holds R data
 
 ### rpackd
 
