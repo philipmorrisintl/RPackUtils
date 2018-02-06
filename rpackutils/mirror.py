@@ -136,7 +136,7 @@ def rpacks_mirror():
             dest='artifactoryConfig',
             action='store',
             default=None,
-            required=False,
+            required=True,
             help=ARTIFACTORY_CONFIG_HELP,
             ) and None
     args = parser.parse_args()
