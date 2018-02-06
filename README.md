@@ -62,6 +62,37 @@ check the documentation of the setup tool by typing :
 (RPackUtils) $ python setup.py install --help
 ```
 
+## Configuration
+
+Customize the provided configuration file sample.
+
+```bash
+RPackUtils/tests/resources $ cp rpackutils.conf ~/
+$ vim ~/rpackutils.conf
+```
+
+Provide the details about your Artifactory instance.
+This is required in order to use the following commands:
+
+* rpackc
+* rpackd
+* rpacki
+* rpackm
+* rpackq
+
+The configuration file has to be systematically passed as an argument:
+```bash
+$ rpackc --conf="~/rpackutils.conf" ...
+```
+
+```
+[global]
+artifactory.url = https://artifactory.local/artifactory
+artifactory.user = artifactoryUser
+artifactory.pwd = "s3C437P4ssw@Rd"
+artifactory.cert = /toto/Certificate_Chain.pem
+```
+
 ## Usage
 
 | Command   | Purpose                                                                                              |
@@ -75,25 +106,32 @@ check the documentation of the setup tool by typing :
 | rpackm    | Download R packages from a specified repository (CRAN, Bioc) and upload them to Artifactory (mirror) |
 
 ### rpackbioc
+TODO
 
 ### rpackmran
+TODO
 
 ### rpackq
+TODO
 
 ### rpacki
+TODO
 
 ### rpackc
+TODO
 
 ### rpackd
+TODO
 
 ### rpackm
+TODO
 
 
 ## Third parties
 
-Bioconductor: [Open source software for Bioinformatics](https://www.bioconductor.org/)
-CRAN: [The Comprehensive R Archive Network](https://cran.rstudio.com/)
-MRAN: [Microsoft R Application Network](https://mran.revolutionanalytics.com/)
+* Bioconductor: [Open source software for Bioinformatics](https://www.bioconductor.org/)
+* CRAN: [The Comprehensive R Archive Network](https://cran.rstudio.com/)
+* MRAN: [Microsoft R Application Network](https://mran.revolutionanalytics.com/)
 
 ## License
 
