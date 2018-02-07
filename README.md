@@ -229,19 +229,39 @@ optional arguments:
                         "Certificate_Chain.pem"
 ```
 
-Search for the package *ggplot2* inside the Artifactory repository *R-3.1.2*.
+Search for the package *tmod* inside the Artifactory repository *R-3.2.2*.
 
 ```bash
 $ rpackq --config="~/rpackutils.conf" \
-         --repositories="R-3.1.2" \
-         --packages="ggplot2"
+         --repositories="R-3.2.2" \
+         --packages="tmod"
 -------------------------------------
-Package: ggplot2  Version: 1.0.0 in repository: R-3.1.2
-Depends on: ['grid', 'reshape2', 'MASS', 'stats', 'plyr', 'R', 'proto', 'scales', 'methods', 'gtable', 'digest']
+Package: tmod  Version: 0.30 in repository: R-3.2.2
+Depends on: ['R', 'pca3d', 'beeswarm', 'tagcloud', 'methods', 'XML']
 
 ```
 
 ### rpacki
+
+The standard way to install R packages is to invoke the command "R CMD
+INSTALL package" or its equivalent on the R prompt.
+
+When you try to install a package having dependencies not yet installed on
+the target environment, you run into this error:
+
+```bash
+$ R CMD INSTALL someAwesomePackage_2.0.26.tar.gz
+* installing to library ‘/foo/bar/R-3.1.2/lib64/R/library’
+ERROR: dependency ‘foodep’ is not available for package ‘someAwesomePackage’
+* removing ‘/foo/bar/R-3.1.2/lib64/R/library/someAwesomePackage’
+```
+
+Then, you'll try to install the dependency and, as before, you may
+experience the error about missing dependencies.  It is an annoying and
+time consuming process of trail and error.
+
+Use *rapcki* for the installation, it will resolve all dependencies for
+you!
 
 ```bash
 $ rpacki -h
@@ -270,12 +290,106 @@ Install the *tmod* package.
 
 ```bash
 $ rpacki --repositories R-3.2.2 \
-         --R-lib-path /foo/bar/R-3.2.2/lib64/R/library/ \
          --R-home /foo/bar/R-3.2.2/ \
          --packages tmod
+
+Using R: /home/scano/opt/R-3.2.2
+Using Repositories: ['R-3.2.2']
+Processing node: XML...
+====> Instaling package: XML
+Package: XML already installed
+Processing node: rgl...
+====> Instaling package: rgl
+Package: rgl already installed
+Processing node: ellipse...
+====> Instaling package: ellipse
+WARNING: ignoring environment value of R_HOME
+* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
+* installing *source* package ‘ellipse’ ...
+** package ‘ellipse’ successfully unpacked and MD5 sums checked
+** R
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (ellipse)
+Processing node: pca3d...
+====> Instaling package: pca3d
+WARNING: ignoring environment value of R_HOME
+* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
+* installing *source* package ‘pca3d’ ...
+** package ‘pca3d’ successfully unpacked and MD5 sums checked
+** R
+** data
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (pca3d)
+Processing node: beeswarm...
+====> Instaling package: beeswarm
+WARNING: ignoring environment value of R_HOME
+* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
+* installing *source* package ‘beeswarm’ ...
+** package ‘beeswarm’ successfully unpacked and MD5 sums checked
+** R
+** data
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded
+* DONE (beeswarm)
+Processing node: Rcpp...
+====> Instaling package: Rcpp
+Package: Rcpp already installed
+Processing node: RColorBrewer...
+====> Instaling package: RColorBrewer
+Package: RColorBrewer already installed
+Processing node: tagcloud...
+====> Instaling package: tagcloud
+WARNING: ignoring environment value of R_HOME
+* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
+* installing *source* package ‘tagcloud’ ...
+** package ‘tagcloud’ successfully unpacked and MD5 sums checked
+** libs
+g++ -I/foo/bar/R-3.2.2/lib64/R/include -DNDEBUG  -I/usr/local/include -I"/foo/bar/R-3.2.2/lib64/R/library/Rcpp/include"   -fpic  -g -O2  -c RcppExports.cpp -o RcppExports.o
+g++ -I/foo/bar/R-3.2.2/lib64/R/include -DNDEBUG  -I/usr/local/include -I"/foo/bar/R-3.2.2/lib64/R/library/Rcpp/include"   -fpic  -g -O2  -c overlap.cpp -o overlap.o
+g++ -shared -L/foo/bar/R-3.2.2/lib64/R/lib -L/usr/local/lib64 -o tagcloud.so RcppExports.o overlap.o -L/foo/bar/R-3.2.2/lib64/R/lib -lR
+installing to /foo/bar/R-3.2.2/lib64/R/library/tagcloud/libs
+** R
+** data
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (tagcloud)
+Processing node: tmod...
+====> Instaling package: tmod
+WARNING: ignoring environment value of R_HOME
+* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
+* installing *source* package ‘tmod’ ...
+** package ‘tmod’ successfully unpacked and MD5 sums checked
+** R
+** data
+** inst
+** preparing package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+* DONE (tmod)
+
 ```
 
-TODO
+
 
 ### rpackc
 
@@ -307,13 +421,13 @@ optional arguments:
 
 Let's clone an existing R environment.
 
-| Reference R environment | /foo/bar/R-3.1.2       |
-| R environment clone     | /foo/bar/R-3.1.2-CLONE |
+* Reference R environment: /foo/bar/R-3.1.2
+* R environment clone: /foo/bar/R-3.1.2-CLONE
+
 
 
 ```bash
 $ rpackc --conf="~/rpackutils.conf"
-    --R-lib-path="/foo/bar/R-3.1.2-CLONE/lib64/R/library" \
     --R-lib-refpath="/foo/bar/R-3.1.2/lib64/R/library \
     --R-home="/foo/bar/R-3.1.2-CLONE" \
     --repositories="R-3.1.2,Bioc-3.0,R-local,R-Data-0.1,Bioc-3.2"
@@ -398,6 +512,7 @@ TODO
 * Bioconductor: [Open source software for Bioinformatics](https://www.bioconductor.org/)
 * CRAN: [The Comprehensive R Archive Network](https://cran.rstudio.com/)
 * MRAN: [Microsoft R Application Network](https://mran.revolutionanalytics.com/)
+* Artifactory: [Enterprise Universal Artifact Manager by JFrog](https://jfrog.com/)
 
 ## License
 
