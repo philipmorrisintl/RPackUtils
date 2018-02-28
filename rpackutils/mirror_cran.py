@@ -185,5 +185,5 @@ class MirrorCRAN():
             print('Failed to download all R packages')
 
     def deploy_cran_packs(self, repos, folder, procs, artifactoryConfig):
-        ah = ArtifactoryHelper(artifactoryConfig)
+        ah = ArtifactoryHelper(repos, artifactoryConfig)
         ah.deploy(repos, folder, procs)

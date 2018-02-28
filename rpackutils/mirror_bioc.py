@@ -261,5 +261,5 @@ class MirrorBioc():
         self.spawn_downloads(procs, urls, packs, targetpaths, packtype)
 
     def deploy_bioc_packs(self, repos, folder, procs, artifactoryConfig=None):
-        ah = ArtifactoryHelper(artifactoryConfig)
+        ah = ArtifactoryHelper(repos, artifactoryConfig)
         ah.deploy(repos, folder, procs)
