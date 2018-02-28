@@ -149,9 +149,7 @@ def rpacks_mirror():
     if not args.outputrepo:
         print('Output Repository not provided')
         sys.exit(-1)
-    artifactoryConfig = None
-    if args.artifactoryConfig is not None:
-        artifactoryConfig = args.artifactoryConfig
+    artifactoryConfig = args.artifactoryConfig
     procs = args.procs
     outputrepo = args.outputrepo
     # create a temp folder

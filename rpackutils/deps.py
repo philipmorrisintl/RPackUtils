@@ -441,9 +441,7 @@ def rpacks_install():
     rlibpath = args.rlibpath
     rhome = args.rhome
     packages = [x.strip() for x in args.packages.split(',')]
-    artifactoryConfig = None
-    if args.artifactoryConfig is not None:
-        artifactoryConfig = args.artifactoryConfig
+    artifactoryConfig = args.artifactoryConfig
     # Check some parameters
     checkrhome(rhome)
     checkrlibpath(rlibpath)
@@ -504,9 +502,7 @@ def rpacks_clone():
     rlibpath = args.rlibpath
     rhome = args.rhome
     rlibpathref = args.rlibpathref
-    artifactoryConfig = None
-    if args.artifactoryConfig is not None:
-        artifactoryConfig = args.artifactoryConfig
+    artifactoryConfig = args.artifactoryConfig
     # Check some parameters
     checkrhome(rhome)
     checkrlibpath(rlibpath)
@@ -561,9 +557,7 @@ def rpacks_query():
     args = parser.parse_args()
     repos = [x.strip() for x in args.repos.split(',')]
     packages = [x.strip() for x in args.packages.split(',')]
-    artifactoryConfig = None
-    if args.artifactoryConfig is not None:
-        artifactoryConfig = args.artifactoryConfig
+    artifactoryConfig = args.artifactoryConfig
     if not repos:
         print('Repository is not provided')
         sys.exit(-1)
@@ -658,12 +652,10 @@ def rpacks_download():
         sys.exit(-1)
     repos = [x.strip() for x in args.repos.split(',')]
     packages = [x.strip() for x in args.packages.split(',')]
-    artifactoryConfig = None
     dest = args.dest
     if args.dest is None:
         dest = os.getcwd()
-    if args.artifactoryConfig is not None:
-        artifactoryConfig = args.artifactoryConfig
+    artifactoryConfig = args.artifactoryConfig
     if not repos:
         print('Repository is not provided')
         sys.exit(-1)
