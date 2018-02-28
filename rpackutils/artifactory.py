@@ -152,4 +152,3 @@ class ArtifactoryHelper(object):
         print('Time elapsed: {0} seconds.'.format(timeelapsed))
         if totaldeployed < totalnumoffiles:
             print('Failed to deploy all artifacts')
-            sys.exit(-1)

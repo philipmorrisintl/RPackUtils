@@ -248,7 +248,6 @@ class MirrorBioc():
         print('Time elapsed: {0} seconds.'.format(timeelapsed))
         if totaldownloaded < totalnumofpacks:
             print('Failed to download all BIOC R {0}'.format(packtype))
-            sys.exit(-1)
 
     def download_bioc_packs(self, packs, bioc_release, view, tofolder, procs):
         packtype = view

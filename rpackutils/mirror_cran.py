@@ -143,8 +143,9 @@ class MirrorCRAN():
             print('Done downloading R package: {0}'.format(pack))
             retVal = 'ok'
         except:
-            error_message = 'Error downloading R package: {0}\n{1}\n{2}' \
+            error_message = 'Error downloading R package: {0}\n{1}\n{2}\n{3}' \
                 .format(pack,
+                        url,
                         sys.exc_info()[0],
                         traceback.extract_tb(sys.exc_info()[2]))
             print(error_message)
@@ -182,7 +183,6 @@ class MirrorCRAN():
         print('Time elapsed: {0} seconds.'.format(timeelapsed))
         if totaldownloaded < totalnumofpacks:
             print('Failed to download all R packages')
-            sys.exit(-1)
 
     def deploy_cran_packs(self, repos, folder, procs, artifactoryConfig):
         ah = ArtifactoryHelper(artifactoryConfig)
