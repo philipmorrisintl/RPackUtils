@@ -197,8 +197,8 @@ class MirrorBioc():
         timeelapsed = int(endtime - starttime)
         print('Time elapsed: {0} seconds.\n'.format(timeelapsed))
         if totalerrors > 0:
-            print('Could not extract all packages versions. Exiting.')
-            exit(-1)
+            print('Could not extract all packages versions.')
+            #exit(-1)
         return packageFullNames
 
     def download(self, url, pack, targetpath, packtype):
