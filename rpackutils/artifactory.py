@@ -97,7 +97,7 @@ class ArtifactoryHelper(object):
 
     def deployArtifact(self, filepath, repo, url):
         print('Deploying artifact: {0}'.format(filepath))
-        cmd = 'curl --cacert {0} -X PUT {1} --data-binary {2}'.format(
+        cmd = 'curl --cacert {0} -X PUT {1} -T {2}'.format(
             self.artifactory_cert, url, filepath)
         res = subprocess.call(cmd, shell=True)
         retVal = 'ok'
