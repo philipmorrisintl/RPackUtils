@@ -96,16 +96,16 @@ class RRepository(object):
         filename = '{0}_{1}{2}'.format(pack, version, '.tar.gz')
         file_handle, dest = tempfile.mkstemp()
         folder = tempfile.mkdtemp()
-        self._ah.download(filename, dest[1])
+        self._ah.download(filename, dest)
         try:
-            tarf = tarfile.open(dest[1], 'r:gz')
+            tarf = tarfile.open(dest, 'r:gz')
             tarf.extract(member=os.path.join(pack, 'DESCRIPTION'),
                 path=folder)
             tarf.close()
         except tarfile.ReadError:
             print('!!!! ERROR when reading tarfile for pack: {0}'.format(
                 pack))
-            print('!!!! tarfile: {0}'.format(dest[1]))
+            print('!!!! tarfile: {0}'.format(dest))
             return pack, self.package_version(pack), []
         descpath = os.path.join(folder, pack, 'DESCRIPTION')
         if not os.path.exists(descpath):
@@ -114,7 +114,7 @@ class RRepository(object):
         f = open(descpath, 'r', encoding='utf-8', errors='ignore')
         content = f.readlines()
         f.close()
-        os.remove(dest[1])
+        os.remove(dest)
         os.close(file_handle)
         shutil.rmtree(folder)
         return RRepository.parse_descfile(content)
@@ -124,7 +124,7 @@ class RRepository(object):
         filename = '{0}_{1}{2}'.format(pack, version, '.tar.gz')
         file_handle = None
         if dest is None:
-            file_handle, dest = tempfile.mkstemp()[1]
+            file_handle, dest = tempfile.mkstemp()
         self._ah.download(filename, dest)
         if file_handle:
             os.close(file_handle)
