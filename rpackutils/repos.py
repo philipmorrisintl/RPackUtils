@@ -94,7 +94,7 @@ class RRepository(object):
     def description(self, pack):
         version = self.package_version(pack)
         filename = '{0}_{1}{2}'.format(pack, version, '.tar.gz')
-        dest = tempfile.mkstemp()
+        file_handle, dest = tempfile.mkstemp()
         folder = tempfile.mkdtemp()
         self._ah.download(filename, dest[1])
         try:
@@ -115,15 +115,19 @@ class RRepository(object):
         content = f.readlines()
         f.close()
         os.remove(dest[1])
+        os.close(file_handle)
         shutil.rmtree(folder)
         return RRepository.parse_descfile(content)
 
     def download(self, pack, dest=None):
         version = self.package_version(pack)
         filename = '{0}_{1}{2}'.format(pack, version, '.tar.gz')
+        file_handle = None
         if dest is None:
-            dest = tempfile.mkstemp()[1]
+            file_handle, dest = tempfile.mkstemp()[1]
         self._ah.download(filename, dest)
+        if file_handle:
+            os.close(file_handle)
         return dest
 
     @staticmethod
