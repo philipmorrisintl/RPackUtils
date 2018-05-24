@@ -5,7 +5,7 @@
 R package dependencies manager and mirroring tool for *Bioconductor* and
 *CRAN* written in Python.  With **RPackUtils** you can:
 *  Install R packages in a reproducible manner with the control of packages
-       versions and dependencies
+   versions and dependencies
 *  Clone existing R environments
 *  Mirror past and current *CRAN* snapshots published on *MRAN*
 *  Mirror past and current *Bioconductor* versions
@@ -25,6 +25,7 @@ $ git clone https://github.com/sgubianpm/RPackUtils.git
 Cloning into 'RPackUtils'...
 [...]
 ```
+
 2. Enter the root folder and create a Virtualenv.
 ```bash
 $ cd RPackUtils
@@ -744,6 +745,13 @@ packages from the *2016-05-03* snapshot. This snapshot contains more than
 rpackg --repo cran --repoparam 2016-05-03 \
        --out ~/RPackUtils_cran_2016-05-03.gml
 ```
+
+Here are renderings of the dependency graph of the Bioconductor repository
+with the help of Gephi.
+
+![Dependency graph of Bioconductor](images/bioc_depgraph.png)
+
+![Dependency graph of Bioconductor (zoom)](images/bioc_depgraph_zoom.png)
 
 
 ## License checking
