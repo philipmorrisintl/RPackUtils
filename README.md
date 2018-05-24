@@ -805,6 +805,9 @@ the configuration file level.
 * CRAN: [The Comprehensive R Archive Network](https://cran.rstudio.com/)
 * MRAN: [Microsoft R Application Network](https://mran.revolutionanalytics.com/)
 * Artifactory: [Enterprise Universal Artifact Manager by JFrog](https://jfrog.com/)
+* Bastian M., Heymann S., Jacomy M. (2009). [Gephi](https://gephi.org/): an
+  open source software for exploring and manipulating
+  networks. International AAAI Conference on Weblogs and Social Media.
 
 ## License
 
