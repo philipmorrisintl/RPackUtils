@@ -97,12 +97,14 @@ def test_find():
 def test_ls():
     packagenames = localRepo.ls(packagenamesonly=True)
     assert(len(packagenames) == 3)
-    assert(packagenames == ['ggplot2', 'data.table', 'plyr'])
+    assert('ggplot2' in packagenames)
+    assert('data.table' in packagenames)
+    assert('plyr' in packagenames)
     filenames = localRepo.ls(packagenamesonly=False)
     assert(len(filenames) == 3)
-    assert(filenames == ['library/ggplot2_2.2.1.tar.gz',
-                         'library/data.table_1.10.4-3.tar.gz',
-                         'library/plyr_1.8.4.tar.gz'])
+    assert('library/ggplot2_2.2.1.tar.gz' in filenames)
+    assert('library/data.table_1.10.4-3.tar.gz' in filenames)
+    assert('library/plyr_1.8.4.tar.gz' in filenames)
 
 def test_download_single():
     # test download success
