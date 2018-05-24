@@ -747,7 +747,7 @@ rpackg --repo cran --repoparam 2016-05-03 \
 ```
 
 Here are renderings of the dependency graph of the Bioconductor repository
-with the help of Gephi.
+with the help of Gephi (*citation at the end or this document*).
 
 ![Dependency graph of Bioconductor](images/bioc_depgraph.png)
 
