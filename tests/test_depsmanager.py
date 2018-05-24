@@ -10,7 +10,7 @@ import pytest
 
 from rpackutils.graph import Graph
 from rpackutils.graph import Node
-from rpackutils.deps import DepsManager
+from rpackutils.depsmanager import DepsManager
 
 # A set of package to test
 pack_set = {

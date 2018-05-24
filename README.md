@@ -11,8 +11,7 @@ R package dependencies manager and mirroring tool for *Bioconductor* and
 *  Mirror past and current *Bioconductor* versions
 *  Artifactory support
 
-It is still under development. Currently refactoring to support different
-source providers for R packages.
+It is still under development.
 
 ## Requirements
 
@@ -39,14 +38,14 @@ $ . bin/activate
 ```
 
 4. Optionnaly launch the unit tests
-
 ```bash
 $ python setup.py build
 [...]
 (RPackUtils) $ cd tests
-(RPackUtils) $ pytest
+(RPackUtils) $ pytest -sv [-m "not slow"]
 [...]
 ```
+You can optionnaly deselecting tests maked as "slow".
 
 5. Install
 ```bash
@@ -71,26 +70,66 @@ RPackUtils/tests/resources $ cp rpackutils.conf ~/
 $ vim ~/rpackutils.conf
 ```
 
-Provide the details about your Artifactory instance.
-This is required in order to use the following commands:
-
-* rpackc
-* rpackd
-* rpacki
-* rpackm
-* rpackq
-
-The configuration file has to be systematically passed as an argument:
+The configuration file has to be passed as an argument for commands requiring it:
 ```bash
-$ rpackc --conf="~/rpackutils.conf" ...
+$ RPACKCOMMAND --config ~/rpackutils.conf ...
 ```
 
+In this configuration file, you have to define your available repositories.
+**RPackUtils** currently supports the following repository types:
+* JFrog Artifactory with the directive *artifactory_repos*
+* Any R environment with *renvironment_repos*
+* Any repository on your local filesystem, like a folder with *local_repos*
+
 ```
-[global]
-artifactory.url = https://artifactory.local/artifactory
-artifactory.user = artifactoryUser
-artifactory.pwd = "s3C437P4ssw@Rd"
-artifactory.cert = /toto/Certificate_Chain.pem
+# [REPO_TYPE]_repos = [list of names]
+#
+# where each name links to an existing configuration section.
+#
+[repositories]
+artifactory_repos = artifactory, artifactorydev
+renvironment_repos = R-3.1.2, R-3.2.5
+local_repos = local
+
+[artifactory]
+baseurl = https://artifactory.local/artifactory
+user = artifactoryUser
+password = "s3C437P4ssw@Rd"
+verify = /toto/Certificate_Chain.pem
+repos = R-3.1.2, Bioc-3.0, R-local, R-Data-0.1
+
+[artifactorydev]
+baseurl = https://artifactorydev.local/artifactory
+user = artifactoryUserDev
+password = "s3C437P4ssw@RdDev"
+verify = /toto/Certificate_Chain_Dev.pem
+repos = R-3.1.2, Bioc-3.0, R-local, R-Data-0.1
+
+[local]
+baseurl = /home/john/RPackUtils/repository
+repos = local1, local2
+
+[R-3.1.2]
+rhome = /home/john/opt/R-3.1.2
+librarypath = lib64/R/library
+licensecheck = True
+
+[R-3.2.5]
+rhome = /home/john/opt/R-3.2.5
+librarypath = lib64/R/library
+```
+
+In the *R-3.1.2* environment, we have enabled the *licensecheck*. This
+feature is supported by any R environment and is disabled by default. For
+more information about this feature, please refer to the dedicated section
+"License checking".
+
+To customize the temporary files location you have to change the
+corresponding environment variable used by the tempfile Python module. For
+bash shells, you have to change *TMPDIR*.
+
+```bash
+export TMPDIR=/home/john/tmp
 ```
 
 ## Usage
@@ -101,15 +140,60 @@ specified *--prefix*.
 
 | Command   | Purpose                                                                                              |
 |-----------|------------------------------------------------------------------------------------------------------|
+| rpackcc   | Check the configuration File                                                                         |
 | rpackbioc | Query the Bioconductor repository for available releases                                             |
 | rpackmran | Query the MRAN repository for available snapshots                                                    |
 | rpackq    | Search accross repositories for a package or a list of packages                                      |
 | rpacki    | Install R packages with resolved dependencies                                                        |
+| rpackd    | Download R packages and resolved dependencies (dry-run install)                                      |
 | rpackc    | Install R packages based on an existing environments (clone)                                         |
-| rpackd    | Download R packages and resolved dependencies                                                        |
 | rpackm    | Download R packages from a specified repository (CRAN, Bioc) and upload them to Artifactory (mirror) |
+| rpackg    | Generate a dependencies graph                                                                        |
 
 The following sections provide use cases for each command.
+
+### rpackcc
+
+The goal of this command is to parse the configuration file and validate
+it. **RPackUtils** will try to connect to any defined remote repository
+and check any local filesystem path exist.
+
+```bash
+$ rpackcc -h
+usage: rpackcc [-h] --config CONFIG
+
+Check the configuration file and report issues if any
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --config CONFIG  RPackUtils configuration file
+```
+
+Example with a connection issue:
+```bash
+$ rpackcc --config ~/rpackutils.conf
+Checking the configuration file...
+Building Artifactory instance "artifactory"
+Checking connection to https://artifactory.local/artifactory ...
+FATAL: Cannot connect to https://artifactory.local/artifactory: Could not find a suitable TLS CA certificate bundle, invalid path: /toto/Certificate_Chain.pem
+(...)
+```
+
+Example of a successfull validation:
+```bash
+$ rpackcc --config ~/rpackutils.conf
+Building Artifactory instance "myartifactory"
+Checking connection to https://myartifactory/artifactory ...
+Connection to https://myartifactory/artifactory established.
+Building R environment instance "R-3.1.2"
+Building R environment instance "R-3.2.2"
+Building R environment instance "R-3.2.5"
+Building R environment instance "R-3.2.5_1"
+Building R environment instance "R-3.2.5_2"
+Building Local repository instance "local1"
+Building Local repository instance "local2"
+Time elapsed: 0.870 seconds.
+```
 
 ### rpackbioc
 
@@ -129,6 +213,8 @@ Providing no argument will list all available realeases.
 
 ```bash
 $ rpackbioc
+Checking connection to https://www.bioconductor.org ...
+Connection to https://www.bioconductor.org established.
 Bioconductor 3.7 (devel)
 Bioconductor 3.6 (release)
 Bioconductor 3.5
@@ -160,16 +246,17 @@ optional arguments:
                         a file where to read the results from
 ```
 
-Providing no argument will fetch all available snapshots for all archived R versions.
+Providing no argument will fetch all available snapshots for all archived R
+versions.
 
 ```bash
 $ rpackmran 
 I will use 50 parallel processes to parse the R version from snapshots dates.
 Fetching available MRAN snapshots from the Internet...
+Checking connection to https://mran.revolutionanalytics.com ...
+Connection to https://mran.revolutionanalytics.com established.
 1225 snapshot dates found.
 Snapshots processed/matching the specified R version (1225), skipped (0), errors (0).
-
-
 Time elapsed: 19 seconds.
 ============================================================
 R version 3.3.2, 125 snapshots
@@ -190,10 +277,10 @@ For this, use the *--Rversion* argument.
 $ rpackmran --Rversion="3.3.2"
 I will use 50 parallel processes to parse the R version from snapshots dates.
 Fetching available MRAN snapshots from the Internet...
+Checking connection to https://mran.revolutionanalytics.com ...
+Connection to https://mran.revolutionanalytics.com established.
 1225 snapshot dates found.
 Snapshots processed/matching the specified R version (125), skipped (1100), errors (0).
-
-
 Time elapsed: 20 seconds.
 ============================================================
 R version 3.3.2, 125 snapshots
@@ -211,34 +298,41 @@ file instead of querying the **MRAN** website.
 
 ```bash
 $ rpackq -h
-usage: rpackq [-h] [--repositories REPOS] --packages PACKAGES --config
-              ARTIFACTORYCONFIG
+usage: rpackq [-h] [--repos REPOS] --packages PACKAGES --config CONFIG
 
 Search accross repositories for a package or a list of packages
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --repositories REPOS  Comma separated list of repositories. Default are:
-                        R-3.1.2, Bioc-3.0, R-local,R-Data-0.1
-  --packages PACKAGES   Comma separated package names to install
-  --config ARTIFACTORYCONFIG
-                        File specifying the Artifactroy configuration. Sample
-                        content: [global] artifactory.url =
-                        "https://artifactoryhost/artifactory"artifactory.user
-                        = "artiuser"artifactory.pwd = "***"artifactory.cert =
-                        "Certificate_Chain.pem"
+  -h, --help           show this help message and exit
+  --repos REPOS        Comma separated repository names, by default: all
+                       defined in the configuration file
+  --packages PACKAGES  Comma separated package names to search
+  --config CONFIG      RPackUtils configuration file
 ```
 
-Search for the package *tmod* inside the Artifactory repository *R-3.2.2*.
+Search for the package *tmod* in Artifactory. This assumes
+*artifactory-pmi* is defined in the configuration file ~/rpackutils.conf
 
 ```bash
 $ rpackq --config="~/rpackutils.conf" \
-         --repositories="R-3.2.2" \
+         --repos="artifactory-pmi" \
          --packages="tmod"
--------------------------------------
-Package: tmod  Version: 0.30 in repository: R-3.2.2
-Depends on: ['R', 'pca3d', 'beeswarm', 'tagcloud', 'methods', 'XML']
 
+Building Artifactory instance "artifactory-pmi"
+Checking connection to https://rd-artifactory.app.pmi/artifactory ...
+Connection to https://rd-artifactory.app.pmi/artifactory established.
+-------------------------------------
+Searching for tmod in artifactory-pmi...
+-
+Repository instance "artifactory-pmi"
+1 matche(s) found
+-
+Downloading R package: tmod_0.30.tar.gz
+Done downloading R package: tmod_0.30.tar.gz
+Package: tmod Version: 0.30 License: GPL (>= 2.0) 
+Repository path: R-3.1.2/tmod_0.30.tar.gz
+Dependencies: beeswarm,pca3d,tagcloud,XML
+-------------------------------------
 ```
 
 ### rpacki
@@ -265,246 +359,436 @@ you!
 
 ```bash
 $ rpacki -h
-usage: rpacki [-h] [--repositories REPOS] [--R-lib-path RLIBPATH]
-              [--R-home RHOME] --packages PACKAGES --config ARTIFACTORYCONFIG
+usage: rpacki [-h] [--repo REPONAME] [--Renv RENVNAME] --packages PACKAGES
+              [--overwrite] --config CONFIG
 
-Install packages based on a list of packages
+Install packages to a target R environment
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --repositories REPOS  Comma separated list of repositories. Default are:
-                        R-3.1.2, Bioc-3.0, R-local,R-Data-0.1
-  --R-lib-path RLIBPATH
-                        Path to the R library path where to install packages
-  --R-home RHOME        Path to the R installation to use for installing
-  --packages PACKAGES   Comma separated package names to install
-  --config ARTIFACTORYCONFIG
-                        File specifying the Artifactroy configuration. Sample
-                        content: [global] artifactory.url =
-                        "https://artifactoryhost/artifactory"artifactory.user
-                        = "artiuser"artifactory.pwd = "***"artifactory.cert =
-                        "Certificate_Chain.pem"
+  -h, --help           show this help message and exit
+  --repo REPONAME      The repository name where to get packages (it must be
+                       defined in the configuration file)
+  --Renv RENVNAME      Name of the target R environment where to do the
+                       installation (the name must be defined in the
+                       configuration file)
+  --packages PACKAGES  Comma separated package names to install
+  --overwrite          Overwrite already installed packages. By default,
+                       nothing gets overwritten.
+  --config CONFIG      RPackUtils configuration file
 ```
 
-Install the *tmod* package.
+Install the *tmod* package. For this example we decide to overwrite any
+already installed package with the *--overwrite* argument.
 
 ```bash
-$ rpacki --repositories R-3.2.2 \
-         --R-home /foo/bar/R-3.2.2/ \
-         --packages tmod
+$ rpacki --config ~/rpackutils.conf \
+         --repo myartifactory \
+         --Renv R-3.2.2 \
+         --packages tmod \
+         --overwrite
 
-Using R: /home/scano/opt/R-3.2.2
-Using Repositories: ['R-3.2.2']
-Processing node: XML...
-====> Instaling package: XML
-Package: XML already installed
-Processing node: rgl...
-====> Instaling package: rgl
-Package: rgl already installed
-Processing node: ellipse...
-====> Instaling package: ellipse
-WARNING: ignoring environment value of R_HOME
-* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
-* installing *source* package ‘ellipse’ ...
-** package ‘ellipse’ successfully unpacked and MD5 sums checked
-** R
-** preparing package for lazy loading
-** help
-*** installing help indices
-** building package indices
-** testing if installed package can be loaded
-* DONE (ellipse)
-Processing node: pca3d...
-====> Instaling package: pca3d
-WARNING: ignoring environment value of R_HOME
-* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
-* installing *source* package ‘pca3d’ ...
-** package ‘pca3d’ successfully unpacked and MD5 sums checked
-** R
-** data
-** preparing package for lazy loading
-** help
-*** installing help indices
-** building package indices
-** installing vignettes
-** testing if installed package can be loaded
-* DONE (pca3d)
+Building Artifactory instance "myartifactory"
+Checking connection to https://myartifactory/artifactory ...
+Connection to https://myartifactory/artifactory established.
+Building R environment instance "R-3.2.2"
+Using the target R environment: R-3.2.2 at /home/john/opt/R-3.2.2
+Using the package repository: myartifactory at https://myartifactory/artifactory with folders: R-3.2.2
+Downloading R package: tmod_0.19.tar.gz
+Done downloading R package: tmod_0.19.tar.gz
+Downloaded R-3.2.2/tmod_0.19.tar.gz
+Downloading R package: tmod_0.30.tar.gz
+Done downloading R package: tmod_0.30.tar.gz
+Downloaded R-3.2.2/tmod_0.30.tar.gz
+Downloading R package: beeswarm_0.2.1.tar.gz
+Done downloading R package: beeswarm_0.2.1.tar.gz
 Processing node: beeswarm...
-====> Instaling package: beeswarm
-WARNING: ignoring environment value of R_HOME
-* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
-* installing *source* package ‘beeswarm’ ...
-** package ‘beeswarm’ successfully unpacked and MD5 sums checked
-** R
-** data
-** preparing package for lazy loading
-** help
-*** installing help indices
-** building package indices
-** testing if installed package can be loaded
-* DONE (beeswarm)
-Processing node: Rcpp...
-====> Instaling package: Rcpp
-Package: Rcpp already installed
+The package is already installed
+Uninstalling the previous version
+Installing package
+The license "Artistic-2.0" is RESTRICTED
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmp3cp2dt42/beeswarm_0.2.1.tar.gz
+Waiting for PID 32508 to complete...
+Installation of package beeswarm_0.2.1.tar.gz DONE.
+Downloading R package: pca3d_0.8.tar.gz
+Done downloading R package: pca3d_0.8.tar.gz
+Downloading R package: rgl_0.95.1367.tar.gz
+Done downloading R package: rgl_0.95.1367.tar.gz
+Processing node: rgl...
+The package is already installed
+Uninstalling the previous version
+Installing package
+The license "GPL" is RESTRICTED
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmpphaz7_oy/rgl_0.95.1367.tar.gz
+Waiting for PID 32531 to complete...
+Installation of package rgl_0.95.1367.tar.gz DONE.
+Downloading R package: ellipse_0.3-8.tar.gz
+Done downloading R package: ellipse_0.3-8.tar.gz
+Processing node: ellipse...
+The package is already installed
+Uninstalling the previous version
+Installing package
+The license "GPL (>= 2)" is RESTRICTED
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmpc1jkb9uz/ellipse_0.3-8.tar.gz
+Waiting for PID 897 to complete...
+Installation of package ellipse_0.3-8.tar.gz DONE.
+Processing node: pca3d...
+The package is already installed
+Uninstalling the previous version
+Installing package
+The license "GPL-2" is RESTRICTED
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmpfi4vkydr/pca3d_0.8.tar.gz
+Waiting for PID 914 to complete...
+Installation of package pca3d_0.8.tar.gz DONE.
+Downloading R package: tagcloud_0.6.tar.gz
+Done downloading R package: tagcloud_0.6.tar.gz
+Downloading R package: RColorBrewer_1.1-2.tar.gz
+Done downloading R package: RColorBrewer_1.1-2.tar.gz
 Processing node: RColorBrewer...
-====> Instaling package: RColorBrewer
-Package: RColorBrewer already installed
+The package is already installed
+Uninstalling the previous version
+Installing package
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmplm9m5aim/RColorBrewer_1.1-2.tar.gz
+Waiting for PID 927 to complete...
+Installation of package RColorBrewer_1.1-2.tar.gz DONE.
+Downloading R package: Rcpp_0.12.1.tar.gz
+Done downloading R package: Rcpp_0.12.1.tar.gz
+Downloaded R-3.2.2/Rcpp_0.12.1.tar.gz
+Downloading R package: Rcpp_0.12.15.tar.gz
+Done downloading R package: Rcpp_0.12.15.tar.gz
+Downloaded R-3.2.2/Rcpp_0.12.15.tar.gz
+Downloading R package: Rcpp_0.12.6.tar.gz
+Done downloading R package: Rcpp_0.12.6.tar.gz
+Downloaded R-3.2.2/Rcpp_0.12.6.tar.gz
+Downloading R package: Rcpp_0.12.7.tar.gz
+Done downloading R package: Rcpp_0.12.7.tar.gz
+Downloaded R-3.2.2/Rcpp_0.12.7.tar.gz
+Processing node: Rcpp...
+The package is already installed
+Uninstalling the previous version
+Installing package
+The license "GPL (>= 2)" is RESTRICTED
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmpj9y6gn27/Rcpp_0.12.15.tar.gz
+Waiting for PID 944 to complete...
+Installation of package Rcpp_0.12.15.tar.gz DONE.
 Processing node: tagcloud...
-====> Instaling package: tagcloud
-WARNING: ignoring environment value of R_HOME
-* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
-* installing *source* package ‘tagcloud’ ...
-** package ‘tagcloud’ successfully unpacked and MD5 sums checked
-** libs
-g++ -I/foo/bar/R-3.2.2/lib64/R/include -DNDEBUG  -I/usr/local/include -I"/foo/bar/R-3.2.2/lib64/R/library/Rcpp/include"   -fpic  -g -O2  -c RcppExports.cpp -o RcppExports.o
-g++ -I/foo/bar/R-3.2.2/lib64/R/include -DNDEBUG  -I/usr/local/include -I"/foo/bar/R-3.2.2/lib64/R/library/Rcpp/include"   -fpic  -g -O2  -c overlap.cpp -o overlap.o
-g++ -shared -L/foo/bar/R-3.2.2/lib64/R/lib -L/usr/local/lib64 -o tagcloud.so RcppExports.o overlap.o -L/foo/bar/R-3.2.2/lib64/R/lib -lR
-installing to /foo/bar/R-3.2.2/lib64/R/library/tagcloud/libs
-** R
-** data
-** inst
-** preparing package for lazy loading
-** help
-*** installing help indices
-** building package indices
-** installing vignettes
-** testing if installed package can be loaded
-* DONE (tagcloud)
+The package is already installed
+Uninstalling the previous version
+Installing package
+The license "GPL (>= 2)" is RESTRICTED
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmpoe2xszyf/tagcloud_0.6.tar.gz
+Waiting for PID 993 to complete...
+Installation of package tagcloud_0.6.tar.gz DONE.
+Downloading R package: XML_3.98-1.3.tar.gz
+Done downloading R package: XML_3.98-1.3.tar.gz
+Processing node: XML...
+The package is already installed
+Uninstalling the previous version
+Installing package
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmpczqglppx/XML_3.98-1.3.tar.gz
+Waiting for PID 1049 to complete...
+Installation of package XML_3.98-1.3.tar.gz DONE.
 Processing node: tmod...
-====> Instaling package: tmod
-WARNING: ignoring environment value of R_HOME
-* installing to library ‘/foo/bar/R-3.2.2/lib64/R/library’
-* installing *source* package ‘tmod’ ...
-** package ‘tmod’ successfully unpacked and MD5 sums checked
-** R
-** data
-** inst
-** preparing package for lazy loading
-** help
-*** installing help indices
-** building package indices
-** installing vignettes
-** testing if installed package can be loaded
-* DONE (tmod)
-
+The package is already installed
+Uninstalling the previous version
+Installing package
+The license "GPL (>= 2.0)" is RESTRICTED
+Running: /home/john/opt/R-3.2.2/bin/R CMD INSTALL /home/john/tmpR/tmpz9qgokgb/tmod_0.30.tar.gz
+Waiting for PID 2094 to complete...
+Installation of package tmod_0.30.tar.gz DONE.
+Time elapsed: 87.387 seconds.
 ```
-
 
 
 ### rpackc
 
+*rpackc* clones a R environment to another, where both R environments do
+not have to be of the same version. The target environment or the "clone"
+will have the same set of packages installed as the input or source R
+environment.
+
 ```bash
 $ rpackc -h
-usage: rpackc [-h] [--repositories REPOS] [--R-lib-path RLIBPATH]
-              [--R-home RHOME] [--R-lib-refpath RLIBPATHREF] --config
-              ARTIFACTORYCONFIG
+usage: rpackc [-h] [--repo REPONAME] [--Renvin RENVNAMEINPUT]
+              [--Renvout RENVNAMEOUTPUT] [--overwrite] --config CONFIG
 
 Install R packages based on an existing environments (clone)
 
 optional arguments:
   -h, --help            show this help message and exit
-  --repositories REPOS  Comma separated list of repositories. Default are:
-                        R-3.1.2, Bioc-3.0, R-local,R-Data-0.1
-  --R-lib-path RLIBPATH
-                        Path to the R library path where to install packages
-  --R-home RHOME        Path to the installation to use
-  --R-lib-refpath RLIBPATHREF
-                        Path to the R library path used as reference
-  --config ARTIFACTORYCONFIG
-                        File specifying the Artifactroy configuration. Sample
-                        content: [global] artifactory.url =
-                        "https://artifactoryhost/artifactory"artifactory.user
-                        = "artiuser"artifactory.pwd = "***"artifactory.cert =
-                        "Certificate_Chain.pem"
-
+  --repo REPONAME       The repository name where to get packages (it must be
+                        defined in the configuration file)
+  --Renvin RENVNAMEINPUT
+                        Name of the input R environment (the name must be
+                        defined in the configuration file)
+  --Renvout RENVNAMEOUTPUT
+                        Name of the target R environment where to do the
+                        installation (the name must be defined in the
+                        configuration file)
+  --overwrite           Overwrite already installed packages. By default,
+                        nothing gets overwritten.
+  --config CONFIG       RPackUtils configuration file
 ```
 
-Let's clone an existing R environment.
+Let's clone R-3.2.5_ref to R-3.2.5.
 
-* Reference R environment: /foo/bar/R-3.1.2
-* R environment clone: /foo/bar/R-3.1.2-CLONE
+* Input R environment: R-3.2.5_ref
+* Output R environment (clone): R-3.2.5
 
-
+Both R environments must be defined in the configuration file. Here is an
+excample.
 
 ```bash
-$ rpackc --conf="~/rpackutils.conf"
-    --R-lib-refpath="/foo/bar/R-3.1.2/lib64/R/library \
-    --R-home="/foo/bar/R-3.1.2-CLONE" \
-    --repositories="R-3.1.2,Bioc-3.0,R-local,R-Data-0.1,Bioc-3.2"
+[repositories]
+artifactory_repos = myartifactory
+renvironment_repos = R-3.2.5, R-3.2.5_ref
+
+[myartifactory]
+(...)
+
+[R-3.2.5]
+rhome = /home/john/opt/R-3.2.5
+librarypath = lib64/R/library
+licensecheck = True
+
+[R-3.2.5_ref]
+rhome = /home/john/opt/R-3.2.5_ref
+librarypath = lib64/R/library
+
 ```
 
-The Artifactory repositories used in this example:
+The command specifies both R environments and *myartifactory* as the
+package repository.
 
-* R-3.1.2 is a mirror of CRAN
-* Bioc-3.0 and Bioc-3.2 are mirrors of Bioconductor realeases
-* R-local is a custom repository holding home-made R packages
-* R-Data-0.1 repo holds R data
+```bash
+rpackc --config ~/rpackutils_pmi.conf \
+       --repo myartifactory \
+       --Renvin R-3.2.5_ref \
+       --Renvout R-3.2.5
+```
+
 
 ### rpackd
 
+*rpacki* is used to install packages. *rpackd* is similar but does not
+actually install anything: it performs dry-run installations, it's kind of
+a simulating mode od *rpacki*.
+
+*rpacki* will generate a bash script *install.sh* and store all downloaded
+R packages in a destination folder specified by the argument *--dest*.
+
 ```bash
 $ rpackd -h
-usage: rpackd [-h] [--repositories REPOS] --packages PACKAGES --config
-              ARTIFACTORYCONFIG [--with-R-cmd] [--R-home RHOME] --R-lib-path
-              RLIBPATH [--prefix PREFIX] [--dest DEST]
+usage: rpackd [-h] [--repo REPONAME] [--Renv RENVNAME] --packages PACKAGES
+              --dest DEST [--overwrite] --config CONFIG
 
-Download R packages and resolved dependencies
+Install packages to a target R environment in dry-run mode
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --repositories REPOS  Comma separated list of repositories. Default are:
-                        R-3.1.2, Bioc-3.0, R-local,R-Data-0.1
-  --packages PACKAGES   Comma separated package names to install
-  --config ARTIFACTORYCONFIG
-                        File specifying the Artifactroy configuration. Sample
-                        content: [global] artifactory.url =
-                        "https://artifactoryhost/artifactory"artifactory.user
-                        = "artiuser"artifactory.pwd = "***"artifactory.cert =
-                        "Certificate_Chain.pem"
-  --with-R-cmd          Print to the console the R command to install them
-  --R-home RHOME        Path to the installation to use
-  --R-lib-path RLIBPATH
-                        Path to the R library path where to install packages
-  --prefix PREFIX       Path to the location where R packages have been
-                        downloaded
-  --dest DEST           Path to the folder where packages are downloaded. If
-                        notprovided, working folder will be used.
-
+  -h, --help           show this help message and exit
+  --repo REPONAME      The repository name where to get packages (it must be
+                       defined in the configuration file)
+  --Renv RENVNAME      Name of the target R environment where to do the
+                       installation (the name must be defined in the
+                       configuration file)
+  --packages PACKAGES  Comma separated package names to install
+  --dest DEST          Path where to store downloaded packages and the
+                       installation script. It must exist.
+  --overwrite          Overwrite already installed packages. By default,
+                       nothing gets overwritten.
+  --config CONFIG      RPackUtils configuration file
 ```
 
-TODO
+Please consider the following example.
+
+```bash
+$ rpackd --config ~/rpackutils.conf \
+         --repo myartifactory \
+         --Renv R-3.2.5 \
+         --packages ggplot2 \
+         --overwrite \
+         --dest ~/dest
+```
+
+The destination folder will contain the installation script *install.sh*
+along with the necesary R packages tarballs.
+
+```bash
+$ ls ~/dest
+colorspace_1.2-6.tar.gz  install.sh             plyr_1.8.3.tar.gz          scales_0.4.1.tar.gz
+dichromat_2.0-0.tar.gz   labeling_0.3.tar.gz    RColorBrewer_1.1-2.tar.gz  stringi_1.1.6.tar.gz
+digest_0.6.12.tar.gz     lazyeval_0.2.0.tar.gz  Rcpp_0.12.15.tar.gz        stringr_1.2.0.tar.gz
+ggplot2_2.2.1.tar.gz     magrittr_1.5.tar.gz    reshape2_1.4.1.tar.gz      tibble_1.3.4.tar.gz
+gtable_0.2.0.tar.gz      munsell_0.4.3.tar.gz   rlang_0.1.2.tar.gz
+```
+
+The installation script contain all necessary commands to install the
+packages in the correct order: the dependencies first.
+
+```bash
+$ cat ~/dest/install.sh 
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/digest_0.6.12.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/gtable_0.2.0.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/Rcpp_0.12.15.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/plyr_1.8.3.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/stringi_1.1.6.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/magrittr_1.5.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/stringr_1.2.0.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/reshape2_1.4.1.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/RColorBrewer_1.1-2.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/dichromat_2.0-0.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/colorspace_1.2-6.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/munsell_0.4.3.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/labeling_0.3.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/scales_0.4.1.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/rlang_0.1.2.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/tibble_1.3.4.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/lazyeval_0.2.0.tar.gz
+~/opt/R-3.2.5/bin/R CMD INSTALL ~/dest/ggplot2_2.2.1.tar.gz
+```
+
 
 ### rpackm
 
+Mirror a particular snapshot of CRAN or a Bioconductor release.
+
 ```bash
 $ rpackm -h
-usage: rpackm [-h] [--input-repository INPUTREPO] [--version VERSION]
-              --output-repository OUTPUTREPO [--procs PROCS]
-              --config ARTIFACTORYCONFIG
+usage: rpackm [-h] [--input-repository INPUTREPO] --inputrepoparam
+              INPUTREPOPARAM --output-repository OUTPUTREPO
+              --output-repository-folder OUTPUTREPOFOLDER [--procs PROCS]
+              --config CONFIG
 
-Download R packages from a specified repository (CRAN, Bioc) and upload them
-to Artifactory (mirror)
+Download R packages from a specified repository (CRAN or Bioconductor) and
+upload them to Artifactory (mirror)
 
 optional arguments:
   -h, --help            show this help message and exit
   --input-repository INPUTREPO
                         The type of public R repository to mirror, possible
-                        values: cran,bioc
-  --version VERSION     The version of Bioconductor or the snapshot date of
+                        values: "cran" or "bioc"
+  --inputrepoparam INPUTREPOPARAM
+                        The release of Bioconductor or the snapshot date of
                         CRAN
   --output-repository OUTPUTREPO
-                        The Artifactory repository name
+                        The destination Artifactory instance name
+  --output-repository-folder OUTPUTREPOFOLDER
+                        The destination Artifactory repository folder name
   --procs PROCS         Number of parallel downloads and uploads, default=10
-  --config ARTIFACTORYCONFIG
-                        File specifying the Artifactroy configuration. Sample
-                        content: [global] artifactory.url =
-                        "https://artifactoryhost/artifactory"artifactory.user
-                        = "artiuser"artifactory.pwd = "***"artifactory.cert =
-                        "Certificate_Chain.pem"
-
+  --config CONFIG       RPackUtils configuration file
 ```
 
-TODO
+To mirror CRAN, you need to provide a snapshot date. You can get a list of
+valid tags with the *rpackmran* command.
+
+In the following example, we want to mirror the CRAN snapshot *2016-05-03*.
+The mirror will be stored inside the *myartifactory* instance in the
+repository or folder names *CRAN_1026-05-03*.
+
+```bash
+rpackm --input-repository cran --inputrepoparam 2016-05-03 \
+       --output-repository myartifactory \
+       --output-repository-folder CRAN_2016-05-03
+       --config ~/rpackutils.conf
+```
+
+The command is similar for Bioconductor and instead of specifying a
+snapshot date, you have to specify the release you want to mirror. You can
+get a list of available releases by running the command *rpackbioc*.
+
+
+### rpackg
+
+You can generate dependency graphs directly from **CRAN**, **Bioconductor** or any
+supported repository type defined in the configuration file.
+
+```bash
+$ rpackg -h
+usage: rpackg [-h] --repo REPO [--repoparam REPOPARAM] [--packages PACKAGES]
+              [--traverse TRAVERSE] [--config CONFIG] --out OUT
+
+Generate a dependencies graph
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --repo REPO           The repository to work with. Identified by its name in
+                        the configuration file. Use "cran" or "bioc" to use
+                        CRAN or Bioconductor respectively
+  --repoparam REPOPARAM
+                        Additional repository parameter. For Artifactory:
+                        "repo name". Bioconductor: "release numer, view" where
+                        "view" can be 1 of "software", "experimentData",
+                        "annotationData". CRAN: "snapshot date".
+  --packages PACKAGES   Comma separated list of root packages to create the
+                        graph, by default all will be included
+  --traverse TRAVERSE   By default "imports,depends", to traverse both imports
+                        and depends to build the dependency graph. "suggests"
+                        is ignored by default.
+  --config CONFIG       RPackUtils configuration file, required unless you use
+                        CRAN or Bioconductor as repository
+  --out OUT             Output file where to write the GML
+```
+
+The *--packages* parameter is optional: you can choose to focus on one or
+more particular packages if you like. All available packages in the
+repository will be taken into account otherwise.
+
+You can choose the list of fields from ['imports', 'depends', 'suggests']
+to take into account while building the dependency graph. By default,
+'imports' and 'depends' are used.
+
+Here is an example to compute the dependency graph for all vailable R
+packages from the *2016-05-03* snapshot. This snapshot contains more than
+8k packages.
+
+```bash
+rpackg --repo cran --repoparam 2016-05-03 \
+       --out ~/RPackUtils_cran_2016-05-03.gml
+```
+
+
+## License checking
+
+**RPackUtils** divides package licenses into 3 classes:
+* BLACKLISTED
+* RESTRICTED
+* ALLOWED
+
+The file *license.py* defines *BLACKLISTED* and *RESTRICTED* licenses
+classes.
+
+The goal is to:
+* Warn the user about the installation of any package linked to a
+  *RESTRICTED* license
+* Deny the installation of any package linked to a *BLACKLISTED* license
+
+The license checking feature can be enable in the configuration file for R
+environments only with the boolean variable *licensecheck*. It is disabled
+by default, this means no license checking feature is in usage when you
+don't even set the variable in the configuration file.
+
+```bash
+[R-3.2.5]
+rhome = ~/opt/R-3.2.5
+librarypath = lib64/R/library
+licensecheck = True
+```
+
+**RPackUtils** gets the license information from every package's
+*DESCRIPTION* file and parses the *LICENSE* field.
+
+```bash
+(...)
+License: MIT + file LICENSE | Unlimited
+(...)
+```
+
+The parsed content is then compared with both *BLACKLISTED* and
+*RESTRICTED* licenses lists for the checking.
+
+Should you need to enable this feature and customize the license classes,
+you will need to change the *license.py* file in the source code since we
+are not providing anything else like licenses classes lists definitions at
+the configuration file level.
 
 
 ## Third parties
@@ -517,4 +801,4 @@ TODO
 ## License
 
 **RPackUtils** is distributed under the [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt) license.
-Copyright (c) 2018 PMPSA
+Copyright (c) 2018 Gubian Sylvain, Cano Stephane, PMPSA

@@ -1,5 +1,8 @@
 requests
 pytest
+pytest-sugar
+python-magic
 bs4
 configparser
+networkx
 wheel
