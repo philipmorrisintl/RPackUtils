@@ -16,6 +16,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+lib64/
 bin/
 include/
 share/
@@ -75,6 +76,7 @@ target/
 
 # pyenv
 .python-version
+pyvenv.cfg
 
 # celery beat schedule file
 celerybeat-schedule
