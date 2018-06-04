@@ -757,17 +757,27 @@ with the help of Gephi (*citation at the end or this document*).
 
 ## License checking
 
-**RPackUtils** divides package licenses into 3 classes:
+**RPackUtils** divides package licenses into 4 classes:
 * BLACKLISTED
 * RESTRICTED
 * ALLOWED
+* UNKNOWN
 
-The file *license.py* defines *BLACKLISTED* and *RESTRICTED* licenses
-classes.
+The file *license.py* defines *BLACKLISTED*, *RESTRICTED* and *ALLOWED*
+licenses classes.
+
+Any unidentified license falls into the *UNKNOWN* category and this is also
+the case When an external file reference is used like in this example.
+
+```bash
+(...)
+License: file LICENSE
+(...)
+```
 
 The goal is to:
 * Warn the user about the installation of any package linked to a
-  *RESTRICTED* license
+  *RESTRICTED* or *UNKNOWN* license
 * Deny the installation of any package linked to a *BLACKLISTED* license
 
 The license checking feature can be enable in the configuration file for R
@@ -791,8 +801,8 @@ License: MIT + file LICENSE | Unlimited
 (...)
 ```
 
-The parsed content is then compared with both *BLACKLISTED* and
-*RESTRICTED* licenses lists for the checking.
+The parsed content is then compared with the *BLACKLISTED*, *RESTRICTED*
+adn *ALLOWED* licenses lists for the checking.
 
 Should you need to enable this feature and customize the license classes,
 you will need to change the *license.py* file in the source code since we
