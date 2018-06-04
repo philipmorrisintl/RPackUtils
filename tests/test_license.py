@@ -75,40 +75,46 @@ def test_check_restricted():
 
 def test_check_allowed():
     license = License('2-Clause BSD License')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Apache v2.0')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Boost Software License v1.0')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('BSL v1.0')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Bzip2 License')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Creative Commons Zero')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('CC0')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Creative Commons Attribution-Only v4.0')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('CC BY')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Henry Spencer RegEx License')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('ISC License')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Microsoft Public License')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Ms-PL')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('MIT License')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('PHP License v3.01')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('PostgreSQL License v1.0')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Python License v3.6.2')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('zlib/libpng')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
     license = License('Supervisor V3.3.3')
-    assert(license.blacklisted == False and license.restricted == False)
+    assert license.allowed
+
+def test_check_unknown():
+    license = License('file LICENSE')
+    assert license.unknown
+    license = License('MIT License | file LICENSE')
+    assert license.unknown

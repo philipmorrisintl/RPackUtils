@@ -123,7 +123,7 @@ class REnvironment(AbstractREnvironment):
                           packInfo.license,
                           packInfo.licenseclass)
             return (-1, message, message)
-        if(not packInfo.installation_warning):
+        if(packInfo.installation_warning):
             message = "*WARNING* The license \"{}\" is {}" \
                       .format(
                           packInfo.license,
