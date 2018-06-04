@@ -716,7 +716,8 @@ optional arguments:
                         CRAN or Bioconductor respectively
   --repoparam REPOPARAM
                         Additional repository parameter. For Artifactory:
-                        "repo name". Bioconductor: "release numer, view" where
+                        "repo name"; all defined repositories will be used
+                        otherwise. Bioconductor: "release numer, view" where
                         "view" can be 1 of "software", "experimentData",
                         "annotationData". CRAN: "snapshot date".
   --packages PACKAGES   Comma separated list of root packages to create the

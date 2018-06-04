@@ -225,7 +225,8 @@ def rpacks_deps_graph():
         default=None,
         required=False,
         help='Additional repository parameter. ' \
-        'For Artifactory: \"repo name\". ' \
+        'For Artifactory: \"repo name\"; all defined repositories ' \
+        'will be used otherwise. ' \
         'Bioconductor: \"release numer, view\" ' \
         'where \"view\" can be 1 of \"software\", ' \
         '\"experimentData\", \"annotationData\". ' \
@@ -306,10 +307,14 @@ def rpacks_deps_graph():
     # for Artifactory we need the repo name
     if isinstance(repository, Artifactory):
         if repoparam is None:
-            logger.error(
-                'Please specify the Artifactory ' \
-                'repo/folder to use with --repoparam')
-            exit(-1)
+            # logger.error(
+            #     'Please specify the Artifactory ' \
+            #     'repo/folder to use with --repoparam')
+            # exit(-1)
+            logger.info('No repository specified for Artifactory, ' \
+                        'using all defined in teh configuration file.')
+            lsargs = {'repo': None}
+            packinfoargs = lsargs
         else:
             lsargs = {'repo': repoparam}
             packinfoargs = lsargs

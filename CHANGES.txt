@@ -25,6 +25,8 @@
 - RPACU-30 Compute the license-class in PackInfo (BLACKLISTED, RESTRICTED,
   ALLOWED)
 - RPACU-31 Support imports, depends ans suggests in dependency graphs
+- RPACU-33 Dependency Graph: Search across all defined Artifactory
+  repositories when --repoparam is not specified
 
 0.1.4
 -----
