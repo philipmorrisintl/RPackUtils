@@ -101,7 +101,7 @@ def test_download_single():
     except Exception:
         pass
 
-@patch('rpackutils.providers.REnvironment._installpackage')
+@patch('rpackutils.providers.renvironment.REnvironment._installpackage')
 def test_upload_single(mock_installpackage):
     renv = REnvironment(RHOME, LIBRARYPATH)
     # none existing package

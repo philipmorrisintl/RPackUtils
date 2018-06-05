@@ -49,7 +49,7 @@ class PackInfoMock(object):
         self.suggests = None
         self.license = None
 
-@patch('rpackutils.providers.Artifactory._do_request')
+@patch('rpackutils.providers.artifactory.Artifactory._do_request')
 def create(mock_do_request):
     mock_do_request.return_value = MockResponse(200, "Ok")
     config = Config(configfilepath)
@@ -68,7 +68,7 @@ def test_get_api_url():
     assert(arti._get_api_url('R-3.1.2') ==
            'https://artifactory.local/artifactory/api/storage/R-3.1.2')
 
-@patch('rpackutils.providers.Artifactory._do_request')
+@patch('rpackutils.providers.artifactory.Artifactory._do_request')
 def test_ls(mock_do_request):
     arti = create()
     mockresjson = {
@@ -96,7 +96,7 @@ def test_ls(mock_do_request):
     assert("R-local/accelerometry_2.2.4.tar.gz" in files)
     assert("R-local/ABCExtremes_1.0.tar.gz" in files)
 
-@patch('rpackutils.providers.Artifactory._do_request')
+@patch('rpackutils.providers.artifactory.Artifactory._do_request')
 def test_find(mock_do_request):
     arti = create()
     mockresjson = {
@@ -122,8 +122,8 @@ def test_find(mock_do_request):
     assert("R-3.1.2/accelerometry_2.2.4.tar.gz" in files)
     assert("R-local/accelerometry_2.2.4.tar.gz" in files)
 
-@patch('rpackutils.providers.Artifactory.find_repo')
-@patch('rpackutils.providers.Artifactory.download_single_fullname')
+@patch('rpackutils.providers.artifactory.Artifactory.find_repo')
+@patch('rpackutils.providers.artifactory.Artifactory.download_single_fullname')
 @patch('rpackutils.packinfo.PackInfo.__init__')
 def test_download_single(mock_pi, mock_download_single_fullname, mock_find_repo):
     arti = create()

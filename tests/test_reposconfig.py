@@ -35,9 +35,9 @@ def test_typeerror():
         pass
 
 @patch('os.path.exists')
-@patch('rpackutils.providers.Artifactory._do_request')
-@patch('rpackutils.providers.Bioconductor.check_connection')
-@patch('rpackutils.providers.CRAN.check_connection')
+@patch('rpackutils.providers.artifactory.Artifactory._do_request')
+@patch('rpackutils.providers.bioconductor.Bioconductor.check_connection')
+@patch('rpackutils.providers.cran.CRAN.check_connection')
 def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     # read the configuration file
     configfilepath = os.path.join(
@@ -100,9 +100,9 @@ def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     assert('local2' in local.repos)
 
 @patch('os.path.exists')
-@patch('rpackutils.providers.Artifactory._do_request')
-@patch('rpackutils.providers.Bioconductor.check_connection')
-@patch('rpackutils.providers.CRAN.check_connection')
+@patch('rpackutils.providers.artifactory.Artifactory._do_request')
+@patch('rpackutils.providers.bioconductor.Bioconductor.check_connection')
+@patch('rpackutils.providers.cran.CRAN.check_connection')
 def test_reposconfig_instance(mock_cran, mock_bioc, mock_arti, mock_exists):
     # read the configuration file
     configfilepath = os.path.join(
@@ -131,9 +131,9 @@ def test_reposconfig_instance(mock_cran, mock_bioc, mock_arti, mock_exists):
     assert(reposconfig.instance('thisreponamedoesnotexist') is None)
 
 @patch('os.path.exists')
-@patch('rpackutils.providers.Artifactory._do_request')
-@patch('rpackutils.providers.Bioconductor.check_connection')
-@patch('rpackutils.providers.CRAN.check_connection')
+@patch('rpackutils.providers.artifactory.Artifactory._do_request')
+@patch('rpackutils.providers.bioconductor.Bioconductor.check_connection')
+@patch('rpackutils.providers.cran.CRAN.check_connection')
 def test_reposconfig_instances_by_name(mock_cran, mock_bioc, mock_arti, mock_exists):
     # read the configuration file
     configfilepath = os.path.join(
