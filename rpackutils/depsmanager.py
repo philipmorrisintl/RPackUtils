@@ -80,6 +80,7 @@ class DepsManager(object):
         self._repo = repo
         self._processed = []
         self._notfound = []
+        self._downloadfailed = []
         self._fun = fun
         self._funargs = funargs
         assert self._repoIsSupported(), 'Only Artifactory or LocalRepository ' \
@@ -104,8 +105,20 @@ class DepsManager(object):
     #     self._fun = v
 
     @property
+    def processed(self):
+        return self._processed
+
+    @property
+    def errors(self):
+        return self._notfound + self._downloadfailed
+
+    @property
     def notfound(self):
         return self._notfound
+
+    @property
+    def downloadfailed(self):
+        return self._downloadfailed
 
     @property
     def funargs(self):
@@ -154,7 +167,7 @@ class DepsManager(object):
             if(packinfo.status == PackStatus.DOWNLOAD_FAILED):
                 logger.error('Failed to download package \"{}\"!' \
                              .format(node.idt))
-                self._notfound.append(node.idt)
+                self._downloadfailed.append(node.idt)
                 self._removePackInfoTempDir(packinfo)
                 return
             node.version = packinfo.version

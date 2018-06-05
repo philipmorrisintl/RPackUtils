@@ -42,6 +42,10 @@ class PackInfoMock(object):
         self.imports = None
         self.suggests = None
         self.license = None
+        self.packagepath = None
+
+    def dependencies(self, withBasePackages):
+        return []
 
 @patch('rpackutils.providers.artifactory.Artifactory._do_request')
 def create(mock_do_request):
@@ -54,7 +58,8 @@ def create(mock_do_request):
                        verify=config.get("artifactory", "verify"))
     return arti
 
-def fakeprocess(param1, param2):
+def fakeprocess(packagename, param1, param2):
+    assert(packagename)
     assert(param1 == 'param1value')
     assert(param2 == 'param2value')
 
@@ -73,7 +78,11 @@ def test_processnode_notfound(mock_packinfo):
     )
     packNode = PackNode(package)
     dm.processnode(packNode)
+    assert(dm.errors)
     assert(dm.notfound)
+    assert(dm.notfound[0] == package)
+    assert(not dm.downloadfailed)
+    assert(not dm.processed)
 
 @patch('rpackutils.providers.artifactory.Artifactory.packinfo')
 def test_processnode_downloadfailed(mock_packinfo):
@@ -90,8 +99,12 @@ def test_processnode_downloadfailed(mock_packinfo):
     )
     packNode = PackNode(package)
     dm.processnode(packNode)
-    assert(dm.notfound)
-
+    assert(dm.errors)
+    assert(not dm.notfound)
+    assert(dm.downloadfailed)
+    assert(dm.downloadfailed[0] == package)
+    assert(not dm.processed)
+    
 @patch('rpackutils.providers.artifactory.Artifactory.packinfo')
 def test_processnode_none(mock_packinfo):
     arti = create()
@@ -104,4 +117,25 @@ def test_processnode_none(mock_packinfo):
     )
     packNode = PackNode(package)
     dm.processnode(packNode)
+    assert(dm.errors)
     assert(dm.notfound)
+    assert(dm.notfound[0] == package)
+    assert(not dm.downloadfailed)
+    assert(not dm.processed)
+
+@patch('rpackutils.providers.artifactory.Artifactory.packinfo')
+def test_processnode_ok(mock_packinfo):
+    arti = create()
+    package = 'fakePackage1'
+    mock_packinfo.return_value = PackInfoMock(package, PackStatus.DOWNLOADED)
+    dm = DepsManager(
+        arti,
+        fakeprocess,
+        {'param1': 'param1value', 'param2': 'param2value'}
+    )
+    packNode = PackNode(package)
+    dm.processnode(packNode)
+    assert(not dm.errors)
+    assert(not dm.notfound)
+    assert(not dm.downloadfailed)
+    assert(dm.processed[0] == package)
