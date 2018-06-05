@@ -7,71 +7,101 @@
 
 import os
 import pytest
+from unittest import mock
+from unittest.mock import patch
 
-from rpackutils.graph import Graph
-from rpackutils.graph import Node
+from rpackutils.depsmanager import PackNode
 from rpackutils.depsmanager import DepsManager
+from rpackutils.packinfo import PackStatus
+from rpackutils.providers.artifactory import Artifactory
+from rpackutils.config import Config
 
-# A set of package to test
-pack_set = {
-        'DCPM': ['apcluster', 'gplots', 'pander', 'whisker' ,'Rgraphviz'],
-        'affy': ['R', 'BiocGenerics', 'Biobase'],
-        'Rgraphviz': ['R', 'methods', 'utils', 'graph', 'grid']
-        }
+configfilepath = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 
+    'resources/rpackutils.conf')
 
-# def test_parse_descfile():
-    # for pack in pack_set:
-        # print('Testing package: {0}'.format(
-            # pack))
-        # path = os.path.join(librarypath, pack, 'DESCRIPTION')
-        # assert(os.path.exists(path))
-        # f = open(path, 'r')
-        # content = f.readlines()
-        # f.close()
-        # name,_,deps = DepsManager.parse_descfile(content)
-        # print('\t{0}'.format(','.join(deps)))
-        # assert([x in pack_set[pack] for x in deps])
+class MockResponse(object):
+    def __init__(self, status_code, text, body=None):
+        self.status_code = status_code
+        self.text = text
+        self.body = body
+        self.ok = (status_code == 200)
+    def json(self):
+        return json.loads(self.text)
+    def iter_content(self, chunk_size=1, decode_unicode=False):
+        return None
 
-# @pytest.fixture
-# def create_deps_graph():
-#     packs = os.listdir(librarypath)
-#     dm = DepsManager()
-#     g = dm.tree(packs, useref=True,)
-#     assert(g)
-#     for idt in g.nodesidts:
-#         print('Version: {0} - {1}'.format(
-#             g.node(idt).version, g.node(idt)))
-#     return g
+class PackInfoMock(object):
+    def __init__(self, name, status):
+        self.name = name
+        self.version = '0.0.1'
+        self.status = status
+        self.fullstatus = None
+        self.repos = None
+        self.depends = None
+        self.imports = None
+        self.suggests = None
+        self.license = None
 
-# @pytest.fixture
-# def create_deps_graph_no_ref():
-#     packs = os.listdir(librarypath)
-#     dm = DepsManager()
-#     g, _ = dm.tree(packs, useref=False)
-#     assert(g)
-#     for idt in g.nodesidts:
-#         print('Version: {0} - {1}'.format(
-#             g.node(idt).version, g.node(idt)))
-#     return g
+@patch('rpackutils.providers.artifactory.Artifactory._do_request')
+def create(mock_do_request):
+    mock_do_request.return_value = MockResponse(200, "Ok")
+    config = Config(configfilepath)
+    arti = Artifactory(baseurl=config.get("artifactory", "baseurl"),
+                       repos=['R-3.1.2', 'R-local'],
+                       auth=(config.get("artifactory", "user"),
+                             config.get("artifactory", "password")),
+                       verify=config.get("artifactory", "verify"))
+    return arti
 
-# def tracecalls(node):
-#     print('{0} : {1}'.format(
-#         node.idt, node.version))
+def fakeprocess(param1, param2):
+    assert(param1 == 'param1value')
+    assert(param2 == 'param2value')
 
+@patch('rpackutils.providers.artifactory.Artifactory.packinfo')
+def test_processnode_notfound(mock_packinfo):
+    arti = create()
+    package = 'fakePackage1'
+    mock_packinfo.return_value = PackInfoMock(
+        package,
+        PackStatus.NOT_FOUND
+    )
+    dm = DepsManager(
+        arti,
+        fakeprocess,
+        {'param1': 'param1value', 'param2': 'param2value'}
+    )
+    packNode = PackNode(package)
+    dm.processnode(packNode)
+    assert(dm.notfound)
 
-# def test_apply_fun():
-    # g = create_deps_graph()
-    # DepsManager.applyfun2graph(g, fun=tracecalls)
+@patch('rpackutils.providers.artifactory.Artifactory.packinfo')
+def test_processnode_downloadfailed(mock_packinfo):
+    arti = create()
+    package = 'fakePackage1'
+    mock_packinfo.return_value = PackInfoMock(
+        package,
+        PackStatus.DOWNLOAD_FAILED
+    )
+    dm = DepsManager(
+        arti,
+        fakeprocess,
+        {'param1': 'param1value', 'param2': 'param2value'}
+    )
+    packNode = PackNode(package)
+    dm.processnode(packNode)
+    assert(dm.notfound)
 
-# def test_download():
-    # g = create_deps_graph()
-    # DepsManager.applyfun2graph(g, fun=DepsManager.download)
-
-# def test_script4install():
-    # g = create_deps_graph()
-    # DepsManager.applyfun2graph(g, DepsManager.script4install)
-
-# def test_script4install_noref():
-    # g = create_deps_graph_no_ref()
-    # DepsManager.applyfun2graph(g, DepsManager.script4install)
-
+@patch('rpackutils.providers.artifactory.Artifactory.packinfo')
+def test_processnode_none(mock_packinfo):
+    arti = create()
+    package = 'fakePackage1'
+    mock_packinfo.return_value = None
+    dm = DepsManager(
+        arti,
+        fakeprocess,
+        {'param1': 'param1value', 'param2': 'param2value'}
+    )
+    packNode = PackNode(package)
+    dm.processnode(packNode)
+    assert(dm.notfound)
