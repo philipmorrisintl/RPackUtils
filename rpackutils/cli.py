@@ -587,9 +587,23 @@ def rpacks_install():
     for package in packages:
         n = PackNode(package)
         dm.processnode(n)
-    if dm.notfound:
-        logger.error('Some packages were not found: {}' \
-                     .format(str(dm.notfound)))
+    logger.info("============================================================")
+    if dm.errors:
+        logger.error('Some error(s) occured.')
+        if dm.notfound:
+            logger.error('Some packages were not found: {}' \
+                         .format(str(dm.notfound)))
+        if dm.downloadfailed:
+            logger.error('Some packages could not be downloaded: {}' \
+                         .format(str(dm.downloadfailed)))
+    logger.info('Packages: {} processed | {} errors ' \
+                '({} not found, {} download failed)' \
+                .format(len(dm.processed),
+                        len(dm.errors),
+                        len(dm.notfound),
+                        len(dm.downloadfailed)
+                )
+    )
     endtime = time.time()
     logger.info('Time elapsed: {0:.3f} seconds.'.format(endtime - starttime))
 
@@ -693,9 +707,23 @@ def rpacks_clone():
     for packagename in packagenames:
         n = PackNode(packagename)
         dm.processnode(n)
-    if dm.notfound:
-        logger.error('Some packages were not found: {}' \
-                     .format(str(dm.notfound)))
+    logger.info("============================================================")
+    if dm.errors:
+        logger.error('Some error(s) occured.')
+        if dm.notfound:
+            logger.error('Some packages were not found: {}' \
+                         .format(str(dm.notfound)))
+        if dm.downloadfailed:
+            logger.error('Some packages could not be downloaded: {}' \
+                         .format(str(dm.downloadfailed)))
+    logger.info('Packages: {} processed | {} errors ' \
+                '({} not found, {} download failed)' \
+                .format(len(dm.processed),
+                        len(dm.errors),
+                        len(dm.notfound),
+                        len(dm.downloadfailed)
+                )
+    )
     endtime = time.time()
     logger.info('Time elapsed: {0:.3f} seconds.'.format(endtime - starttime))
 
@@ -796,9 +824,23 @@ def rpacks_download():
     for package in packages:
         n = PackNode(package)
         dm.processnode(n)
-    if dm.notfound:
-        logger.error('Some packages were not found: {}' \
-                     .format(str(dm.notfound)))
+    logger.info("============================================================")
+    if dm.errors:
+        logger.error('Some error(s) occured.')
+        if dm.notfound:
+            logger.error('Some packages were not found: {}' \
+                         .format(str(dm.notfound)))
+        if dm.downloadfailed:
+            logger.error('Some packages could not be downloaded: {}' \
+                         .format(str(dm.downloadfailed)))
+    logger.info('Packages: {} processed | {} errors ' \
+                '({} not found, {} download failed)' \
+                .format(len(dm.processed),
+                        len(dm.errors),
+                        len(dm.notfound),
+                        len(dm.downloadfailed)
+                )
+    )
     endtime = time.time()
     logger.info('Time elapsed: {0:.3f} seconds.'.format(endtime - starttime))
 
