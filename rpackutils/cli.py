@@ -115,8 +115,14 @@ def _query_packages(repositories, packages):
                             packinfo.license))
                 logger.info('Repository path: {0}' \
                             .format(candidate))
-                logger.info('Dependencies: {0}' \
-                            .format(",".join(packinfo.dependencies())))
+                logger.info('Depends: {}' \
+                            .format(",".join(packinfo.dependslist)))
+                logger.info('Imports: {}' \
+                            .format(",".join(packinfo.importslist)))
+                logger.info('Suggests: {}' \
+                            .format(",".join(packinfo.suggestslist)))
+                # logger.info('Dependencies: {0}' \
+                #             .format(",".join(packinfo.dependencies())))
         logger.info('-------------------------------------')
 
 def rpacks_bioc():

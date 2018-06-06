@@ -109,15 +109,25 @@ class PackInfo(object):
     def as_dict(self):
         return self.__dict__
 
+    @property
+    def dependslist(self):
+        return self.depends if self.depends else []
+
+    @property
+    def importslist(self):
+        return self.imports if self.imports else []
+
+    @property
+    def suggestslist(self):
+        return self.suggests if self.suggests else []
+
     def dependencies(self, withBasePackages=False):
         """
         Returns an aggregated list of both imports and depends.
 
         :param withBasepackages: if True, remove all R base packages
         """
-        listimports = self.imports if self.imports else []
-        listdepends = self.depends if self.depends else []
-        all = listimports + listdepends
+        all = self.importslist + self.dependslist
         if not withBasePackages:
             all = [x for x in all if x not in RBasePackages.getnames()]
         return all
