@@ -74,6 +74,8 @@ def test_check_restricted():
     assert license.restricted
 
 def test_check_allowed():
+    license = License('Internal')
+    assert license.allowed
     license = License('2-Clause BSD License')
     assert license.allowed
     license = License('Apache v2.0')
