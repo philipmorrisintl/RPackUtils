@@ -21,7 +21,7 @@ It is still under development.
 
 1. Get the source code.
 ```bash
-$ git clone https://github.com/sgubianpm/RPackUtils.git
+$ git clone https://github.com/pmpsa-hpc/RPackUtils.git
 Cloning into 'RPackUtils'...
 [...]
 ```
