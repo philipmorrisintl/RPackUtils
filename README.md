@@ -38,8 +38,7 @@ $ . bin/activate
 (RPackUtils) $
 ```
 
-4. Upgrade pip and setuptools
-It is recommended to upgrade both modules before building the package.
+4. Upgrade pip and setuptools (recommended)
 ```bash
 $ pip install -U pip
 [...]
