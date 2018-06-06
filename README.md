@@ -38,17 +38,31 @@ $ . bin/activate
 (RPackUtils) $
 ```
 
-4. Optionnaly launch the unit tests
+4. Upgrade pip and setuptools
+It is recommended to upgrade both modules before building the package.
+```bash
+$ pip install -U pip
+[...]
+
+$ pip install -U setuptools
+[...]
+```
+
+5. Build the Application
 ```bash
 $ python setup.py build
 [...]
+```
+
+6. Optionnaly launch the unit tests
+```bash
 (RPackUtils) $ cd tests
 (RPackUtils) $ pytest -sv [-m "not slow"]
 [...]
 ```
 You can optionnaly deselecting tests maked as "slow".
 
-5. Install
+7. Install
 ```bash
 (RPackUtils) $ python setup.py build install
 [...]
