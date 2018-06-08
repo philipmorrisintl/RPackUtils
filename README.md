@@ -79,7 +79,7 @@ $ python setup.py build
 (RPackUtils) $ pytest -sv [-m "not slow"]
 [...]
 ```
-You can optionnaly deselecting tests maked as "slow".
+You can optionnaly unselect tests maked as "slow".
 
 7. Install
 ```bash
@@ -605,7 +605,7 @@ rpackc --config ~/rpackutils_pmi.conf \
 
 *rpacki* is used to install packages. *rpackd* is similar but does not
 actually install anything: it performs dry-run installations, it's kind of
-a simulating mode od *rpacki*.
+a simulating mode of *rpacki*.
 
 *rpacki* will generate a bash script *install.sh* and store all downloaded
 R packages in a destination folder specified by the argument *--dest*.
@@ -781,7 +781,7 @@ rpackg --repo cran --repoparam 2016-05-03 \
 ```
 
 Here are renderings of the dependency graph of the Bioconductor repository
-with the help of Gephi (*citation at the end or this document*).
+with the help of Gephi (*citation* [here](#third-parties)).
 
 The gml file has the following attributes for each node:
 
