@@ -1,5 +1,25 @@
 # RPackUtils
 
+**Table of Contents**
+
+* [Introduction](#introduction)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Usage](#usage)
+    * [rpackcc](#rpackcc)
+    * [rpackbioc](#rpackbioc)
+    * [rpackmran](#rpackmran)
+    * [rpackq](#rpackq)
+    * [rpacki](#rpacki)
+    * [rpackc](#rpackc)
+    * [rpackd](#rpackd)
+    * [rpackm](#rpackm)
+    * [rpackg](#rpackq)
+* [License checking](#license-checking)
+* [Third parties](#third-parties)
+* [License](#license)
+
 ## Introduction
 
 R package dependencies manager and mirroring tool for *Bioconductor* and
@@ -152,17 +172,17 @@ The entry points or commands are installed in *$PREFIX/bin*. This is either
 inside your *bin/* folder of your Virtualenv or in the *bin/* folder of the
 specified *--prefix*.
 
-| Command   | Purpose                                                                                              |
-|-----------|------------------------------------------------------------------------------------------------------|
-| rpackcc   | Check the configuration File                                                                         |
-| rpackbioc | Query the Bioconductor repository for available releases                                             |
-| rpackmran | Query the MRAN repository for available snapshots                                                    |
-| rpackq    | Search accross repositories for a package or a list of packages                                      |
-| rpacki    | Install R packages with resolved dependencies                                                        |
-| rpackd    | Download R packages and resolved dependencies (dry-run install)                                      |
-| rpackc    | Install R packages based on an existing environments (clone)                                         |
-| rpackm    | Download R packages from a specified repository (CRAN, Bioc) and upload them to Artifactory (mirror) |
-| rpackg    | Generate a dependencies graph                                                                        |
+| Command                 | Purpose                                                                                              |
+|-------------------------|------------------------------------------------------------------------------------------------------|
+| [rpackcc](#rpackcc)     | Check the configuration File                                                                         |
+| [rpackbioc](#rpackbioc) | Query the Bioconductor repository for available releases                                             |
+| [rpackmran](#rpackmran) | Query the MRAN repository for available snapshots                                                    |
+| [rpackq](#rpackq)       | Search accross repositories for a package or a list of packages                                      |
+| [rpacki](#rpacki)       | Install R packages with resolved dependencies                                                        |
+| [rpackd](#rpackd)       | Download R packages and resolved dependencies (dry-run install)                                      |
+| [rpackc](#rpackc)       | Install R packages based on an existing environments (clone)                                         |
+| [rpackm](#rpackm)       | Download R packages from a specified repository (CRAN, Bioc) and upload them to Artifactory (mirror) |
+| [rpackg](#rpackg)       | Generate a dependencies graph                                                                        |
 
 The following sections provide use cases for each command.
 
