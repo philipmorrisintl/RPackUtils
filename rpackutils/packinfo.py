@@ -34,6 +34,13 @@ PackStatus = enum(
     INVALID=-4,
 )
 
+#####################################################################
+# Please note the attributes should not start with an '_' since the #
+# as_dist() method is called to fetch node's attributes to generate #
+# dependency graph with the networkx module. networkx prefers plain #
+# clean names.                                                      #
+#####################################################################
+
 class PackInfo(object):
     
     def __init__(self, path):
