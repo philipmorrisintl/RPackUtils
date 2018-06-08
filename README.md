@@ -783,6 +783,24 @@ rpackg --repo cran --repoparam 2016-05-03 \
 Here are renderings of the dependency graph of the Bioconductor repository
 with the help of Gephi (*citation at the end or this document*).
 
+The gml file has the following attributes for each node:
+
+| Attribute             | Description                        |
+|-----------------------|------------------------------------|
+| label                 | package name                       |
+| name                  | package name                       |
+| version               | package version                    |
+| depends               | packages in depends                |
+| imports               | packages in imports                |
+| suggests              | packages in suggests               |
+| license               | package license                    |
+| licenseclass          | ALLOWED / RESTRICETD / BLACKLISTED |
+| installationisallowed | 1 / 0                              |
+| installationwarning   | 1 / 0                              |
+
+Technically, the node's attributes corresponds to an instance of the
+PackInfo class.
+
 ![Dependency graph of Bioconductor](images/bioc_depgraph.png)
 
 ![Dependency graph of Bioconductor (zoom)](images/bioc_depgraph_zoom.png)
