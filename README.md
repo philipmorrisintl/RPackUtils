@@ -136,7 +136,7 @@ librarypath = lib64/R/library
 In the *R-3.1.2* environment, we have enabled the *licensecheck*. This
 feature is supported by any R environment and is disabled by default. For
 more information about this feature, please refer to the dedicated section
-"License checking".
+[License checking](#license-checking).
 
 To customize the temporary files location you have to change the
 corresponding environment variable used by the tempfile Python module. For
@@ -782,7 +782,7 @@ licenses classes.
 Any unidentified license falls into the *UNKNOWN* category and this is also
 the case When an external file reference is used like in this example.
 
-```bash
+```
 (...)
 License: file LICENSE
 (...)
@@ -808,7 +808,7 @@ licensecheck = True
 **RPackUtils** gets the license information from every package's
 *DESCRIPTION* file and parses the *LICENSE* field.
 
-```bash
+```
 (...)
 License: MIT + file LICENSE | Unlimited
 (...)
