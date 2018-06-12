@@ -550,7 +550,7 @@ class Artifactory(AbstractPackageRepository):
                 packinfo.tempdir = dest
                 packinfo.status = PackStatus.DOWNLOAD_FAILED
                 packinfo.fullstatus = 'Failed to download package ' \
-                                      + packagenae
+                                      + packagename
             if dest and os.path.exists(dest) and not keeptempfiles:
                 shutil.rmtree(dest)
             return packinfo
