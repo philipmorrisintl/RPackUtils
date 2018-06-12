@@ -44,7 +44,7 @@ class REnvironment(AbstractREnvironment):
         if not os.path.exists(self._repofullpath):
             raise FileNotFoundError(errno.ENOENT,
                                     os.strerror(errno.ENOENT),
-                                    repofullpath)
+                                    self._repofullpath)
         self._Rbinarypath = os.path.join(rhome, 'bin', 'R')
         if not os.path.exists(self._Rbinarypath):
             raise FileNotFoundError(errno.ENOENT,
