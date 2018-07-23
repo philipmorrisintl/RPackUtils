@@ -13,7 +13,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open('requirements.txt') as f:
     REQUIREMENTS = f.read().splitlines()
 
-with open('README.md') as f:
+with open('README.md', encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 
 setup(name='RPackUtils',
