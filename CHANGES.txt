@@ -1,3 +1,8 @@
+0.1.6
+-----
+
+- Prepare and publish to PYPI
+
 0.1.5
 -----
 

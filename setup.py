@@ -17,7 +17,7 @@ with open('README.md') as f:
     LONG_DESCRIPTION = f.read()
 
 setup(name='RPackUtils',
-      version='0.1.5',
+      version='0.1.6',
       description='R Package Manager',
       long_description=LONG_DESCRIPTION,
       long_description_content_type="text/markdown",
