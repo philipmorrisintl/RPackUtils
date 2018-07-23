@@ -12,10 +12,15 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 with open('requirements.txt') as f:
     REQUIREMENTS = f.read().splitlines()
-    
+
+with open('README.md') as f:
+    LONG_DESCRIPTION = f.read()
+
 setup(name='RPackUtils',
       version='0.1.5',
       description='R Package Manager',
+      long_description=LONG_DESCRIPTION,
+      long_description_content_type="text/markdown",
       classifiers=[
           'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
           'Intended Audience :: Developers',
