@@ -1,7 +1,6 @@
 # RPackUtils
 
-![](https://img.shields.io/pypi/v/RPackUtils.svg)
-![](https://img.shields.io/pypi/pyversions/RPackUtils.svg)
+![Package on PYPI](https://img.shields.io/pypi/v/RPackUtils.svg) ![Supported Python versions](https://img.shields.io/pypi/pyversions/RPackUtils.svg)
 
 **Table of Contents**
 * [Introduction](#introduction)
