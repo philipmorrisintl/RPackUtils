@@ -30,3 +30,6 @@ class Config:
         
     def get(self, section, option):
         return self._environment_config.get(section, option).strip('"')
+
+    def getboolean(self, section, option):
+        return self._environment_config.getboolean(section, option, fallback=False)

@@ -131,7 +131,7 @@ class ReposConfig:
                         .format(name))
             licensecheck = False
             try:
-                licensecheck = self._config.get(name, "licensecheck")
+                licensecheck = self._config.getboolean(name, "licensecheck")
             except Exception as e:
                 licensecheck = False
             provider = REnvironment(
@@ -140,6 +140,10 @@ class ReposConfig:
                 licensecheck
             )
             provider.name = name
+            if(provider._licensecheck):
+                logger.info('License checking is ON')
+            else:
+                logger.info('License checking is OFF')
             self._renvironment_instances[name] = provider
 
     def _build_local_repos(self, names):
