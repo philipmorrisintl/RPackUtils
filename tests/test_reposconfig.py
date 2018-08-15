@@ -52,12 +52,13 @@ def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     reposconfig = ReposConfig(config)
     # verify the number of instances created
     assert(len(reposconfig.artifactory_instances) == 2)
-    assert(len(reposconfig.renvironment_instances) == 2)
+    assert(len(reposconfig.renvironment_instances) == 3)
     assert(len(reposconfig.local_instances) == 1)
     # verify the instances names
     assert(reposconfig.artifactory_instance('artifactory') is not None)
     assert(reposconfig.artifactory_instance('artifactorydev') is not None)
     assert(reposconfig.renvironment_instance('R-3.1.2') is not None)
+    assert(reposconfig.renvironment_instance('R-3.2.2') is not None)
     assert(reposconfig.renvironment_instance('R-3.2.5') is not None)
     assert(reposconfig.local_instance('local') is not None)
     # verify artifactory instance
