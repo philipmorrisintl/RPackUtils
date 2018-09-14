@@ -328,7 +328,7 @@ class CRAN(AbstractPackageRepository):
     def upload(self, filepath, repo, overwrite=False):
         raise NotImplementedError('Uploading is not implemented for CRAN')
 
-    def upload_ultiple(self, filepaths, repo, overwrite=False):
+    def upload_multiple(self, filepaths, repo, overwrite=False):
         raise NotImplementedError('Uploading is not implemented for CRAN')
 
     def packinfo(self, packagename, snapshot_date, keeptempfiles=False):
