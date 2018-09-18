@@ -395,21 +395,25 @@ you!
 ```bash
 $ rpacki -h
 usage: rpacki [-h] [--repo REPONAME] [--Renv RENVNAME] --packages PACKAGES
-              [--overwrite] --config CONFIG
+              [--overwrite] [--overwrite-specified] --config CONFIG
 
 Install packages to a target R environment
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --repo REPONAME      The repository name where to get packages (it must be
-                       defined in the configuration file)
-  --Renv RENVNAME      Name of the target R environment where to do the
-                       installation (the name must be defined in the
-                       configuration file)
-  --packages PACKAGES  Comma separated package names to install
-  --overwrite          Overwrite already installed packages. By default,
-                       nothing gets overwritten.
-  --config CONFIG      RPackUtils configuration file
+  -h, --help            show this help message and exit
+  --repo REPONAME       The repository name where to get packages (it must be
+                        defined in the configuration file)
+  --Renv RENVNAME       Name of the target R environment where to do the
+                        installation (the name must be defined in the
+                        configuration file)
+  --packages PACKAGES   Comma separated package names to install
+  --overwrite           Overwrite already installed packages. By default,
+                        nothing gets overwritten.
+  --overwrite-specified
+                        Overwrite only specified packages (in --packages) that
+                        are already installed. By default, nothing gets
+                        overwritten.
+  --config CONFIG       RPackUtils configuration file
 ```
 
 Install the *tmod* package. For this example we decide to overwrite any
