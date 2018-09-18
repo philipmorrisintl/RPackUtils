@@ -550,6 +550,16 @@ def rpacks_install():
               'By default, nothing gets overwritten.'),
     ) and None
     parser.add_argument(
+        '--overwrite-specified',
+        dest='overwritespecified',
+        action='store_true',
+        default=False,
+        required=False,
+        help=('Overwrite only specified packages (in --packages) ' \
+              'that are already installed. ' \
+              'By default, nothing gets overwritten.'),
+    ) and None
+    parser.add_argument(
         '--config',
         dest='config',
         action='store',
@@ -559,6 +569,7 @@ def rpacks_install():
     ) and None
     args = parser.parse_args()
     overwrite = args.overwrite
+    overwritespecified = args.overwritespecified
     configFile = args.config
     starttime = time.time()
     # read the configuration file
@@ -581,6 +592,15 @@ def rpacks_install():
                      .format(reponame))
         exit(-1)
     packages = [x.strip() for x in args.packages.split(',')]
+    overwritepackages = None
+    if overwritespecified:
+        if overwrite:
+            logger.error('Please use only one of ' \
+                         '--overwrite or --overwritespecified, not both.')
+            exit(-1)
+        overwritepackages = packages
+        logger.info('The following packages will be overwritten: ' \
+                    '{}'.format(packages))
     logger.info('Using the target R environment: {} at {}' \
                 .format(renv.name, renv.baseurl))
     logger.info('Using the package repository: {} at {} with folders: {}' \
@@ -588,7 +608,8 @@ def rpacks_install():
     dm = DepsManager(
         repo,
         renv.install,
-        {'overwrite': overwrite}
+        {'overwrite': overwrite,
+         'overwritepackages': overwritepackages}
     )
     for package in packages:
         n = PackNode(package)
@@ -780,6 +801,16 @@ def rpacks_download():
               'By default, nothing gets overwritten.'),
     ) and None
     parser.add_argument(
+        '--overwrite-specified',
+        dest='overwritespecified',
+        action='store_true',
+        default=False,
+        required=False,
+        help=('Overwrite only specified packages (in --packages) ' \
+              'that are already installed. ' \
+              'By default, nothing gets overwritten.'),
+    ) and None
+    parser.add_argument(
         '--config',
         dest='config',
         action='store',
@@ -789,6 +820,7 @@ def rpacks_download():
     ) and None
     args = parser.parse_args()
     overwrite = args.overwrite
+    overwritespecified = args.overwritespecified
     configFile = args.config
     starttime = time.time()
     # read the configuration file
@@ -796,6 +828,7 @@ def rpacks_download():
     # create the repositories defined there
     reposConfig = ReposConfig(config)
     dest = args.dest
+    overwritepackages = None
     # check destination folder exists
     if not os.path.exists(dest):
         logger.error('The path \"{}\" does not exist, ' \
@@ -818,6 +851,14 @@ def rpacks_download():
                      .format(reponame))
         exit(-1)
     packages = [x.strip() for x in args.packages.split(',')]
+    if overwritespecified:
+        if overwrite:
+            logger.error('Please use only one of ' \
+                         '--overwrite or --overwritespecified, not both.')
+            exit(-1)
+        overwritepackages = packages
+        logger.info('The following packages will be overwritten: ' \
+                    '{}'.format(packages))
     logger.info('Using the target R environment: {} at {}' \
                 .format(renv.name, renv.baseurl))
     logger.info('Using the package repository: {} at {} with folders: {}' \
@@ -825,7 +866,8 @@ def rpacks_download():
     dm = DepsManager(
         repo,
         renv.install_dryrun,
-        {'dest': dest, 'overwrite': overwrite}
+        {'dest': dest, 'overwrite': overwrite,
+         'overwritepackages': overwritepackages}
     )
     for package in packages:
         n = PackNode(package)

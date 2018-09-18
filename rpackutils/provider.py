@@ -34,11 +34,13 @@ class AbstractProvider():
         pass
 
     @abstractmethod
-    def upload_single(self, filepath, repo, overwrite=False):
+    def upload_single(self, filepath, repo, overwrite=False,
+                      overwritepackages=None):
         pass
 
     @abstractmethod
-    def upload_multiple(self, filepaths, repos, overwrite=False):
+    def upload_multiple(self, filepaths, repos, overwrite=False,
+                        overwritepackages=None):
         pass
 
     @abstractmethod
@@ -75,7 +77,8 @@ class AbstractREnvironment(AbstractProvider):
         return packinfo
 
     @abstractmethod
-    def install_dryrun(self, packnode):
+    def install_dryrun(self, packnode, dest, overwrite=False,
+                       overwritepackages=None):
         '''
         This method is used to simulate the installion of
         packages and is called from the Depsmanager class.
@@ -83,7 +86,8 @@ class AbstractREnvironment(AbstractProvider):
         pass
 
     @abstractmethod
-    def install(self, packnode):
+    def install(self, packnode, overwrite=False,
+                overwritepackages=None):
         '''
         This method is used to install packages and is called from
         the Depsmanager class.

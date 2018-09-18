@@ -289,11 +289,13 @@ class Bioconductor(AbstractPackageRepository):
                 matches.append(entry)
         return matches
 
-    def upload_single(self, filepath, bioc_release, view, overwrite=False):
+    def upload_single(self, filepath, bioc_release, view,
+                      overwrite=False, overwritepackages=None):
         raise NotImplementedError(
             'Uploading to Bioconductor is not implemented')
 
-    def upload_multiple(self, filepaths, bioc_release, view, overwrite=False):
+    def upload_multiple(self, filepaths, bioc_release, view,
+                        overwrite=False, overwritepackages=None):
         raise NotImplementedError(
             'Uploading to Bioconductor is not implemented')
 

@@ -325,10 +325,11 @@ class CRAN(AbstractPackageRepository):
             logger.error('Failed to download all R packages')
         return retVals
 
-    def upload(self, filepath, repo, overwrite=False):
+    def upload(self, filepath, repo, overwrite=False, overwritepackages=None):
         raise NotImplementedError('Uploading is not implemented for CRAN')
 
-    def upload_multiple(self, filepaths, repo, overwrite=False):
+    def upload_multiple(self, filepaths, repo, overwrite=False,
+                        overwritepackages=None):
         raise NotImplementedError('Uploading is not implemented for CRAN')
 
     def packinfo(self, packagename, snapshot_date, keeptempfiles=False):

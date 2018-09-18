@@ -328,7 +328,8 @@ class Artifactory(AbstractPackageRepository):
             logger.error('Failed to download all R packages')
         return retVals
 
-    def upload_single(self, filepath, repo, properties=None, overwrite=False):
+    def upload_single(self, filepath, repo, properties=None,
+                      overwrite=False, overwritepackages=None):
         logger.info('Deploying artifact: {0}'.format(filepath))
         # construct the url with the credentials, repo and file
         url = self.baseurl.replace(
@@ -364,7 +365,9 @@ class Artifactory(AbstractPackageRepository):
         logger.info('Successfully deployed file: {0}'.format(filepath))
         return PackStatus.DEPLOYED
 
-    def upload_multiple(self, filepaths, repo, procs=20, properties=None, overwrite=False):
+    def upload_multiple(self, filepaths, repo, procs=20, properties=None,
+                        overwrite=False,
+                        overwritepackages=None):
         starttime = time.time()
         totalnumoffiles = len(filepaths)
         totaldeployed = 0

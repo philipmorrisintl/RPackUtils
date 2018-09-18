@@ -85,22 +85,26 @@ class REnvironment(AbstractREnvironment):
         relfiles2 = [re.sub("^/", "", f) for f in relfiles]
         return relfiles2
 
-    def install_dryrun(self, packnode, dest, overwrite=False):
+    def install_dryrun(self, packnode, dest, overwrite=False,
+                       overwritepackages=None):
         if not isinstance(packnode, PackNode):
             msg = 'a PackNode instance is expected!'
             logger.error(msg)
             raise TypeError(msg)
         return self.upload_single_dryrun(packnode.packagepath,
                                          dest,
-                                         overwrite=overwrite)
+                                         overwrite=overwrite,
+                                         overwritepackages=overwritepackages)
 
-    def install(self, packnode, overwrite=False):
+    def install(self, packnode, overwrite=False,
+                overwritepackages=None):
         if not isinstance(packnode, PackNode):
             msg = 'a PackNode instance is expected!'
             logger.error(msg)
             raise TypeError(msg)
         return self.upload_single(packnode.packagepath,
-                                  overwrite=overwrite)
+                                  overwrite=overwrite,
+                                  overwritepackages=overwritepackages)
 
     def _installpackage(self, packagepath):
         # Perform a license check
@@ -179,7 +183,8 @@ class REnvironment(AbstractREnvironment):
                             .format(packInfo.license))
         # copy the package to the dest folder
         shutil.copy(packagepath, dest)
-        cmd = os.path.join(self._Rbinarypath)
+        cmd = os.path.joi
+        n(self._Rbinarypath)
         destpackagepath = os.path.join(dest, os.path.basename(packagepath))
         cmdargs = [cmd, 'CMD', 'INSTALL', destpackagepath]
         command = " ".join(cmdargs)
@@ -193,7 +198,7 @@ class REnvironment(AbstractREnvironment):
         return (returncode, stdout, stderr)
 
     def upload_single(self, filepath, repo=None, overwrite=False,
-                      packagenamesonly=None):
+                      overwritepackages=None, packagenamesonly=None):
         """
         This will install a new R package to the R environment.
 
@@ -208,11 +213,13 @@ class REnvironment(AbstractREnvironment):
         if not os.path.exists(filepath):
             logger.error('Cannot access {0}'.format(filepath))
             return PackStatus.DEPLOY_FAILED
+        if overwritepackages is None:
+            overwritepackages = []
         packagefullname = os.path.basename(filepath)
         packagename = PackInfo._parse_package_name_version(filepath)[0]
         p = os.path.join(self._repofullpath, packagename)
         if os.path.exists(p):
-            if overwrite:
+            if overwrite or packagename in overwritepackages:
                 logger.info('The package is already installed')
                 try:
                     logger.info('Uninstalling the previous version')
@@ -250,7 +257,7 @@ class REnvironment(AbstractREnvironment):
             return PackStatus.DEPLOYED
 
     def upload_single_dryrun(self, filepath, dest, repo=None, overwrite=False,
-                             packagenamesonly=None):
+                             overwritepackages=None, packagenamesonly=None):
         """
         This will simulate the installion a new R package to the R environment.
 
@@ -265,11 +272,13 @@ class REnvironment(AbstractREnvironment):
         if not os.path.exists(filepath):
             logger.error('Cannot access {0}'.format(filepath))
             return PackStatus.DEPLOY_FAILED
+        if overwritepackages is None:
+            overwritepackages = []
         packagefullname = os.path.basename(filepath)
         packagename = PackInfo._parse_package_name_version(filepath)[0]
         p = os.path.join(self._repofullpath, packagename)
         if os.path.exists(p):
-            if overwrite:
+            if overwrite or packagename in overwritepackages:
                 logger.info('The package is already installed')
                 try:
                     logger.info('Uninstalling the previous version')
@@ -306,5 +315,6 @@ class REnvironment(AbstractREnvironment):
             #                     out.decode()))
             return PackStatus.DEPLOYED
 
-    def upload_multiple(self, filepaths, repo=None, overwrite=False):
+    def upload_multiple(self, filepaths, repo=None, overwrite=False,
+                        overwritepackages=None):
         pass

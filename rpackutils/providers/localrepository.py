@@ -144,7 +144,8 @@ class LocalRepository(AbstractPackageRepository):
     def download_multiple(self, packagenames, dest):
         pass
 
-    def upload_single(self, filepath, repo, overwrite=False):
+    def upload_single(self, filepath, repo, overwrite=False,
+                      overwritepackages=None):
         """
         Upload a R package to the target repository.
 
@@ -192,7 +193,8 @@ class LocalRepository(AbstractPackageRepository):
                     'to the repository: {0}'.format(e))
                 return PackStatus.DEPLOY_FAILED
 
-    def upload_multiple(self, filepaths, repo, overwrite=False):
+    def upload_multiple(self, filepaths, repo, overwrite=False,
+                        overwritepackages=None):
         pass
 
     def packinfo(self, packagename, keeptempfiles=False):
