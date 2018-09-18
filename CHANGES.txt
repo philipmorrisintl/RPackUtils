@@ -3,6 +3,8 @@
 
 - RPACU-38 licensecheck boolean is not parsed correctly while reading the
   configuration file
+- RPACU-37 new option '--overwrite-specified' to only overwrite specified
+  packages and not all as for the option '--overwrite'
 
 0.1.6
 -----
