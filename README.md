@@ -794,18 +794,18 @@ with the help of Gephi (*citation* [here](#third-parties)).
 
 The gml file has the following attributes for each node:
 
-| Attribute             | Description                        |
-|-----------------------|------------------------------------|
-| label                 | package name                       |
-| name                  | package name                       |
-| version               | package version                    |
-| depends               | packages in depends                |
-| imports               | packages in imports                |
-| suggests              | packages in suggests               |
-| license               | package license                    |
-| licenseclass          | ALLOWED / RESTRICETD / BLACKLISTED |
-| installationisallowed | 1 / 0                              |
-| installationwarning   | 1 / 0                              |
+| Attribute             | Description                                  |
+|-----------------------|----------------------------------------------|
+| label                 | package name                                 |
+| name                  | package name                                 |
+| version               | package version                              |
+| depends               | packages in depends                          |
+| imports               | packages in imports                          |
+| suggests              | packages in suggests                         |
+| license               | package license                              |
+| licenseclass          | ALLOWED / RESTRICETD / BLACKLISTED / UNKNOWN |
+| installationisallowed | 1 / 0                                        |
+| installationwarning   | 1 / 0                                        |
 
 Technically, the node's attributes corresponds to an instance of the
 PackInfo class.
