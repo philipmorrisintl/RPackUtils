@@ -318,13 +318,13 @@ def rpacks_deps_graph():
             #     'repo/folder to use with --repoparam')
             # exit(-1)
             logger.info('No repository specified for Artifactory, ' \
-                        'using all defined in teh configuration file.')
+                        'using all defined in the configuration file.')
             lsargs = {'repo': None}
             packinfoargs = lsargs
         else:
             lsargs = {'repo': repoparam}
             packinfoargs = lsargs
-    # for Bioconductor we need the release number and teh view name
+    # for Bioconductor we need the release number and the view name
     if isinstance(repository, Bioconductor):
         if repoparam is None:
             logger.error(
@@ -346,7 +346,7 @@ def rpacks_deps_graph():
         if repoparam is None:
             logger.error(
                 'Please specify the CRAN ' \
-                'spanshot date to use with --repoparam')
+                'snapshot date to use with --repoparam')
             exit(-1)
         else:
             lsargs = {'snapshot_date': repoparam}
