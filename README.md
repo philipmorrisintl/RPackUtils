@@ -17,6 +17,7 @@
     * [rpackd](#rpackd)
     * [rpackm](#rpackm)
     * [rpackg](#rpackq)
+    * [rpackscan](#rpackscan)
 * [License checking](#license-checking)
 * [Third parties](#third-parties)
 * [License](#license)
