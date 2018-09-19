@@ -5,6 +5,7 @@
   configuration file
 - RPACU-37 new option '--overwrite-specified' to only overwrite specified
   packages and not all as for the option '--overwrite'
+- RPACU-35 new command to scan a repository to fetch R packages metadata
 
 0.1.6
 -----

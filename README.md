@@ -184,6 +184,7 @@ specified *--prefix*.
 | [rpackc](#rpackc)       | Install R packages based on an existing environments (clone)                                         |
 | [rpackm](#rpackm)       | Download R packages from a specified repository (CRAN, Bioc) and upload them to Artifactory (mirror) |
 | [rpackg](#rpackg)       | Generate a dependencies graph                                                                        |
+| [rpackscan](#rpackscan) | Scan a repository or an R environment                                                                |
 
 The following sections provide use cases for each command.
 
@@ -809,6 +810,45 @@ The gml file has the following attributes for each node:
 
 Technically, the node's attributes corresponds to an instance of the
 PackInfo class.
+
+
+### rpackscan
+
+Scan all R packages to fetch their metadata from the DESCRIPTION file from
+one or more specified repository/repositories.
+
+```bash
+$ rpackscan -h
+usage: rpackscan [-h] --repos REPOS --config CONFIG --out OUT
+
+Scan a repository or an R environment
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --repos REPOS    Comma separated repository names, use "all": to specify all
+                   defined in the configuration file
+  --config CONFIG  RPackUtils configuration file
+  --out OUT        Output file where to write the CSV
+```
+
+Please consider the following example to scan an existing R environment:
+
+```bash
+$ rpackscan --repos R-3.2.5 --config rpackutils.conf --out R325.csv
+
+[...]
+-------------------------------------
+Writting output CSV file to "R325.csv" ...
+Time elapsed: 22.923 seconds.
+```
+
+The output file, is a comma-separated format (CSV) and as a table, it looks
+like the following:
+
+| Name     | Version | License            | License class | Depends | Imports         | Suggests                 | Installation allowed | Installation warning |
+|----------|---------|--------------------|---------------|---------|-----------------|--------------------------|----------------------|----------------------|
+| evaluate | 0.9     | MIT + file LICENSE | ALLOWED       | R       | methods,stringr | testthat,lattice,ggplot2 | True                 | True                 |
+| [...]    |         |                    |               |         |                 |                          |                      |                      |
 
 
 ## License checking

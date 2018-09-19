@@ -50,6 +50,7 @@ setup(name='RPackUtils',
               'rpackd = rpackutils.cli:rpacks_download',
               'rpackg = rpackutils.cli:rpacks_deps_graph',
               'rpackcc = rpackutils.cli:rpacks_config_check',
+              'rpackscan = rpackutils.cli:rpacks_scan',
         ],
       }
 )
