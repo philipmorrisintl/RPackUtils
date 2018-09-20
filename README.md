@@ -865,7 +865,7 @@ The file *license.py* defines *BLACKLISTED*, *RESTRICTED* and *ALLOWED*
 licenses classes.
 
 Any unidentified license falls into the *UNKNOWN* category and this is also
-the case When an external file reference is used like in this example.
+the case when an external file reference is used like in this example.
 
 ```
 (...)
