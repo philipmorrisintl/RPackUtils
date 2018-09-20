@@ -76,13 +76,13 @@ $ python setup.py build
 [...]
 ```
 
-6. Optionnaly launch the unit tests
+6. Optionally launch the unit tests
 ```bash
 (RPackUtils) $ cd tests
 (RPackUtils) $ pytest -sv [-m "not slow"]
 [...]
 ```
-You can optionnaly unselect tests maked as "slow".
+You can optionally unselect tests marked as "slow".
 
 7. Install
 ```bash
@@ -116,7 +116,7 @@ In this configuration file, you have to define your available repositories.
 **RPackUtils** currently supports the following repository types:
 * JFrog Artifactory with the directive *artifactory_repos*
 * Any R environment with *renvironment_repos*
-* Any repository on your local filesystem, like a folder with *local_repos*
+* Any repository on your local file system, like a folder with *local_repos*
 
 ```
 # [REPO_TYPE]_repos = [list of names]
@@ -162,8 +162,8 @@ more information about this feature, please refer to the dedicated section
 [License checking](#license-checking).
 
 To customize the temporary files location you have to change the
-corresponding environment variable used by the tempfile Python module. For
-bash shells, you have to change *TMPDIR*.
+corresponding environment variable used by the *tempfile* Python
+module. For bash shells, you have to change *TMPDIR*.
 
 ```bash
 export TMPDIR=/home/john/tmp
@@ -194,7 +194,7 @@ The following sections provide use cases for each command.
 
 The goal of this command is to parse the configuration file and validate
 it. **RPackUtils** will try to connect to any defined remote repository
-and check any local filesystem path exist.
+and check any local file system path exist.
 
 ```bash
 $ rpackcc -h
@@ -217,7 +217,7 @@ FATAL: Cannot connect to https://artifactory.local/artifactory: Could not find a
 (...)
 ```
 
-Example of a successfull validation:
+Example of a successful validation:
 ```bash
 $ rpackcc --config ~/rpackutils.conf
 Building Artifactory instance "myartifactory"
@@ -247,7 +247,7 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
 
-Providing no argument will list all available realeases.
+Providing no argument will list all available releases.
 
 ```bash
 $ rpackbioc
