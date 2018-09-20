@@ -31,7 +31,8 @@ R package dependencies manager and mirroring tool for *Bioconductor* and
 *  Clone existing R environments
 *  Mirror past and current *CRAN* snapshots published on *MRAN*
 *  Mirror past and current *Bioconductor* versions
-*  Artifactory support
+*  Use Artifactory as a R packages repository
+*  Check and scan licenses of R packages
 
 It is still under development.
 
