@@ -41,17 +41,16 @@ setup(name='RPackUtils',
       test_suite="tests",
       entry_points = {
           'console_scripts': [
-              'rpackc = rpackutils.cli:rpacks_clone',
-              'rpacki = rpackutils.cli:rpacks_install',
-              'rpackq = rpackutils.cli:rpacks_query',
-              'rpackm = rpackutils.cli:rpacks_mirror',
-              'rpackmran = rpackutils.cli:rpacks_mran',
-              'rpackbioc = rpackutils.cli:rpacks_bioc',
-              'rpackd = rpackutils.cli:rpacks_download',
-              'rpackg = rpackutils.cli:rpacks_deps_graph',
-              'rpackcc = rpackutils.cli:rpacks_config_check',
-              'rpackscan = rpackutils.cli:rpacks_scan',
+              'rpackc = rpackutils.cli.cliClone:rpacks_clone',
+              'rpacki = rpackutils.cli.cliInstall:rpacks_install',
+              'rpackq = rpackutils.cli.cliQuery:rpacks_query',
+              'rpackm = rpackutils.cli.cliMirror:rpacks_mirror',
+              'rpackmran = rpackutils.cli.cliMran:rpacks_mran',
+              'rpackbioc = rpackutils.cli.cliBioc:rpacks_bioc',
+              'rpackd = rpackutils.cli.cliDownload:rpacks_download',
+              'rpackg = rpackutils.cli.cliDepsGraph:rpacks_deps_graph',
+              'rpackcc = rpackutils.cli.cliConfigCheck:rpacks_config_check',
+              'rpackscan = rpackutils.cli.cliScan:rpacks_scan',
         ],
       }
 )
-
