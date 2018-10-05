@@ -21,17 +21,18 @@ from ..packinfo import PackInfo
 from ..rbasepackages import RBasePackages
 from ..utils import Utils
 from ..depsmanager import PackNode
+from ..license import License
 # from ..command import Command
 
 # INSTALL_TIMEOUT_SEC = 240
 logger = logging.getLogger(__name__)
+
 
 class REnvironment(AbstractREnvironment):
 
     def __init__(self, rhome, librarypath, licensecheck=False):
         """
         Define a R environment.
-        
         :param rhome: example /home/john/R-3.1.2
         :param librarypath: example 'lib64/R/library'
         """
@@ -62,7 +63,7 @@ class REnvironment(AbstractREnvironment):
         to the baseurl+librarypath.
         """
         folders = os.listdir(self._repofullpath)
-        folders = [re.sub('^/', '', x) for x in folders \
+        folders = [re.sub('^/', '', x) for x in folders
                    if os.path.exists(os.path.join(
                            self._repofullpath, x, 'DESCRIPTION'))]
         if not withBasePackages:
@@ -74,7 +75,6 @@ class REnvironment(AbstractREnvironment):
         """
         Return a list of repository paths matching a filename pattern.
         The returned paths are relative to the baseurl+librarypath.
-        
         The pattern may contain simple shell-style wildcards a la
         fnmatch. However, unlike fnmatch, filenames starting with a
         dot are special cases that are not matched by '*' and '?'
@@ -143,7 +143,7 @@ class REnvironment(AbstractREnvironment):
             shell=False)
         # communicate will wait for the process to terminate
         # and set the returncode value
-        logger.info('Waiting for PID {} to complete...' \
+        logger.info('Waiting for PID {} to complete...'
                     .format(p.pid))
         (stdout, stderr) = p.communicate()
         returncode = p.returncode
@@ -179,12 +179,11 @@ class REnvironment(AbstractREnvironment):
                           .format(packInfo.license)
                 return (-1, message, message)
             if license.restricted:
-                logger.warn("The license \"{}\" is RESTRICTED" \
+                logger.warn("The license \"{}\" is RESTRICTED"
                             .format(packInfo.license))
         # copy the package to the dest folder
         shutil.copy(packagepath, dest)
-        cmd = os.path.joi
-        n(self._Rbinarypath)
+        cmd = os.path.join(self._Rbinarypath)
         destpackagepath = os.path.join(dest, os.path.basename(packagepath))
         cmdargs = [cmd, 'CMD', 'INSTALL', destpackagepath]
         command = " ".join(cmdargs)
@@ -229,7 +228,7 @@ class REnvironment(AbstractREnvironment):
                                  .format(e))
                     return PackStatus.DEPLOY_FAILED
             else:
-                logger.info('The package is already installed and ' \
+                logger.info('The package is already installed and '
                             'overwritting is disabled')
                 # ts = os.path.getmtime(p)
                 # pack.install_date = str(datetime.datetime.fromtimestamp(ts))
@@ -237,9 +236,9 @@ class REnvironment(AbstractREnvironment):
         logger.info('Installing package')
         (res, out, err) = self._installpackage(filepath)
         if res != 0:
-            logger.error('Installation of package {} failed!\n' \
-                         '\n[STDOUT BEGINS]\n{}\n[STDOUT ENDS]\n' \
-                         '\n[STDERR BEGINS]\n{}\n[STDERR ENDS]' \
+            logger.error('Installation of package {} failed!\n'
+                         '\n[STDOUT BEGINS]\n{}\n[STDOUT ENDS]\n'
+                         '\n[STDERR BEGINS]\n{}\n[STDERR ENDS]'
                          .format(packagefullname,
                                  out,
                                  err))
@@ -247,7 +246,7 @@ class REnvironment(AbstractREnvironment):
         else:
             # pack.fullstatus = out
             # pack.install_date = str(datetime.datetime.now())
-            logger.info('Installation of package {} DONE.' \
+            logger.info('Installation of package {} DONE.'
                         .format(packagefullname))
             # verbose:
             # logger.info('Installation of package {} DONE.\n' \
@@ -288,7 +287,7 @@ class REnvironment(AbstractREnvironment):
                                  .format(e))
                     return PackStatus.DEPLOY_FAILED
             else:
-                logger.info('The package is already installed and ' \
+                logger.info('The package is already installed and '
                             'overwritting is disabled')
                 # ts = os.path.getmtime(p)
                 # pack.install_date = str(datetime.datetime.fromtimestamp(ts))
@@ -296,9 +295,9 @@ class REnvironment(AbstractREnvironment):
         logger.info('Installing package')
         (res, out, err) = self._installpackage_dryrun(filepath, dest)
         if res != 0:
-            logger.error('Installation of package {} failed!\n' \
-                         '\n[STDOUT BEGINS]\n{}\n[STDOUT ENDS]\n' \
-                         '\n[STDERR BEGINS]\n{}\n[STDERR ENDS]' \
+            logger.error('Installation of package {} failed!\n'
+                         '\n[STDOUT BEGINS]\n{}\n[STDOUT ENDS]\n'
+                         '\n[STDERR BEGINS]\n{}\n[STDERR ENDS]'
                          .format(packagefullname,
                                  out,
                                  err))
@@ -306,7 +305,7 @@ class REnvironment(AbstractREnvironment):
         else:
             # pack.fullstatus = out
             # pack.install_date = str(datetime.datetime.now())
-            logger.info('Installation of package {} DONE.' \
+            logger.info('Installation of package {} DONE.'
                         .format(packagefullname))
             # verbose:
             # logger.info('Installation of package {} DONE.\n' \

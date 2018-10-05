@@ -7,6 +7,7 @@
 
 import json
 
+
 class JSONSerializer:
 
     @staticmethod
@@ -19,7 +20,7 @@ class JSONSerializer:
         with open(filepath, "r") as f:
             obj = json.load(f)
         return obj
-        
+
     @staticmethod
     def serialize(obj):
         return json.dumps(obj)

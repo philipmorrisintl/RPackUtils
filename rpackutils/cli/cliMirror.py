@@ -26,15 +26,16 @@ logger = logging.getLogger(__name__)
 
 def rpacks_mirror():
     parser = argparse.ArgumentParser(
-        description='Download R packages from a specified repository ' \
-        '(CRAN or Bioconductor) and upload them to Artifactory (mirror)')
+        description=('Download R packages from a specified repository '
+                     '(CRAN or Bioconductor) and upload them to Artifactory'
+                     ' (mirror)'),
     parser.add_argument(
         '--input-repository',
         dest='inputrepo',
         action='store',
         default='',
-        help='The type of public R repository to mirror, ' \
-        'possible values: \"cran\" or \"bioc\"',
+        help=('The type of public R repository to mirror, '
+              'possible values: \"cran\" or \"bioc\"')
     ) and None
     parser.add_argument(
         '--inputrepoparam',
@@ -42,7 +43,7 @@ def rpacks_mirror():
         action='store',
         default='',
         required=True,
-        help='The release of Bioconductor or the snapshot date of CRAN',
+        help='The release of Bioconductor or the snapshot date of CRAN'
     ) and None
     parser.add_argument(
         '--output-repository',

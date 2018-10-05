@@ -8,5 +8,6 @@
 from ..provider import AbstractPackageRepository
 from ..packinfo import PackStatus
 
+
 class Nexus(AbstractPackageRepository):
     pass

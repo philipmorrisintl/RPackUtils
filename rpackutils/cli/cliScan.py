@@ -27,8 +27,8 @@ def rpacks_scan():
         action='store',
         default=None,
         required=True,
-        help='Comma separated repository names, ' \
-        'use \"all\": to specify all defined in the configuration file',
+        help=('Comma separated repository names, '
+              'use \"all\": to specify all defined in the configuration file'),
     ) and None
     parser.add_argument(
         '--config',
@@ -46,8 +46,6 @@ def rpacks_scan():
         required=True,
         help='Output file where to write the CSV',
     ) and None
-    lsargs = None
-    packinfoargs = None
     args = parser.parse_args()
     repos = [x.strip() for x in args.repos.split(',')]
     out = args.out
@@ -64,10 +62,11 @@ def rpacks_scan():
         repositories = reposConfig.repository_instances_by_name(repos)
     # scan all available R packages accross specified repositories
     _scan_packages(repositories, out)
-    logger.info('Writting output CSV file to \"{}\" ...' \
+    logger.info('Writting output CSV file to \"{}\" ...'
                 .format(out))
     endtime = time.time()
     logger.info('Time elapsed: {0:.3f} seconds.'.format(endtime - starttime))
+
 
 def _scan_packages(repositories, out):
     # TODO: we could launch multi processes
@@ -81,7 +80,7 @@ def _scan_packages(repositories, out):
         logger.info('{0} repositories(s) specified'.format(len(repositories)))
         for repo in repositories:
             candidates = repo.ls(packagenamesonly=True)
-            logger.info('Repository instance \"{0}\"' \
+            logger.info('Repository instance \"{0}\"'
                         .format(repo.name))
             logger.info('{0} package(s) found'.format(len(candidates)))
             for idx, candidate in enumerate(candidates):

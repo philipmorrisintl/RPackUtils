@@ -58,8 +58,8 @@ class Artifactory(AbstractPackageRepository):
         Please note numtries must be >= 1.
         """
         if numtries < 1:
-            logger.warn('The \"numtries\" parameter in check_connection() ' \
-                        "must be >= 1. Was \"{0}\" but using 1!" \
+            logger.warn('The \"numtries\" parameter in check_connection() '
+                        "must be >= 1. Was \"{0}\" but using 1!"
                         .format(numtries))
             numtries = 1
         retVal = False
@@ -133,8 +133,8 @@ class Artifactory(AbstractPackageRepository):
             logger.error('Repository {} does not exist!'.format(repo))
             return []
         else:
-            logger.error('Unexpected http {0} while trying' \
-                         ' to access the repository {1} ' \
+            logger.error('Unexpected http {0} while trying'
+                         ' to access the repository {1} '
                          .format(r.status_code, repo))
             return []
 
@@ -142,7 +142,6 @@ class Artifactory(AbstractPackageRepository):
         """
         Return a list of files matching the specified pattern
         for the defined repositories.
-        
         The pattern may contain simple shell-style wildcards a la
         fnmatch. However, unlike fnmatch, filenames starting with a
         dot are special cases that are not matched by '*' and '?'
@@ -158,7 +157,6 @@ class Artifactory(AbstractPackageRepository):
         """
         Return a list of files matching the specified pattern
         for a given repository name.
-        
         The pattern may contain simple shell-style wildcards a la
         fnmatch. However, unlike fnmatch, filenames starting with a
         dot are special cases that are not matched by '*' and '?'
@@ -166,7 +164,7 @@ class Artifactory(AbstractPackageRepository):
         """
         matches = []
         files = self.ls_repo(repo)
-        for entry in files:  
+        for entry in files:
             if fnmatch.fnmatch(entry, pattern):
                 matches.append(entry)
         return matches
@@ -177,7 +175,6 @@ class Artifactory(AbstractPackageRepository):
         given a repository name.
         The fullpackagename uniquely identifies a package and is
         like "packagename_version.tar.gz".
-        
         returns:
         PackStatus.DOWNLOADED upon success
         PackStatus.DOWNLOAD_FAILED if any download error occured
@@ -190,8 +187,8 @@ class Artifactory(AbstractPackageRepository):
             fullpackagename
         )
         if url is None:
-            logger.error('Cancelling download of package {0} :' \
-                         'could not figure out the download url!' \
+            logger.error('Cancelling download of package {0} :'
+                         'could not figure out the download url!'
                          .format(fullpackagename))
             return PackStatus.DOWNLOAD_FAILED
         package_tarball = os.path.basename(url)
@@ -200,18 +197,18 @@ class Artifactory(AbstractPackageRepository):
             r = self._do_request(url, stream=True)
             with open(targetpath, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
-                    if chunk: # filter out keep-alive new chunks
+                    if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
-            logger.info('Done downloading R package: {0}' \
+            logger.info('Done downloading R package: {0}'
                         .format(fullpackagename))
             retVal = PackStatus.DOWNLOADED
-        except:
-            error_message = "Error downloading R package: " \
-                            "{0}\n{1}\n{2}\n{3}" \
-                            .format(fullpackagename,
-                                    url,
-                                    sys.exc_info()[0],
-                                    traceback.extract_tb(sys.exc_info()[2]))
+        except Exception:
+            error_message = "Error downloading R package: "
+            "{0}\n{1}\n{2}\n{3}".format(
+                fullpackagename,
+                url,
+                sys.exc_info()[0],
+                traceback.extract_tb(sys.exc_info()[2]))
             logger.error(error_message)
             retVal = PackStatus.DOWNLOAD_FAILED
         if retVal == PackStatus.DOWNLOADED:
@@ -236,7 +233,6 @@ class Artifactory(AbstractPackageRepository):
         """
         Download a R package to the specified dest folder
         given a repository name.
-        
         returns:
         PackStatus.DOWNLOADED upon success
         PackStatus.DOWNLOAD_FAILED if any download error occured
@@ -246,7 +242,7 @@ class Artifactory(AbstractPackageRepository):
         retVal = PackStatus.DOWNLOADED
         matches = self.find_repo(repo, '{0}_*.tar.gz'.format(packagename))
         if len(matches) == 0:
-            logger.error('Package {0} not found in repository {1}!' \
+            logger.error('Package {0} not found in repository {1}!'
                          .format(packagename, repo))
             return PackStatus.NOT_FOUND
         elif len(matches) > 1:
@@ -275,7 +271,8 @@ class Artifactory(AbstractPackageRepository):
                 if mostrecenttarball is None:
                     mostrecenttarball = pi['tarball']
                 else:
-                    if LooseVersion(pi['packinfo'].version) > LooseVersion(packinfo.version):
+                    if LooseVersion(pi['packinfo'].version) > LooseVersion(
+                            packinfo.version):
                         mostrecenttarball = pi['tarball']
             retVal = self.download_single_fullname(repo,
                                                    mostrecenttarball,
@@ -297,10 +294,7 @@ class Artifactory(AbstractPackageRepository):
         starttime = time.time()
         totalnumofpacks = len(packagenames)
         totaldownloaded = 0
-        # urls = []
-        targetpaths = []
-        snapshot_dates = []
-        logger.info('preparing to download {0} packages' \
+        logger.info('preparing to download {0} packages'
                     .format(totalnumofpacks))
         # multiprocessing.cpu_count()
         pool = multiprocessing.Pool(processes=procs)
@@ -309,7 +303,7 @@ class Artifactory(AbstractPackageRepository):
         results = [pool.apply_async(self.download_single,
                                     args=(repos[i],
                                           packagenames[i],
-                                          dest)) \
+                                          dest))
                    for i in range(0, totalnumofpacks)]
         retVals = [res.get() for res in results]
         # avoid zombies and release the memory
@@ -318,9 +312,9 @@ class Artifactory(AbstractPackageRepository):
             # if retVal == 'ok':
             if retVal == PackStatus.DOWNLOADED:
                 totaldownloaded = totaldownloaded+1
-        logger.info("{0}/{1} packages done." \
-                  .format(totaldownloaded,
-                          totalnumofpacks))
+        logger.info("{0}/{1} packages done."
+                    .format(totaldownloaded,
+                            totalnumofpacks))
         endtime = time.time()
         timeelapsed = endtime - starttime
         logger.info('Time elapsed: {0:.3f} seconds.'.format(timeelapsed))
@@ -345,7 +339,7 @@ class Artifactory(AbstractPackageRepository):
             for k in properties.keys():
                 properties_matrix += ";"
                 properties_matrix += "{0}={1}".format(k, properties[k])
-            url += properies_matrix
+            url += properties_matrix
         cmd = None
         if self.verify:
             cmd = 'curl --cacert {0} -X PUT {1} -T {2}'.format(
@@ -381,13 +375,13 @@ class Artifactory(AbstractPackageRepository):
                                         args=(filepaths[i],
                                               repo,
                                               properties[i],
-                                              overwrite)) \
+                                              overwrite))
                        for i in range(0, totalnumoffiles)]
         else:
             results = [pool.apply_async(self.upload_single,
                                         args=(filepaths[i],
                                               repo,
-                                              overwrite)) \
+                                              overwrite))
                        for i in range(0, totalnumoffiles)]
         retVals = [res.get() for res in results]
         # avoid zombies and release the memory
@@ -397,7 +391,7 @@ class Artifactory(AbstractPackageRepository):
         for retVal in retVals:
             if retVal == PackStatus.DEPLOYED:
                 totaldeployed = totaldeployed+1
-        logger.info("{0}/{1} artifacts deployed." \
+        logger.info("{0}/{1} artifacts deployed."
                     .format(totaldeployed,
                             totalnumoffiles))
         logger.info('Time elapsed: {0:.3f} seconds.'.format(timeelapsed))
@@ -432,7 +426,8 @@ class Artifactory(AbstractPackageRepository):
             # TODO use pattern matching
             if('/' in packagename):
                 packagename, repo = self._get_name_and_repo(packagename)
-                fullpackagenames = self._get_fullpackagenames(packagename, repo)
+                fullpackagenames = self._get_fullpackagenames(
+                    packagename, repo)
             else:
                 if(".tar.gz" in packagename):
                     fullpackagenames = self.find(
@@ -444,10 +439,12 @@ class Artifactory(AbstractPackageRepository):
             fullpackagenames = self._get_fullpackagenames(packagename, repo)
         if len(fullpackagenames) == 0:
             if repo:
-                logger.error('Package {0} not FOUND in Artifactory repository \"{1}\"'
+                logger.error('Package {0} not FOUND in Artifactory '
+                             'repository \"{1}\"'
                              .format(packagename, repo))
             else:
-                logger.error('Package {0} not FOUND in Artifactory repositories \"{1}\"'
+                logger.error('Package {0} not FOUND in Artifactory '
+                             'repositories \"{1}\"'
                              .format(packagename, ",".join(self.repos)))
             packinfo = PackInfo(packagename)
             packinfo.status = PackStatus.NOT_FOUND
@@ -482,24 +479,24 @@ class Artifactory(AbstractPackageRepository):
                              'tarball': tarball}
                         )
                     else:
-                        logger.error('An error occured while reading the ' \
-                                     'tarball contents at {0}' \
+                        logger.error('An error occured while reading the '
+                                     'tarball contents at {0}'
                                      .format(tarballfullpath))
                         # packinfo = PackInfo(tarball.split('_')[0])
                         if(packinfo):
                             packinfo.tempdir = dest2
                             packinfo.status = PackStatus.DOWNLOAD_FAILED
-                            packinfo.fullstatus = 'An error occured while' \
-                                                  ' reading the tarball contents of {0}' \
-                                                  .format(tarball)
+                            packinfo.fullstatus = 'An error occured while'
+                            ' reading the tarball contents of {0}'.format(
+                                tarball)
                 else:
                     logger.info('Failed to Download {0}'.format(tarball))
                     # packinfo = PackInfo(name)
                     if(packinfo):
                         packinfo.tempdir = dest2
                         packinfo.status = PackStatus.DOWNLOAD_FAILED
-                        packinfo.fullstatus = 'Failed to download package {0}' \
-                                .format(tarball)
+                        packinfo.fullstatus = 'Failed to download '
+                        'package {0}'.format(tarball)
             mostrecentpit = None
             # logger.info('packinfos_tarballs = {}'.format(packinfos_tarballs))
             for pit in packinfos_tarballs:
@@ -511,14 +508,12 @@ class Artifactory(AbstractPackageRepository):
                            > LooseVersion(mostrecentpit['packinfo'].version):
                             mostrecentpit = pit
                     except Exception as e:
-                        logger.error('Error comparing version \"{}\" ' \
-                                     'with version \"{}\"!' \
+                        logger.error('Error comparing version \"{}\" '
+                                     'with version \"{}\"!'
                                      .format(
                                          pit['packinfo'].version,
-                                         mostrecentpit['packinfo'].version
-                                     )
-                        )
-                        logger.warn('Keeping {} as the most recent version' \
+                                         mostrecentpit['packinfo'].version))
+                        logger.warn('Keeping {} as the most recent version'
                                     .format(mostrecentpit['packinfo'].version))
                         pass
             packinfo = mostrecentpit['packinfo']
@@ -531,7 +526,7 @@ class Artifactory(AbstractPackageRepository):
             repo_orig = repo
             name, repo = self._get_name_and_repo(fullpackagenames[0])
             if not repo:
-                repo = repo_orig        
+                repo = repo_orig
             # if repo is None:
             #     name, repo = self._get_name_and_repo(fullpackagenames[0])
             # else:

@@ -16,6 +16,7 @@ from rpackutils.providers.cran import CRAN
 
 logger = logging.getLogger(__name__)
 
+
 class ReposConfig:
 
     def __init__(self, config):
@@ -75,7 +76,7 @@ class ReposConfig:
         elif name in self.local_instances:
             return self.local_instance(name)
         else:
-            logger.error('Repository named \"{0}\" not found!' \
+            logger.error('Repository named \"{0}\" not found!'
                          .format(name))
             return None
 
@@ -108,7 +109,7 @@ class ReposConfig:
 
     def _build_artifactory_repos(self, names):
         for name in names:
-            logger.info('Building Artifactory instance \"{0}\"' \
+            logger.info('Building Artifactory instance \"{0}\"'
                         .format(name))
             auth = (
                 self._config.get(name, "user"),
@@ -127,7 +128,7 @@ class ReposConfig:
 
     def _build_renvironment_repos(self, names):
         for name in names:
-            logger.info('Building R environment instance \"{0}\"' \
+            logger.info('Building R environment instance \"{0}\"'
                         .format(name))
             licensecheck = False
             try:
@@ -148,7 +149,7 @@ class ReposConfig:
 
     def _build_local_repos(self, names):
         for name in names:
-            logger.info('Building Local repository instance \"{0}\"' \
+            logger.info('Building Local repository instance \"{0}\"'
                         .format(name))
             repos = [x.strip() for x in self._config.get(
                 name, "repos").split(',')]

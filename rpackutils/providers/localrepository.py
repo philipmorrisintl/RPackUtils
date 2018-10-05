@@ -23,12 +23,12 @@ from ..utils import Utils
 
 logger = logging.getLogger(__name__)
 
+
 class LocalRepository(AbstractPackageRepository):
 
     def __init__(self, baseurl, repos):
         """
         Create a local R packages repository.
-        
         :param baseurl: example /home/john/packages
         :param repos: example [R-3.1.2_packages]
         """
@@ -65,7 +65,6 @@ class LocalRepository(AbstractPackageRepository):
         """
         Return a list of repository paths matching a filename pattern.
         The returned paths are relative to the baseurl of the repository.
-        
         The pattern may contain simple shell-style wildcards a la
         fnmatch. However, unlike fnmatch, filenames starting with a
         dot are special cases that are not matched by '*' and '?'
@@ -83,8 +82,7 @@ class LocalRepository(AbstractPackageRepository):
     def find_repo(self, repo, pattern):
         """
         Return a list of files matching the specified pattern
-        for a given repository name.
-        
+        for a given repository nam.
         The pattern may contain simple shell-style wildcards a la
         fnmatch. However, unlike fnmatch, filenames starting with a
         dot are special cases that are not matched by '*' and '?'
@@ -127,7 +125,8 @@ class LocalRepository(AbstractPackageRepository):
                 if mostrecenttarball is None:
                     mostrecenttarball = pi['tarball']
                 else:
-                    if LooseVersion(pi['packinfo'].version) > LooseVersion(packinfo.version):
+                    if(LooseVersion(pi['packinfo'].version)
+                       > LooseVersion(packinfo.version)):
                         mostrecenttarball = pi['tarball']
         else:
             mostrecenttarball = tarballs[0]
@@ -175,12 +174,12 @@ class LocalRepository(AbstractPackageRepository):
                     return PackStatus.DEPLOYED
                 except Exception as e:
                     logger.error(
-                        'Failed to push the package ' \
+                        'Failed to push the package '
                         'to the repository: {0}'.format(e))
                     return PackStatus.DEPLOY_FAILED
             else:
                 logger.info(
-                    'The package already exists in the ' \
+                    'The package already exists in the '
                     'repository and overwrite is disabled')
                 return PackStatus.DEPLOYED
         else:
@@ -189,7 +188,7 @@ class LocalRepository(AbstractPackageRepository):
                 return PackStatus.DEPLOYED
             except Exception as e:
                 logger.error(
-                    'Failed to push the package ' \
+                    'Failed to push the package '
                     'to the repository: {0}'.format(e))
                 return PackStatus.DEPLOY_FAILED
 
@@ -229,17 +228,16 @@ class LocalRepository(AbstractPackageRepository):
                     packinfo = pi
                 else:
                     try:
-                        if LooseVersion(pi.version) > LooseVersion(packinfo.version):
+                        if(LooseVersion(pi.version)
+                           > LooseVersion(packinfo.version)):
                             packinfo = pi
                     except Exception as e:
-                        logger.error('Error comparing version \"{}\" ' \
-                                     'with version \"{}\"!' \
+                        logger.error('Error comparing version \"{}\" '
+                                     'with version \"{}\"!'
                                      .format(
                                          pi.version,
-                                         packinfo.version
-                                     )
-                        )
-                        logger.warn('Keeping {} as the most recent version' \
+                                         packinfo.version))
+                        logger.warn('Keeping {} as the most recent version'
                                     .format(packinfo.version))
                         pass
         else:

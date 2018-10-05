@@ -25,8 +25,8 @@ def rpacks_mran():
         dest='rversion',
         action='store',
         default=None,
-        help='The version of R, as \"x.y.z\" ' \
-        '(ignored when --restore is used)',
+        help=('The version of R, as \"x.y.z\" '
+              '(ignored when --restore is used)'),
     ) and None
     parser.add_argument(
         '--procs',
@@ -34,8 +34,8 @@ def rpacks_mran():
         action='store',
         default='50',
         type=int,
-        help='Number of parallel processes used to parse ' \
-        'snapshots properties, default=50',
+        help=('Number of parallel processes used to parse '
+              'snapshots properties, default=50'),
     ) and None
     parser.add_argument(
         '--dump',
@@ -53,33 +53,34 @@ def rpacks_mran():
     ) and None
     args = parser.parse_args()
     if args.dumpfilepath is not None and args.restorefromfilepath is not None:
-        logger.error("Please choose either dump or restore, " \
+        logger.error("Please choose either dump or restore, "
                      "they are exclusive!")
         exit(-1)
     snapshots = None
     starttime = time.time()
     if args.restorefromfilepath is None:
-        logger.info("I will use {0} parallel processes to parse " \
-                    "the R version from snapshots dates." \
-              .format(args.procs))
+        logger.info("I will use {0} parallel processes to parse "
+                    "the R version from snapshots dates."
+                    .format(args.procs))
         logger.info("Fetching available MRAN snapshots from the Internet...")
         cran = CRAN()
         snapshots = cran.ls_snapshots(args.procs, args.rversion)
     else:
         if args.rversion is not None:
-            logger.warn('Ignoring the --Rversion parameter ' \
+            logger.warn('Ignoring the --Rversion parameter '
                         'since --restore is used.')
         if args.procs is not None:
-            logger.warn('Ignoring the --procs parameter ' \
+            logger.warn('Ignoring the --procs parameter '
                         'since --restore is used.')
-        logger.info("Reading available MRAN snapshots " \
+        logger.info("Reading available MRAN snapshots "
                     "from {0}...".format(args.restorefromfilepath))
-        snapshots = JSONSerializer.deserializefromfile(args.restorefromfilepath)
+        snapshots = JSONSerializer.deserializefromfile(
+            args.restorefromfilepath)
     logger.info("============================================================")
     for version in snapshots.keys():
-        logger.info("R version {0}, {1} snapshots\n"\
-                    "----------------------------------------" \
-                    "\n{2}\n" \
+        logger.info("R version {0}, {1} snapshots\n"
+                    "----------------------------------------"
+                    "\n{2}\n"
                     .format(version,
                             len(snapshots[version]),
                             " ".join(snapshots[version])))

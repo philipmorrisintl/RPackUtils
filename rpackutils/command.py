@@ -13,6 +13,7 @@ import threading
 
 logger = logging.getLogger(__name__)
 
+
 class Command(object):
     """
     Create subprocess with timeout support.
@@ -27,7 +28,6 @@ class Command(object):
     def kill(self, signal=signal.SIGINT):
         """
         Kill the runnin process
-        
         :param signal: os.signal, default=os.signal.SIGINT
         """
         os.kill(self.process.pid, signal.SIGINT)
@@ -39,7 +39,7 @@ class Command(object):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 shell=False)
-            logger.info('Waiting for process {} to complete...' \
+            logger.info('Waiting for process {} to complete...'
                         .format(self.process.pid))
             for stdout_line in iter(self.process.stdout.readline, ""):
                 print(stdout_line)
@@ -55,8 +55,8 @@ class Command(object):
         thread.start()
         thread.join(timeout)
         if thread.is_alive():
-            logger.error('The process {} is taking too long, ' \
-                         'terminating it' \
+            logger.error('The process {} is taking too long, '
+                         'terminating it'
                          .format(self.process.pid))
             self.kill()
             thread.join()

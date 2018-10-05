@@ -5,8 +5,9 @@
 # GNU General Public License for more details.                    #
 ###################################################################
 
+
 class Node(object):
-    def __init__(self,key):
+    def __init__(self, key):
         self._idt = key
         self._connections = {}
 
@@ -65,4 +66,3 @@ class Graph(object):
 
     def __iter__(self):
         return iter(self._nodes.values())
-

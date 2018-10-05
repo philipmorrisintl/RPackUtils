@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 def rpacks_config_check():
     parser = argparse.ArgumentParser(
-        description='Check the configuration file ' \
-        'and report issues if any')
+        description=('Check the configuration file '
+                     'and report issues if any'))
     parser.add_argument(
         '--config',
         dest='config',
@@ -38,6 +38,6 @@ def rpacks_config_check():
     # create the repositories defined there
     reposConfig = ReposConfig(config)
     # get all repository instances
-    repositories = reposConfig.repository_instances
+    reposConfig.repository_instances
     endtime = time.time()
     logger.info('Time elapsed: {0:.3f} seconds.'.format(endtime - starttime))

@@ -35,9 +35,9 @@ def rpacks_deps_graph():
         action='store',
         default=None,
         required=True,
-        help='The repository to work with. Identified by ' \
-        'its name in the configuration file. Use \"cran\" or ' \
-        '\"bioc\" to use CRAN or Bioconductor respectively',
+        help=('The repository to work with. Identified by '
+              'its name in the configuration file. Use \"cran\" or '
+              '\"bioc\" to use CRAN or Bioconductor respectively'),
     ) and None
     parser.add_argument(
         '--repoparam',
@@ -45,13 +45,13 @@ def rpacks_deps_graph():
         action='store',
         default=None,
         required=False,
-        help='Additional repository parameter. ' \
-        'For Artifactory: \"repo name\"; all defined repositories ' \
-        'will be used otherwise. ' \
-        'Bioconductor: \"release numer, view\" ' \
-        'where \"view\" can be 1 of \"software\", ' \
-        '\"experimentData\", \"annotationData\". ' \
-        'CRAN: \"snapshot date\".'
+        help=('Additional repository parameter. '
+              'For Artifactory: \"repo name\"; all defined repositories '
+              'will be used otherwise. '
+              'Bioconductor: \"release numer, view\" '
+              'where \"view\" can be 1 of \"software\", '
+              '\"experimentData\", \"annotationData\". '
+              'CRAN: \"snapshot date\".')
     ) and None
     parser.add_argument(
         '--packages',
@@ -59,8 +59,8 @@ def rpacks_deps_graph():
         action='store',
         default=None,
         required=False,
-        help='Comma separated list of root packages' \
-        ' to create the graph, by default all will be included',
+        help=('Comma separated list of root packages'
+              ' to create the graph, by default all will be included'),
     ) and None
     parser.add_argument(
         '--traverse',
@@ -68,9 +68,9 @@ def rpacks_deps_graph():
         action='store',
         default='imports,depends',
         required=False,
-        help='By default \"imports,depends\", to traverse both ' \
-        'imports and depends to build the dependency graph. ' \
-        '\"suggests\" is ignored by default.',
+        help=('By default \"imports,depends\", to traverse both '
+              'imports and depends to build the dependency graph. '
+              '\"suggests\" is ignored by default.'),
     ) and None
     parser.add_argument(
         '--config',
@@ -78,8 +78,8 @@ def rpacks_deps_graph():
         action='store',
         default=None,
         required=False,
-        help='RPackUtils configuration file, required unless ' \
-        'you use CRAN or Bioconductor as repository',
+        help=('RPackUtils configuration file, required unless '
+              'you use CRAN or Bioconductor as repository'),
     ) and None
     parser.add_argument(
         '--out',
@@ -103,17 +103,17 @@ def rpacks_deps_graph():
     if repo == 'cran':
         repository = CRAN()
         if args.config is not None:
-            logger.warn('Ignoring the --conf argument ' \
+            logger.warn('Ignoring the --conf argument '
                         'since CRAN will be used.')
     elif repo == 'bioc':
         repository = Bioconductor()
         if args.config is not None:
-            logger.warn('Ignoring the --conf argument ' \
+            logger.warn('Ignoring the --conf argument '
                         'since Bioconductor will be used.')
     else:
         if args.config is None:
             logger.error(
-                'Please specify the configuration ' \
+                'Please specify the configuration '
                 'file to use with --config')
             exit(-1)
         configFile = args.config
@@ -132,7 +132,7 @@ def rpacks_deps_graph():
             #     'Please specify the Artifactory ' \
             #     'repo/folder to use with --repoparam')
             # exit(-1)
-            logger.info('No repository specified for Artifactory, ' \
+            logger.info('No repository specified for Artifactory, '
                         'using all defined in the configuration file.')
             lsargs = {'repo': None}
             packinfoargs = lsargs
@@ -143,15 +143,16 @@ def rpacks_deps_graph():
     if isinstance(repository, Bioconductor):
         if repoparam is None:
             logger.error(
-                'Please specify the Bioconductor ' \
+                'Please specify the Bioconductor '
                 'release and view to use with --repoparam')
             exit(-1)
         else:
             repoparams = [x.strip() for x in repoparam.split(',')]
             if not len(repoparams) == 2:
                 logger.error(
-                    'Please specify the Bioconductor ' \
-                    'release and view to use with --repoparam=\"release,view\"')
+                    'Please specify the Bioconductor '
+                    'release and view to use with '
+                    '--repoparam=\"release,view\"')
                 exit(-1)
             lsargs = {'bioc_release': repoparams[0],
                       'view': repoparams[1]}
@@ -160,7 +161,7 @@ def rpacks_deps_graph():
     if isinstance(repository, CRAN):
         if repoparam is None:
             logger.error(
-                'Please specify the CRAN ' \
+                'Please specify the CRAN '
                 'snapshot date to use with --repoparam')
             exit(-1)
         else:
@@ -188,9 +189,9 @@ def rpacks_deps_graph():
         logger.info('The result graph is empty!')
         logger.info('No output file generated')
         exit(1)
-    logger.info('The result graph has {} nodes and {} edges' \
+    logger.info('The result graph has {} nodes and {} edges'
                 .format(len(dt._g.nodes()), len(dt._g.edges())))
-    logger.info('Writting output GML file to \"{}\" ...' \
+    logger.info('Writting output GML file to \"{}\" ...'
                 .format(out))
     write_gml(dt._g,
               out,

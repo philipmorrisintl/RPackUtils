@@ -17,10 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def rpacks_bioc():
-    parser = argparse.ArgumentParser(
-        description='Query the Bioconductor repository ' \
-        'for available releases')
-    args = parser.parse_args()
+    argparse.ArgumentParser(
+        description='Query the Bioconductor repository for available releases')
     starttime = time.time()
     bioc = Bioconductor()
     releases = bioc.ls_releases()

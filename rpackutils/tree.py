@@ -11,9 +11,10 @@ import networkx as nx
 from .packinfo import PackInfo
 from .rbasepackages import RBasePackages
 
+
 class DepTree(object):
-# FUTURE: we could use multiple providers instead of a single one in order ot search
-# across several repositories
+    # FUTURE: we could use multiple providers instead of a single one
+    # in order ot search across several repositories
     def __init__(self, provider, lsargs=None, packinfoargs=None,
                  imports=True, depends=True, suggests=False):
         """

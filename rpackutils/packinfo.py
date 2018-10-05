@@ -78,7 +78,7 @@ class PackInfo(object):
                 self.name, self.version = PackInfo._parse_package_name_version(path)
             except Exception as e:
                 logger.error(
-                    'Unexpected R package file name' \
+                    'Unexpected R package file name'
                     ' \"{0}\": '.format(path, e))
         elif ispath:
             self.name = os.path.basename(path)
@@ -100,8 +100,8 @@ class PackInfo(object):
                     folder, self.name, 'DESCRIPTION')
             except Exception as e:
                 logger.error(
-                    'Unexpected error while reading the tarball ' \
-                    'for package: {0}, tarball: {1}, ' \
+                    'Unexpected error while reading the tarball '
+                    'for package: {0}, tarball: {1}, '
                     'error message: {2}'.format(self.name, path, e))
                 self.status = PackStatus.INVALID
                 self.fullstatus = e
@@ -185,16 +185,12 @@ class PackInfo(object):
         # we expect only 1 underscore
         spl = filename.split('_')
         if not len(spl) == 2:
-            self.status = PackStatus.INVALID
-            self.fullstatus = 'Unrecognized R package file name'
             name = spl[0]
             raise ParsingError('Unrecognized R package file name')
         name = spl[0]
         try:
             pos = spl[1].index('.tar.gz')
         except ValueError:
-            self.status = PackStatus.INVALID
-            self.fullstatus = 'Wrong package extension'
             raise ParsingError(
                     'Wrong package extention')
         version = spl[1][:pos]
@@ -245,7 +241,7 @@ class PackInfo(object):
     def _clean_children(s):
         if s:
             lst = s.strip().split(',')
-            lst = [x.strip() if not '(' in x else x[:x.index(
+            lst = [x.strip() if '(' not in x else x[:x.index(
                 '(')].strip() for x in lst]
             lst = [x for x in lst if x]
             return lst
@@ -254,7 +250,7 @@ class PackInfo(object):
 
     @staticmethod
     def _is_context(lines, index):
-        return( ':' in lines[index] )
+        return(':' in lines[index])
 
     def _newcontext_or_endofcontent(self, d, context, lines, index):
         if PackInfo._is_context(lines, index+1):

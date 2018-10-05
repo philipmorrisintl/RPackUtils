@@ -17,8 +17,10 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+
 class AbstractProvider():
     __metaclass__ = ABCMeta
+
     def __init__(self, name, baseurl, repos):
         self.name = name
         self.baseurl = baseurl
@@ -55,8 +57,10 @@ class AbstractProvider():
     def find(self, pattern):
         pass
 
+
 class AbstractREnvironment(AbstractProvider):
     __metaclass__ = ABCMeta
+
     def __init__(self, name, rhome, librarypath):
         super().__init__(name, rhome, [librarypath])
 
@@ -104,8 +108,10 @@ class AbstractREnvironment(AbstractProvider):
         raise NotImplementedError(
             'Downloading package from a R environment is not implemented')
 
+
 class AbstractPackageRepository(AbstractProvider):
     __metaclass__ = ABCMeta
+
     def __init__(self, name, baseurl, repos):
         super().__init__(name, baseurl, repos)
 
@@ -119,8 +125,8 @@ class AbstractPackageRepository(AbstractProvider):
         Please note numtries must be >= 1.
         """
         if numtries < 1:
-            logger.warn('The \"numtries\" parameter in check_connection() ' \
-                        "must be >= 1. Was \"{0}\" but using 1!" \
+            logger.warn('The \"numtries\" parameter in check_connection() '
+                        "must be >= 1. Was \"{0}\" but using 1!"
                         .format(numtries))
             numtries = 1
         retVal = False

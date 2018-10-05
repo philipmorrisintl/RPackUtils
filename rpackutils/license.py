@@ -55,6 +55,7 @@ ALLOWED_LICENSES = [
     'SUPERVISOR'
 ]
 
+
 class License:
 
     def __init__(self, name):
@@ -69,11 +70,11 @@ class License:
     @property
     def unknown(self):
         return self._unknown
-    
+
     @property
     def allowed(self):
         return self._allowed
-    
+
     @property
     def restricted(self):
         return self._restricted

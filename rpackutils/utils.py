@@ -10,6 +10,7 @@ import shutil
 import shlex
 from subprocess import Popen, PIPE
 
+
 class Utils:
 
     @staticmethod
@@ -25,7 +26,7 @@ class Utils:
 
     @staticmethod
     def cleanCRLFTAB(str):
-        return str.replace('\r','').replace('\n','').replace('\t','')
+        return str.replace('\r', '').replace('\n', '').replace('\t', '')
 
     @staticmethod
     def rmtree_under(path):

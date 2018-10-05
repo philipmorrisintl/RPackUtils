@@ -31,6 +31,7 @@ from .providers.localrepository import LocalRepository
 
 logger = logging.getLogger(__name__)
 
+
 class PackNode(Node):
     def __init__(self, idt):
         super(PackNode, self).__init__(idt)
@@ -75,6 +76,7 @@ class PackNode(Node):
         return ('{} - {} - {} - {}'.format(
             self.idt, self.version, self.status, self.reponame))
 
+
 class DepsManager(object):
     def __init__(self, repo, fun=None, funargs=None):
         self._repo = repo
@@ -83,15 +85,16 @@ class DepsManager(object):
         self._downloadfailed = []
         self._fun = fun
         self._funargs = funargs
-        assert self._repoIsSupported(), 'Only Artifactory or LocalRepository ' \
-            'instances are supported!'
+        assert(self._repoIsSupported(),
+               'Only Artifactory or LocalRepository '
+               'instances are supported!')
 
     def _repoIsSupported(self):
         return(
-            isinstance(self._repo, AbstractPackageRepository) \
+            isinstance(self._repo, AbstractPackageRepository)
             and (
-                isinstance(self._repo, Artifactory) \
-                or \
+                isinstance(self._repo, Artifactory)
+                or
                 isinstance(self._repo, LocalRepository)
             )
         )
@@ -137,15 +140,15 @@ class DepsManager(object):
     def processnode(self, node):
         if node.idt in RBasePackages.getnames():
             logger.info(
-                'Package: {} is already installed ' \
-                '(part of the base packages)' \
+                'Package: {} is already installed '
+                '(part of the base packages)'
                 .format(node.idt))
             return
         if node.idt in self._notfound:
-            logger.error('Package \"{}\" was not found!' \
+            logger.error('Package \"{}\" was not found!'
                          .format(node.idt))
             return
-        if not node.idt in self._processed:
+        if node.idt not in self._processed:
             # the most recent version will be taken
             # from the repository "repo"
             #
@@ -153,19 +156,19 @@ class DepsManager(object):
             packinfo = self._repo.packinfo(packagename=node.idt,
                                            keeptempfiles=True)
             if(packinfo is None):
-                logger.error('Package \"{}\" was not found!' \
+                logger.error('Package \"{}\" was not found!'
                              .format(node.idt))
                 self._notfound.append(node.idt)
                 self._removePackInfoTempDir(packinfo)
                 return
             if(packinfo.status == PackStatus.NOT_FOUND):
-                logger.error('Package \"{}\" was not found!' \
+                logger.error('Package \"{}\" was not found!'
                              .format(node.idt))
                 self._notfound.append(node.idt)
                 self._removePackInfoTempDir(packinfo)
                 return
             if(packinfo.status == PackStatus.DOWNLOAD_FAILED):
-                logger.error('Failed to download package \"{}\"!' \
+                logger.error('Failed to download package \"{}\"!'
                              .format(node.idt))
                 self._downloadfailed.append(node.idt)
                 self._removePackInfoTempDir(packinfo)

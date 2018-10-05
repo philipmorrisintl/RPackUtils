@@ -20,16 +20,16 @@ logger = logging.getLogger(__name__)
 
 def rpacks_query():
     parser = argparse.ArgumentParser(
-        description='Search accross repositories for ' \
-        'a package or a list of packages')
+        description=('Search accross repositories for '
+                     'a package or a list of packages'))
     parser.add_argument(
         '--repos',
         dest='repos',
         action='store',
         default='all',
         required=False,
-        help='Comma separated repository names, ' \
-        'by default: all defined in the configuration file',
+        help=('Comma separated repository names, '
+              'by default: all defined in the configuration file'),
     ) and None
     parser.add_argument(
         '--packages',
@@ -69,11 +69,12 @@ def rpacks_query():
     endtime = time.time()
     logger.info('Time elapsed: {0:.3f} seconds.'.format(endtime - starttime))
 
+
 def _query_packages(repositories, packages):
     for package in packages:
         logger.info('-------------------------------------')
         for repo in repositories:
-            logger.info('Searching for {} in {}...' \
+            logger.info('Searching for {} in {}...'
                         .format(package, repo.name))
             candidates = []
             if(isinstance(repo, AbstractREnvironment)):
@@ -81,26 +82,26 @@ def _query_packages(repositories, packages):
             else:
                 candidates = repo.find('{0}_*.tar.gz'.format(package))
             logger.info('-')
-            logger.info('Repository instance \"{0}\"' \
+            logger.info('Repository instance \"{0}\"'
                         .format(repo.name))
             logger.info('{0} matche(s) found'.format(len(candidates)))
             for candidate in candidates:
                 logger.info('-')
                 packinfo = repo.packinfo(candidate)
                 logger.info(
-                    'Package: {0} ' \
-                    'Version: {1} ' \
-                    'License: {2} ' \
+                    'Package: {0} '
+                    'Version: {1} '
+                    'License: {2} '
                     .format(packinfo.name,
                             packinfo.version,
                             packinfo.license))
-                logger.info('Repository path: {0}' \
+                logger.info('Repository path: {0}'
                             .format(candidate))
-                logger.info('Depends: {}' \
+                logger.info('Depends: {}'
                             .format(",".join(packinfo.dependslist)))
-                logger.info('Imports: {}' \
+                logger.info('Imports: {}'
                             .format(",".join(packinfo.importslist)))
-                logger.info('Suggests: {}' \
+                logger.info('Suggests: {}'
                             .format(",".join(packinfo.suggestslist)))
                 # logger.info('Dependencies: {0}' \
                 #             .format(",".join(packinfo.dependencies())))

@@ -31,12 +31,12 @@ logger = logging.getLogger(__name__)
 
 MRAN_BASE_URL = 'https://mran.revolutionanalytics.com'
 
+
 class CRAN(AbstractPackageRepository):
     def __init__(self,
                  baseurl=MRAN_BASE_URL):
         """
         Create a MRAN R packages repository.
-        
         :param baseurl: Default 'https://mran.revolutionanalytics.com'
         """
         super().__init__('cran', baseurl, [])
@@ -68,18 +68,19 @@ class CRAN(AbstractPackageRepository):
         if not self.check_connection(numtries=3, verbose=False):
             raise FileNotFoundError(errno.ENOENT,
                                     os.strerror(errno.ENOENT),
-                                    baseurl)
-        # hold "R version to snashot date"
+                                    self.baseurl)
+        # store "R version to snapshot date"
         version2dates = dict()
         # fetch the snapshot dates list
         r1 = requests.get(self.mran_snapshots_url)
         if not r1.status_code == 200:
             logger.error(
-                "Cannot open MRAN snapshots URL, "\
-                "HTTP status code {0}: {1}" \
+                "Cannot open MRAN snapshots URL, "
+                "HTTP status code {0}: {1}"
                 .format(r1.status_code, self.mran_snapshots_url))
         soup = BeautifulSoup(r1.text, 'html.parser')
-        # example of 1 anchor: "<a href="2014-08-18_0233/">2014-08-18_0233/</a>"
+        # example of 1 anchor:
+        # "<a href="2014-08-18_0233/">2014-08-18_0233/</a>"
         anchors = soup.findAll('a')
         # example of 1 href:
         # u'https://mran.revolutionanalytics.com/snapshot/2014-09-08/'
@@ -88,15 +89,15 @@ class CRAN(AbstractPackageRepository):
             Utils.concaturls(self.mran_snapshots_url, anchor['href']),
             "banner.shtml"
         ) for anchor in anchors][1:]
-        dates = [str(anchor.contents[0]).replace('/','')
+        dates = [str(anchor.contents[0]).replace('/', '')
                  for anchor in anchors][1:]
         logger.info("{0} snapshot dates found.".format(len(dates)))
         pool = multiprocessing.Pool(processes=procs)
         # submit all processes at once and retrieve the results
         # as soon as they are finished
         results = [pool.apply_async(self._ls_snapshot,
-                                    args=(hrefs[i], rversion, dates[i])) \
-                       for i in range(0, len(hrefs))]
+                                    args=(hrefs[i], rversion, dates[i]))
+                   for i in range(0, len(hrefs))]
         retVals = [res.get() for res in results]
         # avoid zombies and release the memory
         pool.close()
@@ -113,8 +114,8 @@ class CRAN(AbstractPackageRepository):
                 totalskipped = totalskipped+1
             if retVal['status'] == 'error':
                 totalerrors = totalerrors+1
-        logger.info("Snapshots processed/matching the specified " \
-                    "R version ({0}), skipped ({1}), errors ({2})." \
+        logger.info("Snapshots processed/matching the specified "
+                    "R version ({0}), skipped ({1}), errors ({2})."
                     .format(totalprocessed,
                             totalskipped,
                             totalerrors))
@@ -133,8 +134,8 @@ class CRAN(AbstractPackageRepository):
         matches = [m.group(0) for l in anchors2
                    for m in [regex.search(str(l))] if m]
         if not len(matches) == 1:
-            logger.info("Snapshot \"{0}\": " \
-                        "Could not parse the R version number " \
+            logger.info("Snapshot \"{0}\": "
+                        "Could not parse the R version number "
                         "from the html page!".format(date))
             sys.stdout.flush()
             return {"status": "error", "version": "?", "date": date}
@@ -163,8 +164,8 @@ class CRAN(AbstractPackageRepository):
         r = requests.get(self.get_mran_packages_url(snapshot_date))
         if not r.status_code == 200:
             logger.error(
-                "Cannot open MRAN packages URL, " \
-                "HTTP status code {0}: {1}" \
+                "Cannot open MRAN packages URL, "
+                "HTTP status code {0}: {1}"
                 .format(r.status_code,
                         self.get_mran_packages_url(snapshot_date)))
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -173,13 +174,13 @@ class CRAN(AbstractPackageRepository):
         allhrefs = [str(anchor['href']) for anchor in anchors][1:]
         # select tarballs only (R packages)
         regex = re.compile(".*(\.tar\.gz)")
-        tarballs = [m.group(0) for l in allhrefs \
+        tarballs = [m.group(0) for l in allhrefs
                     for m in [regex.search(str(l))] if m]
         if not tarballs:
             logger.error(
-                "Could not parse the R package names " \
+                "Could not parse the R package names "
                 "(tarballs) from the html page!")
-        logger.info("Number of R packages available: {0}" \
+        logger.info("Number of R packages available: {0}"
                     .format(len(tarballs)))
         if packagenamesonly:
             names = [os.path.basename(p)
@@ -195,7 +196,6 @@ class CRAN(AbstractPackageRepository):
         for a given snapshot date.
         The returned paths are relative to the snapshot folder of
         the repository.
-        
         The pattern may contain simple shell-style wildcards a la
         fnmatch. However, unlike fnmatch, filenames starting with a
         dot are special cases that are not matched by '*' and '?'
@@ -204,10 +204,10 @@ class CRAN(AbstractPackageRepository):
         if not self.check_connection(numtries=3, verbose=False):
             raise FileNotFoundError(errno.ENOENT,
                                     os.strerror(errno.ENOENT),
-                                    baseurl)
+                                    self.baseurl)
         matches = []
         files = self.ls(snapshot_date)
-        for entry in files:  
+        for entry in files:
             if fnmatch.fnmatch(entry, pattern):
                 matches.append(entry)
         return matches
@@ -225,7 +225,7 @@ class CRAN(AbstractPackageRepository):
                          .format(packagename, snapshot_date))
             return None
         elif len(tarballs) > 1:
-            logger.error('Found multiple packages matching ' \
+            logger.error('Found multiple packages matching '
                          '{} for snapshot {}: '
                          .format(packagename,
                                  snapshot_date,
@@ -238,7 +238,6 @@ class CRAN(AbstractPackageRepository):
         """
         Download a R package to the specified dest folder
         given a MRAN snapchot date.
-        
         returns:
         PackStatus.DOWNLOADED upon success
         PackStatus.DOWNLOAD_FAILED if any download error occured
@@ -254,16 +253,16 @@ class CRAN(AbstractPackageRepository):
         if not self.check_connection(numtries=3, verbose=False):
             raise FileNotFoundError(errno.ENOENT,
                                     os.strerror(errno.ENOENT),
-                                    baseurl)
+                                    self.baseurl)
         try:
             r = requests.get(url, stream=True)
             with open(targetpath, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
-                    if chunk: # filter out keep-alive new chunks
+                    if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
             logger.info('Done downloading R package: {0}'.format(packagename))
             retVal = PackStatus.DOWNLOADED
-        except:
+        except Exception:
             error_message = 'Error downloading R package: {0}\n{1}\n{2}\n{3}' \
                 .format(packagename,
                         url,
@@ -306,8 +305,8 @@ class CRAN(AbstractPackageRepository):
         results = [pool.apply_async(self.download_single,
                                     args=(snapshot_dates[i],
                                           packagenames[i],
-                                          targetpaths[i])) \
-                       for i in range(0, totalnumofpacks)]
+                                          targetpaths[i]))
+                   for i in range(0, totalnumofpacks)]
         retVals = [res.get() for res in results]
         # avoid zombies and release the memory
         pool.close()
@@ -315,9 +314,9 @@ class CRAN(AbstractPackageRepository):
             # if retVal == 'ok':
             if retVal == PackStatus.DOWNLOADED:
                 totaldownloaded = totaldownloaded+1
-        logger.info("{0}/{1} packages done." \
-                  .format(totaldownloaded,
-                          totalnumofpacks))
+        logger.info("{0}/{1} packages done."
+                    .format(totaldownloaded,
+                            totalnumofpacks))
         endtime = time.time()
         timeelapsed = endtime - starttime
         logger.info('Time elapsed: {0:.3f} seconds.'.format(timeelapsed))
@@ -349,10 +348,12 @@ class CRAN(AbstractPackageRepository):
             packinfo.fullstatus = 'Package not found'
         elif len(tarballs) > 1:
             logger.error('Multiple packages {} FOUND for snapshot {}: '
-                         .format(packagename, snapshot_date, ','.join(tarballs)))
+                         .format(packagename, snapshot_date,
+                                 ','.join(tarballs)))
             packinfo = PackInfo(packagename)
             packinfo.status = PackStatus.NOT_FOUND
-            packinfo.fullstatus = 'Multiple packages found: ' + ','.join(tarballs)
+            packinfo.fullstatus = 'Multiple packages found: '
+            + ','.join(tarballs)
         else:
             # download tarball prior to create the PackInfo object
             dest = tempfile.mkdtemp()
@@ -365,7 +366,8 @@ class CRAN(AbstractPackageRepository):
                 packinfo = PackInfo(packagename)
                 packinfo.tempdir = dest
                 packinfo.status = PackStatus.DOWNLOAD_FAILED
-                packinfo.fullstatus = 'Failed to download package ' + packagename
+                packinfo.fullstatus = 'Failed to download package '
+                + packagename
             if dest and os.path.exists(dest) and not keeptempfiles:
                 shutil.rmtree(dest)
         return packinfo
