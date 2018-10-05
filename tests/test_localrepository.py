@@ -46,7 +46,7 @@ except Exception as e:
 
 def cran_is_available():
     if cran is not None:
-        return cran.check_connection(numtries=1)
+        return cran.check_connection_mran_snapshot(numtries=1)
     else:
         return False
 
@@ -90,10 +90,18 @@ def test_create():
     except Exception:
         pass
 
+@pytest.mark.skipif(
+    not cran_is_available(),
+    reason="MRAN is not available (https://mran.revolutionanalytics.com)"
+)
 def test_find():
     assert(len(localRepo.find("*.tar.gz")) == 3)
     assert(len(localRepo.find("*.zip")) == 0)
 
+@pytest.mark.skipif(
+    not cran_is_available(),
+    reason="MRAN is not available (https://mran.revolutionanalytics.com)"
+)
 def test_ls():
     packagenames = localRepo.ls(packagenamesonly=True)
     assert(len(packagenames) == 3)
@@ -106,6 +114,10 @@ def test_ls():
     assert('library/data.table_1.10.4-3.tar.gz' in filenames)
     assert('library/plyr_1.8.4.tar.gz' in filenames)
 
+@pytest.mark.skipif(
+    not cran_is_available(),
+    reason="MRAN is not available (https://mran.revolutionanalytics.com)"
+)
 def test_download_single():
     # test download success
     destfolder = tempfile.mkdtemp()
@@ -142,6 +154,10 @@ def test_upload_single():
     uploadStatus = localRepo.upload_single('/some/invalid/package/path/foo.tar.gz', 'library')
     assert(uploadStatus == PackStatus.DEPLOY_FAILED)
 
+@pytest.mark.skipif(
+    not cran_is_available(),
+    reason="MRAN is not available (https://mran.revolutionanalytics.com)"
+)
 def test_packinfo():
     ggplot2 = localRepo.packinfo('ggplot2')
     print('ggplot2: {0}'.format(ggplot2.as_dict))
