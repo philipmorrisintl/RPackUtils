@@ -6,6 +6,8 @@
 - RPACU-37 new option '--overwrite-specified' to only overwrite specified
   packages and not all as for the option '--overwrite'
 - RPACU-35 new command to scan a repository to fetch R packages metadata
+- Clean and reformat the source code
+- Skip tests requiring any external resource when the later is unavailable
 
 0.1.6
 -----
