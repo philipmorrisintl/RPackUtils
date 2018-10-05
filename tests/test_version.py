@@ -9,6 +9,7 @@ import os
 import pytest
 from distutils.version import LooseVersion
 
+
 def test_version():
     assert(LooseVersion('0.99.2-45') > LooseVersion('0.99.2-12'))
     assert(LooseVersion('0.99.2-45') > LooseVersion('0.99.2'))

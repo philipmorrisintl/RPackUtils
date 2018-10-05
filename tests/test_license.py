@@ -9,6 +9,7 @@ import os
 import pytest
 from rpackutils.license import License
 
+
 def test_check_blacklist():
     license = License('GNU Affero General Public License v3')
     assert license.blacklisted
@@ -26,6 +27,7 @@ def test_check_blacklist():
     assert license.blacklisted
     license = License('Reciprocal Public License v1.5')
     assert license.blacklisted
+
 
 def test_check_restricted():
     license = License('Amazon Software License')
@@ -73,6 +75,7 @@ def test_check_restricted():
     license = License('IBM Public License Version - Secure Mailer v1.0')
     assert license.restricted
 
+
 def test_check_allowed():
     license = License('Internal')
     assert license.allowed
@@ -114,6 +117,7 @@ def test_check_allowed():
     assert license.allowed
     license = License('Supervisor V3.3.3')
     assert license.allowed
+
 
 def test_check_unknown():
     license = License('file LICENSE')

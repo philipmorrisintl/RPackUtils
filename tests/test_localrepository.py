@@ -44,11 +44,13 @@ try:
 except Exception as e:
     pass
 
+
 def cran_is_available():
     if cran is not None:
         return cran.check_connection_mran_snapshot(numtries=1)
     else:
         return False
+
 
 cran = CRAN()
 packages = ["ggplot2",
@@ -66,29 +68,31 @@ localRepo = LocalRepository(
 # def cleanup():
 #     Utils.rmtree_under(LOCALREPO_LIBS)
 
+
 def test_create():
     assert(localRepo.baseurl == LOCALREPO_BASE)
     assert(localRepo.repos == REPOS)
     # invalid baseurl
     try:
-        repo = LocalRepository(
+        LocalRepository(
             '/invalid/local/repobase',
             REPOS
         )
-        pytest.fail('Constructing a LocalRepository with ' \
+        pytest.fail('Constructing a LocalRepository with '
                     'an invalid baseurl must raise an Exception!')
     except Exception:
         pass
     # invalid repos
     try:
-        repo = LocalRepository(
+        LocalRepository(
             LOCALREPO_BASE,
             ['invalid1', 'invalid2', 'invalid3']
         )
-        pytest.fail('Constructing a LocalRepository with ' \
+        pytest.fail('Constructing a LocalRepository with '
                     'an invalid repos list must raise an Exception!')
     except Exception:
         pass
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
@@ -97,6 +101,7 @@ def test_create():
 def test_find():
     assert(len(localRepo.find("*.tar.gz")) == 3)
     assert(len(localRepo.find("*.zip")) == 0)
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
@@ -114,6 +119,7 @@ def test_ls():
     assert('library/data.table_1.10.4-3.tar.gz' in filenames)
     assert('library/plyr_1.8.4.tar.gz' in filenames)
 
+
 @pytest.mark.skipif(
     not cran_is_available(),
     reason="MRAN is not available (https://mran.revolutionanalytics.com)"
@@ -129,20 +135,25 @@ def test_download_single():
         ))
     shutil.rmtree(destfolder)
     # test download failure, package not found
-    downloadStatus = localRepo.download_single('notexistingpackage', destfolder)
+    downloadStatus = localRepo.download_single(
+        'notexistingpackage', destfolder)
     assert(downloadStatus == PackStatus.NOT_FOUND)
     # test download failure, dest folder does not exist
-    downloadStatus = localRepo.download_single('plyr', '/some/wreid/none/existing/path')
+    downloadStatus = localRepo.download_single(
+        'plyr', '/some/wreid/none/existing/path')
     assert(downloadStatus == PackStatus.DOWNLOAD_FAILED)
+
 
 def test_upload_single():
     uploadStatus = localRepo.upload_single(PACKAGEPATH, 'library')
     assert(uploadStatus == PackStatus.DEPLOYED)
     # test upload, overwrite existing
-    uploadStatus = localRepo.upload_single(PACKAGEPATH, 'library', overwrite=True)
+    uploadStatus = localRepo.upload_single(
+        PACKAGEPATH, 'library', overwrite=True)
     assert(uploadStatus == PackStatus.DEPLOYED)
     # test upload do not overwrite existing
-    uploadStatus = localRepo.upload_single(PACKAGEPATH, 'library', overwrite=False)
+    uploadStatus = localRepo.upload_single(
+        PACKAGEPATH, 'library', overwrite=False)
     assert(uploadStatus == PackStatus.DEPLOYED)
     # test uploa with invalid repo
     uploadStatus = localRepo.upload_single(PACKAGEPATH, 'noneexistingrepo')
@@ -151,8 +162,10 @@ def test_upload_single():
     uploadStatus = localRepo.upload_single(PACKAGEPATH, None)
     assert(uploadStatus == PackStatus.INVALID)
     # none existing packagepath
-    uploadStatus = localRepo.upload_single('/some/invalid/package/path/foo.tar.gz', 'library')
+    uploadStatus = localRepo.upload_single(
+        '/some/invalid/package/path/foo.tar.gz', 'library')
     assert(uploadStatus == PackStatus.DEPLOY_FAILED)
+
 
 @pytest.mark.skipif(
     not cran_is_available(),

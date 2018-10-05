@@ -6,6 +6,7 @@
 ###################################################################
 
 import os
+import json
 import pytest
 from unittest import mock
 from unittest.mock import patch
@@ -17,8 +18,9 @@ from rpackutils.providers.artifactory import Artifactory
 from rpackutils.config import Config
 
 configfilepath = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 
+    os.path.dirname(os.path.abspath(__file__)),
     'resources/rpackutils.conf')
+
 
 class MockResponse(object):
     def __init__(self, status_code, text, body=None):
@@ -26,10 +28,13 @@ class MockResponse(object):
         self.text = text
         self.body = body
         self.ok = (status_code == 200)
+
     def json(self):
         return json.loads(self.text)
+
     def iter_content(self, chunk_size=1, decode_unicode=False):
         return None
+
 
 class PackInfoMock(object):
     def __init__(self, name, status):
@@ -47,6 +52,7 @@ class PackInfoMock(object):
     def dependencies(self, withBasePackages):
         return []
 
+
 @patch('rpackutils.providers.artifactory.Artifactory._do_request')
 def create(mock_do_request):
     mock_do_request.return_value = MockResponse(200, "Ok")
@@ -58,10 +64,12 @@ def create(mock_do_request):
                        verify=config.get("artifactory", "verify"))
     return arti
 
+
 def fakeprocess(packagename, param1, param2):
     assert(packagename)
     assert(param1 == 'param1value')
     assert(param2 == 'param2value')
+
 
 @patch('rpackutils.providers.artifactory.Artifactory.packinfo')
 def test_processnode_notfound(mock_packinfo):
@@ -84,6 +92,7 @@ def test_processnode_notfound(mock_packinfo):
     assert(not dm.downloadfailed)
     assert(not dm.processed)
 
+
 @patch('rpackutils.providers.artifactory.Artifactory.packinfo')
 def test_processnode_downloadfailed(mock_packinfo):
     arti = create()
@@ -104,7 +113,8 @@ def test_processnode_downloadfailed(mock_packinfo):
     assert(dm.downloadfailed)
     assert(dm.downloadfailed[0] == package)
     assert(not dm.processed)
-    
+
+
 @patch('rpackutils.providers.artifactory.Artifactory.packinfo')
 def test_processnode_none(mock_packinfo):
     arti = create()
@@ -122,6 +132,7 @@ def test_processnode_none(mock_packinfo):
     assert(dm.notfound[0] == package)
     assert(not dm.downloadfailed)
     assert(not dm.processed)
+
 
 @patch('rpackutils.providers.artifactory.Artifactory.packinfo')
 def test_processnode_ok(mock_packinfo):

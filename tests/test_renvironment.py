@@ -33,6 +33,7 @@ RPACKAGE = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
     'resources/FooBar_0.99.1.tar.gz')
 
+
 def test_create():
     renv = REnvironment(RHOME, LIBRARYPATH)
     assert(renv.baseurl == RHOME)
@@ -43,7 +44,7 @@ def test_create():
             '/invalid/local/repobase',
             LIBRARYPATH
         )
-        pytest.fail('Constructing a REnvironment with ' \
+        pytest.fail('Constructing a REnvironment with '
                     'an invalid baseurl/rhome must raise an Exception!')
     except Exception:
         pass
@@ -53,7 +54,7 @@ def test_create():
             RHOME,
             'invalid1'
         )
-        pytest.fail('Constructing a REnvironment with ' \
+        pytest.fail('Constructing a REnvironment with '
                     'an invalid library path must raise an Exception!')
     except Exception:
         pass
@@ -63,16 +64,18 @@ def test_create():
             RHOME_INVALID,
             'library'
         )
-        pytest.fail('Constructing a REnvironment which ' \
-                    'does not contain any R binary file must raise an Exception!')
+        pytest.fail(
+            'Constructing a REnvironment which '
+            'does not contain any R binary file must raise an Exception!')
     except Exception:
         pass
+
 
 def test_find():
     renv = REnvironment(RHOME, LIBRARYPATH)
     # findall
     findall = renv.find('*')
-    assert(len(findall), 6)
+    assert(len(findall) == 6)
     assert('energy' in findall)
     assert('entropy' in findall)
     assert('evaluate' in findall)
@@ -80,17 +83,19 @@ def test_find():
     assert('faraway' in findall)
     assert('fastcluster' in findall)
     # find something that does not exist
-    assert(len(renv.find('*.tar.gz')), 0)
+    assert(len(renv.find('*.tar.gz')) == 0)
+
 
 def test_ls():
-   renv = REnvironment(RHOME, LIBRARYPATH)
-   packagenames = renv.ls()
-   assert(len(packagenames) == 5)
-   assert('energy' in packagenames)
-   assert('entropy' in packagenames)
-   assert('evaluate' in packagenames)
-   assert('faraway' in packagenames)
-   assert('fastcluster' in packagenames)
+    renv = REnvironment(RHOME, LIBRARYPATH)
+    packagenames = renv.ls()
+    assert(len(packagenames) == 5)
+    assert('energy' in packagenames)
+    assert('entropy' in packagenames)
+    assert('evaluate' in packagenames)
+    assert('faraway' in packagenames)
+    assert('fastcluster' in packagenames)
+
 
 def test_download_single():
     renv = REnvironment(RHOME, LIBRARYPATH)
@@ -101,11 +106,13 @@ def test_download_single():
     except Exception:
         pass
 
+
 @patch('rpackutils.providers.renvironment.REnvironment._installpackage')
 def test_upload_single(mock_installpackage):
     renv = REnvironment(RHOME, LIBRARYPATH)
     # none existing package
-    status = renv.upload_single('/none/existent/path/to/some/none/existent/package.tar.gz')
+    status = renv.upload_single(
+        '/none/existent/path/to/some/none/existent/package.tar.gz')
     assert(status == PackStatus.DEPLOY_FAILED)
     # existing package
     mock_installpackage.return_value = (0, "Ok", None)
@@ -122,6 +129,7 @@ def test_upload_single(mock_installpackage):
     status = renv.upload_single(RPACKAGE)
     assert(status == PackStatus.DEPLOY_FAILED)
 
+
 def test_packinfo():
     renv = REnvironment(RHOME, LIBRARYPATH)
     # existing package
@@ -136,8 +144,8 @@ def test_packinfo():
     assert(foobar.status == PackStatus.NOT_FOUND)
     # invalid package
     try:
-        fake1 = renv.packinfo('fake1')
-        pytest.fail('Passing a folder without any DESCRIPTION file ' \
+        renv.packinfo('fake1')
+        pytest.fail('Passing a folder without any DESCRIPTION file '
                     'must raise an exception!')
     except Exception:
         pass

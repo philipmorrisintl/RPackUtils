@@ -7,11 +7,13 @@
 
 import os
 import pytest
+import json
 from unittest import mock
 from unittest.mock import patch
 from rpackutils.config import Config
 from rpackutils.reposconfig import ReposConfig
 from rpackutils.provider import AbstractPackageRepository
+
 
 class MockResponse(object):
     def __init__(self, status_code, text, body=None):
@@ -19,20 +21,24 @@ class MockResponse(object):
         self.text = text
         self.body = body
         self.ok = (status_code == 200)
+
     def json(self):
         return json.loads(self.text)
+
     def iter_content(self, chunk_size=1, decode_unicode=False):
         return None
+
 
 def test_typeerror():
     config = "wrong type"
     try:
-        reposConfig = ReposConfig(config)
-        fail('Constructing a ReposConfig with ' \
-             'a parameter which is not an instance of ' \
-             'Config must raise an exception!')
+        ReposConfig(config)
+        pytest.fail('Constructing a ReposConfig with '
+                    'a parameter which is not an instance of '
+                    'Config must raise an exception!')
     except Exception as e:
         pass
+
 
 @patch('os.path.exists')
 @patch('rpackutils.providers.artifactory.Artifactory._do_request')
@@ -41,7 +47,7 @@ def test_typeerror():
 def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     # read the configuration file
     configfilepath = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), 
+        os.path.dirname(os.path.abspath(__file__)),
         'resources/rpackutils.conf')
     config = Config(configfilepath)
     # construct a reposconfig
@@ -74,7 +80,8 @@ def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     assert('R-Data-0.1' in artifactory.repos)
     # verify artifactorydev instance
     artifactorydev = reposconfig.artifactory_instance('artifactorydev')
-    assert(artifactorydev.baseurl == 'https://artifactorydev.local/artifactory')
+    assert(artifactorydev.baseurl
+           == 'https://artifactorydev.local/artifactory')
     assert(artifactorydev.auth[0] == 'artifactoryUserDev')
     assert(artifactorydev.auth[1] == 's3C437P4ssw@RdDev')
     assert(artifactorydev.verify == '/toto/Certificate_Chain_Dev.pem')
@@ -100,6 +107,7 @@ def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     assert('local1' in local.repos)
     assert('local2' in local.repos)
 
+
 @patch('os.path.exists')
 @patch('rpackutils.providers.artifactory.Artifactory._do_request')
 @patch('rpackutils.providers.bioconductor.Bioconductor.check_connection')
@@ -107,7 +115,7 @@ def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
 def test_reposconfig_instance(mock_cran, mock_bioc, mock_arti, mock_exists):
     # read the configuration file
     configfilepath = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), 
+        os.path.dirname(os.path.abspath(__file__)),
         'resources/rpackutils.conf')
     config = Config(configfilepath)
     # construct a reposconfig
@@ -131,14 +139,16 @@ def test_reposconfig_instance(mock_cran, mock_bioc, mock_arti, mock_exists):
     # none existing repo
     assert(reposconfig.instance('thisreponamedoesnotexist') is None)
 
+
 @patch('os.path.exists')
 @patch('rpackutils.providers.artifactory.Artifactory._do_request')
 @patch('rpackutils.providers.bioconductor.Bioconductor.check_connection')
 @patch('rpackutils.providers.cran.CRAN.check_connection')
-def test_reposconfig_instances_by_name(mock_cran, mock_bioc, mock_arti, mock_exists):
+def test_reposconfig_instances_by_name(mock_cran, mock_bioc, mock_arti,
+                                       mock_exists):
     # read the configuration file
     configfilepath = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), 
+        os.path.dirname(os.path.abspath(__file__)),
         'resources/rpackutils.conf')
     config = Config(configfilepath)
     # construct a reposconfig
@@ -148,7 +158,8 @@ def test_reposconfig_instances_by_name(mock_cran, mock_bioc, mock_arti, mock_exi
     mock_cran.return_value = True
     reposconfig = ReposConfig(config)
     # check the whole list of repositories
-    repos = reposconfig.repository_instances_by_name(['artifactorydev', 'R-3.2.5'])
+    repos = reposconfig.repository_instances_by_name(
+        ['artifactorydev', 'R-3.2.5'])
     assert(len(repos) == 2)
     assert('artifactorydev' in [repos[0].name, repos[1].name])
     assert('R-3.2.5' in [repos[0].name, repos[1].name])

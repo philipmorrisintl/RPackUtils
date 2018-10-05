@@ -27,11 +27,13 @@ try:
 except Exception as e:
     pass
 
+
 def bioc_is_available():
     if bioc is not None:
         return bioc.check_connection(numtries=1)
     else:
         return False
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -42,10 +44,11 @@ def test_create():
     assert(bioc.repos == [])
     # invalid baseurl
     try:
-        invalid_bioc = Bioconductor('invalid/baseurl')
+        Bioconductor('invalid/baseurl')
         pytest.fail('Using an invalid baseurl must raise an Exception!')
     except Exception:
         pass
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -53,6 +56,7 @@ def test_create():
 )
 def test_bioc_chkres_url():
     assert(bioc.bioc_chkres_url == 'https://www.bioconductor.org/checkResults')
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -62,6 +66,7 @@ def test_bioc_possible_views():
     assert('software' in bioc.bioc_possible_views)
     assert('experimentData' in bioc.bioc_possible_views)
     assert('annotationData' in bioc.bioc_possible_views)
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -73,6 +78,7 @@ def test_get_bioc_software_url():
         'https://www.bioconductor.org/packages/json/3.0/bioc/packages.js'
     )
 
+
 @pytest.mark.skipif(
     not bioc_is_available(),
     reason="BioConductor is not available (https://www.bioconductor.org)"
@@ -82,6 +88,7 @@ def test_get_bioc_experimentdata_url():
         bioc.get_bioc_experimentdata_url('3.0') ==
         'https://www.bioconductor.org/packages/json/3.0/data/experiment/packages.js'
     )
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -93,6 +100,7 @@ def test_get_bioc_annotationdata_url():
         'https://www.bioconductor.org/packages/json/3.0/data/annotation/packages.js'
     )
 
+
 @pytest.mark.skipif(
     not bioc_is_available(),
     reason="BioConductor is not available (https://www.bioconductor.org)"
@@ -102,6 +110,7 @@ def test_get_bioc_software_page_url():
         bioc.get_bioc_software_page_url('3.3', 'RGraph2js') ==
         'https://www.bioconductor.org/packages/3.3/bioc/html/RGraph2js.html'
     )
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -113,6 +122,7 @@ def test_get_bioc_experimentaldata_page_url():
         'https://www.bioconductor.org/packages/3.3/data/experiment/html/RGraph2js.html'
     )
 
+
 @pytest.mark.skipif(
     not bioc_is_available(),
     reason="BioConductor is not available (https://www.bioconductor.org)"
@@ -122,6 +132,7 @@ def test_get_bioc_annotationdata_page_url():
         bioc.get_bioc_annotationdata_page_url('3.3', 'RGraph2js') ==
         'https://www.bioconductor.org/packages/3.3/data/annotation/html/RGraph2js.html'
     )
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -133,6 +144,7 @@ def test_get_bioc_download_software_url():
         'https://www.bioconductor.org/packages/3.3/bioc/src/contrib/RGraph2js.tar.gz'
     )
 
+
 @pytest.mark.skipif(
     not bioc_is_available(),
     reason="BioConductor is not available (https://www.bioconductor.org)"
@@ -142,6 +154,7 @@ def test_get_bioc_download_experimentaldata_url():
         bioc.get_bioc_download_experimentaldata_url('3.3', 'RGraph2js') ==
         'https://www.bioconductor.org/packages/3.3/data/experiment/src/contrib/RGraph2js.tar.gz'
     )
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -153,6 +166,7 @@ def test_get_bioc_download_annotationdata_url():
         'https://www.bioconductor.org/packages/3.3/data/annotation/src/contrib/RGraph2js.tar.gz'
     )
 
+
 @pytest.mark.skipif(
     not bioc_is_available(),
     reason="BioConductor is not available (https://www.bioconductor.org)"
@@ -163,6 +177,7 @@ def test_get_full_package_name():
     assert(retVal['status'] == 'ok')
     assert(retVal['name'] == 'RGraph2js')
     assert(retVal['full_package_name'] == 'RGraph2js_1.0.0')
+
 
 @pytest.mark.slow
 @pytest.mark.skipif(
@@ -182,6 +197,7 @@ def test_ls():
     files = bioc.ls('3.0', 'annotationData')
     assert('rat2302cdf' in files)
 
+
 @pytest.mark.slow
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -198,6 +214,7 @@ def test_find():
     assert(len(files) == 1)
     assert(files[0] == 'rat2302cdf')
 
+
 @pytest.mark.skipif(
     not bioc_is_available(),
     reason="BioConductor is not available (https://www.bioconductor.org)"
@@ -211,6 +228,7 @@ def test_download_single():
     retVal = bioc.download_single('noneexistingpackage', '3.0', 'software', dest)
     assert(retVal == PackStatus.DOWNLOAD_FAILED)
     shutil.rmtree(dest)
+
 
 @pytest.mark.skipif(
     not bioc_is_available(),
@@ -243,6 +261,7 @@ def test_download_multiple():
             )) == 1
         )
     shutil.rmtree(dest)
+
 
 @pytest.mark.slow
 @pytest.mark.skipif(

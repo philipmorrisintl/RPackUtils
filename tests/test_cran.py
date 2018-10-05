@@ -42,7 +42,7 @@ def test_create():
     assert(cran.repos == [])
     # invalid baseurl
     try:
-        invalid_cran = CRAN('invalid/baseurl')
+        CRAN('invalid/baseurl')
         pytest.fail('Using an invalid baseurl must raise an Exception!')
     except Exception:
         pass
@@ -75,7 +75,7 @@ def test_get_mran_package_url():
 )
 def test_ls_snapshots():
     # full fetch
-    version2dates_all = cran.ls_snapshots()
+    cran.ls_snapshots()
     # fetch snapshots for a particular R version
     version2dates_r312 = cran.ls_snapshots(rversion='3.1.2')
     assert(len(version2dates_r312.keys()) == 1)

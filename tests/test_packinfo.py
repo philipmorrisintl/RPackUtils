@@ -24,17 +24,21 @@ def test_constructor_packagetarball():
     assert(pi.suggests == ['Rtoto', 'Rtiti'])
     assert(pi.license == 'GPL-2')
 
+
 def test_constructor_invalid_packagetarball():
     tarballpath = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         'resources/nonexistingpackage_0.99.1.tar.gz')
     try:
-        pi = PackInfo(tarballpath)
+        PackInfo(tarballpath)
     except Exception:
-        fail('Constructing a packInfo with ' \
-             'an invalid tarball must raise an Exception!')
+        pytest.fail(
+            'Constructing a packInfo with '
+            'an invalid tarball must raise an Exception!'
+        )
     except Exception:
         pass
+
 
 def test_constructor_packagefolder():
     path = os.path.join(
@@ -50,6 +54,7 @@ def test_constructor_packagefolder():
     assert(pi.suggests == ['Rtoto', 'Rtiti', 'Rtata'])
     assert(pi.license == 'GPL-2 and some blahblah')
 
+
 def test_filename():
     path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
@@ -57,6 +62,7 @@ def test_filename():
         'FooBar')
     pi = PackInfo(path)
     assert(pi.filename == 'FooBar_0.99.1.tar.gz')
+
 
 def test_tarball():
     path = os.path.join(
@@ -66,13 +72,15 @@ def test_tarball():
     pi = PackInfo(path)
     assert(pi.tarball == 'FooBar_0.99.1.tar.gz')
 
+
 def test_has_depends():
     path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         'resources',
         'FooBar')
     pi = PackInfo(path)
-    assert(pi.has_depends == True)
+    assert(pi.has_depends)
+
 
 def test_has_imports():
     path = os.path.join(
@@ -80,7 +88,8 @@ def test_has_imports():
         'resources',
         'FooBar')
     pi = PackInfo(path)
-    assert(pi.has_imports == True)
+    assert(pi.has_imports)
+
 
 def test_dependencies():
     path = os.path.join(
@@ -96,6 +105,7 @@ def test_dependencies():
     assert(len(pi.dependencies()) == 1)
     assert('toto' in pi.dependencies())
 
+
 def test__do_parse_descriptionfile():
     tarballpath = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
@@ -106,6 +116,7 @@ def test__do_parse_descriptionfile():
         pytest.fail('Calling the method that way must raise an Exception!')
     except Exception:
         pass
+
 
 def test__parse_package_name_version():
     # invalid extension
@@ -121,6 +132,7 @@ def test__parse_package_name_version():
     except Exception:
         pass
     # correct name
-    name, version = PackInfo._parse_package_name_version('/some/path/name_0.1.0.tar.gz')
+    name, version = PackInfo._parse_package_name_version(
+        '/some/path/name_0.1.0.tar.gz')
     assert(name == 'name')
     assert(version == '0.1.0')

@@ -8,6 +8,7 @@
 from rpackutils.graph import Graph
 from rpackutils.graph import Node
 
+
 def create_graph():
     g = Graph()
     for i in range(10):
@@ -25,6 +26,7 @@ def create_graph():
     g.connect('3', '6', 1)
     g.connect('3', '9', 1)
     return g
+
 
 def test_create_graph():
     g = create_graph()

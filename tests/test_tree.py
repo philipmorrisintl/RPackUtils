@@ -20,6 +20,7 @@ from networkx.readwrite.gml import write_gml
 from networkx.readwrite.gml import literal_stringizer
     
 from rpackutils.providers.cran import CRAN
+from rpackutils.providers.bioconductor import Bioconductor
 from rpackutils.packinfo import PackInfo
 from rpackutils.packinfo import PackStatus
 from rpackutils.tree import DepTree
@@ -30,11 +31,11 @@ from rpackutils.utils import Utils
 from rpackutils.config import Config
 
 LOCALREPO_BASE = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 
+    os.path.dirname(os.path.abspath(__file__)),
     'resources/R')
 
 # LOCALREPO_LIBS = os.path.join(
-#     os.path.dirname(os.path.abspath(__file__)), 
+#     os.path.dirname(os.path.abspath(__file__)),
 #     'resources/R/library')
 
 LOCALREPO_LIBS = 'library'
@@ -45,7 +46,7 @@ GML = os.path.join(tempfile.gettempdir(),
                    'RPackUtils_deps_graph.gml')
 
 configfilepath = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 
+    os.path.dirname(os.path.abspath(__file__)),
     'resources/rpackutils.conf')
 
 #####################################################################
@@ -59,11 +60,13 @@ try:
 except Exception as e:
     pass
 
+
 def cran_is_available():
     if cran is not None:
         return cran.check_connection_mran_snapshot(numtries=1)
     else:
         return False
+
 
 # Bioconductor
 bioc = None
@@ -72,11 +75,13 @@ try:
 except Exception as e:
     pass
 
+
 def bioc_is_available():
     if bioc is not None:
         return bioc.check_connection(numtries=1)
     else:
         return False
+
 
 @pytest.fixture(scope="module")
 def cleanup(request):
@@ -92,16 +97,20 @@ def cleanup(request):
             pass
     request.addfinalizer(teardown)
 
+
 class MockResponse(object):
     def __init__(self, status_code, text, body=None):
         self.status_code = status_code
         self.text = text
         self.body = body
         self.ok = (status_code == 200)
+
     def json(self):
         return json.loads(self.text)
+
     def iter_content(self, chunk_size=1, decode_unicode=False):
         return None
+
 
 @patch('rpackutils.providers.Artifactory._do_request')
 def create(mock_do_request):
@@ -122,6 +131,7 @@ def create(mock_do_request):
 ######################################################################
 ######################################################################
 
+
 @pytest.mark.slow
 @pytest.mark.skipif(
     not cran_is_available(),
@@ -136,7 +146,7 @@ def test_build_dependencies_graph_from_local_packages_repository(cleanup):
                     "evaluate", "formatR", "highr", "markdown", "mime",
                     "httpuv", "caTools", "RJSONIO", "xtable", "htmltools",
                     "bitops", "zoo", "SparseM", "survival", "Formula",
-                    "latticeExtra", "cluster", "maps","sp", "foreign",
+                    "latticeExtra", "cluster", "maps", "sp", "foreign",
                     "mvtnorm", "TH.data", "sandwich", "nlme", "Matrix", "bit",
                     "codetools", "iterators", "timeDate", "quadprog", "Hmisc",
                     "BH", "quantreg", "mapproj", "hexbin", "maptools",
@@ -147,10 +157,10 @@ def test_build_dependencies_graph_from_local_packages_repository(cleanup):
                     "acepack", "stringi", "praise", "cli", "glue",
                     "htmlwidgets", "crayon", "yaml", "quantmod", "magrittr",
                     "MatrixModels", "jsonlite"]
-    download_status = cran.download_multiple('2018-02-27',
-                                             packagenames,
-                                             dest=REPOFULLPATH,
-                                             procs=10)
+    cran.download_multiple('2018-02-27',
+                           packagenames,
+                           dest=REPOFULLPATH,
+                           procs=10)
     # step 2: create a local repository for these downloaded packages
     localRepo = LocalRepository(
         LOCALREPO_BASE,
@@ -171,6 +181,7 @@ def test_build_dependencies_graph_from_local_packages_repository(cleanup):
               GML,
               stringizer=literal_stringizer)
     assert(os.path.exists(GML))
+
 
 @pytest.mark.slow
 @pytest.mark.skipif(
@@ -194,6 +205,7 @@ def test_build_dependencies_graph_from_cran(cleanup):
               GML,
               stringizer=literal_stringizer)
     assert(os.path.exists(GML))
+
 
 def test_build_dependencies_graph_from_renvironment(cleanup):
     RHOME = os.path.join(
@@ -219,12 +231,12 @@ def test_build_dependencies_graph_from_renvironment(cleanup):
               stringizer=literal_stringizer)
     assert(os.path.exists(GML))
 
+
 @pytest.mark.skipif(
     not bioc_is_available(),
     reason="BioConductor is not available (https://www.bioconductor.org)"
 )
 def test_build_dependencies_graph_from_bioc(cleanup):
-    artifactory = Artifactory()
     print('Building dependencies graph...')
     lsargs = {'bioc_release': '3.3',
               'view': 'software'}
@@ -240,6 +252,7 @@ def test_build_dependencies_graph_from_bioc(cleanup):
               GML,
               stringizer=literal_stringizer)
     assert(os.path.exists(GML))
+
 
 def test_build_dependencies_graph_from_artifactory(cleanup):
     pass
