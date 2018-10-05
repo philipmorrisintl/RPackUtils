@@ -45,6 +45,40 @@ class CRAN(AbstractPackageRepository):
                                     os.strerror(errno.ENOENT),
                                     baseurl)
 
+    def check_connection_mran_snapshot(self, numtries=3, verbose=True):
+        """
+        Returns True if the connection to mran_snapshots_url is successful.
+        False otherwise.
+
+        A max number of numtries will be done.
+        Please note numtries must be >= 1.
+        """
+        if numtries < 1:
+            logger.warn('The \"numtries\" parameter in check_connection() '
+                        "must be >= 1. Was \"{0}\" but using 1!"
+                        .format(numtries))
+            numtries = 1
+        retVal = False
+        for i in range(0, numtries):
+            try:
+                if(verbose):
+                    logger.info('Checking connection to {0} ...'
+                                .format(self.mran_snapshots_url))
+                retVal = (requests.get(self.mran_snapshots_url)
+                          .status_code == 200)
+            except Exception as e:
+                retVal = False
+                logger.error('FATAL: Cannot connect to {0}: {1}'
+                             .format(self.mran_snapshots_url, e))
+                time.sleep(3)
+                continue
+            break
+        if retVal:
+            if(verbose):
+                logger.info('Connection to {0} established.'
+                            .format(self.mran_snapshots_url))
+        return retVal
+
     @property
     def mran_snapshots_url(self):
         return Utils.concaturls(self.baseurl, 'snapshot')

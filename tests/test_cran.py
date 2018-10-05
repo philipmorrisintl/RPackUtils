@@ -29,7 +29,7 @@ except Exception as e:
 
 def cran_is_available():
     if cran is not None:
-        return cran.check_connection(numtries=1)
+        return cran.check_connection_mran_snapshot(numtries=1)
     else:
         return False
 
