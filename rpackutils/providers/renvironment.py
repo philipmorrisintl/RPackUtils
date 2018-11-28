@@ -91,10 +91,13 @@ class REnvironment(AbstractREnvironment):
             msg = 'a PackNode instance is expected!'
             logger.error(msg)
             raise TypeError(msg)
-        return self.upload_single_dryrun(packnode.packagepath,
-                                         dest,
-                                         overwrite=overwrite,
-                                         overwritepackages=overwritepackages)
+        return self.upload_single_dryrun(
+            filepath=packnode.packagepath,
+            dest=dest,
+            repo=None,
+            overwrite=overwrite,
+            overwritepackages=overwritepackages,
+            packagenamesonly=None)
 
     def install(self, packnode, overwrite=False,
                 overwritepackages=None):
@@ -102,9 +105,12 @@ class REnvironment(AbstractREnvironment):
             msg = 'a PackNode instance is expected!'
             logger.error(msg)
             raise TypeError(msg)
-        return self.upload_single(packnode.packagepath,
-                                  overwrite=overwrite,
-                                  overwritepackages=overwritepackages)
+        return self.upload_single(
+            filepath=packnode.packagepath,
+            repo=None,
+            overwrite=overwrite,
+            overwritepackages=overwritepackages,
+            packagenamesonly=None)
 
     def _installpackage(self, packagepath):
         # Perform a license check
