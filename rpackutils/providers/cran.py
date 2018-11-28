@@ -395,6 +395,7 @@ class CRAN(AbstractPackageRepository):
             if retVal == PackStatus.DOWNLOADED:
                 packinfo = PackInfo(os.path.join(dest, tarballs[0]))
                 packinfo.tempdir = dest
+                packinfo.packagepath = Utils.concatpaths(dest, tarballs[0])
                 logger.debug("PACKINFO: " + str(packinfo.as_dict))
             else:
                 packinfo = PackInfo(packagename)

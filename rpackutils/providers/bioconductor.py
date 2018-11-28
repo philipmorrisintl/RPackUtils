@@ -421,6 +421,8 @@ class Bioconductor(AbstractPackageRepository):
                     dest,
                     "{}.tar.gz".format(fullpackagename)))
                 packinfo.tempdir = dest
+                packinfo.packagepath = Utils.concatpaths(
+                    dest, "{}.tar.gz".format(fullpackagename))
                 logger.debug("PACKINFO: " + str(packinfo.as_dict))
             else:
                 packinfo = PackInfo(packagename)
