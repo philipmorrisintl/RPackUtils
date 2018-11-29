@@ -28,7 +28,7 @@ def rpacks_mirror():
     parser = argparse.ArgumentParser(
         description=('Download R packages from a specified repository '
                      '(CRAN or Bioconductor) and upload them to Artifactory'
-                     ' (mirror)'),
+                     ' (mirror)'))
     parser.add_argument(
         '--input-repository',
         dest='inputrepo',
