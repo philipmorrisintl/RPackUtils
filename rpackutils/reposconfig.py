@@ -8,13 +8,13 @@
 import logging
 
 from .config import Config
+from configparser import NoSectionError, NoOptionError
 from rpackutils.providers.artifactory import Artifactory
 from rpackutils.providers.renvironment import REnvironment
 from rpackutils.providers.localrepository import LocalRepository
-from rpackutils.providers.bioconductor import Bioconductor
-from rpackutils.providers.cran import CRAN
 
 logger = logging.getLogger(__name__)
+REPOSITORIES = "repositories"
 
 
 class ReposConfig:
@@ -93,19 +93,27 @@ class ReposConfig:
 
     def renvironment_instance(self, name):
         return self._renvironment_instances[name]
-    
+
     @property
     def local_instances(self):
         return self._local_instances.keys()
 
     def local_instance(self, name):
         return self._local_instances[name]
-    
+
     def _build_repositories(self, repositoriesKey, buildFunction):
-        repos_config = self._config.get("repositories", repositoriesKey)
-        if not repos_config == "":
-            names = [x.strip() for x in repos_config.split(',')]
-            getattr(self, buildFunction)(names)
+        try:
+            repos_config = self._config.get(REPOSITORIES, repositoriesKey)
+            if not repos_config == "":
+                names = [x.strip() for x in repos_config.split(',')]
+                getattr(self, buildFunction)(names)
+        except NoOptionError:
+            pass
+        except NoSectionError:
+            logger.error(
+                'The section \"{}\" is missing '
+                'in the configuration file!'.format(REPOSITORIES))
+            pass
 
     def _build_artifactory_repos(self, names):
         for name in names:
@@ -133,7 +141,7 @@ class ReposConfig:
             licensecheck = False
             try:
                 licensecheck = self._config.getboolean(name, "licensecheck")
-            except Exception as e:
+            except Exception:
                 licensecheck = False
             provider = REnvironment(
                 self._config.get(name, "rhome"),
