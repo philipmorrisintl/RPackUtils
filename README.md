@@ -18,6 +18,7 @@
     * [rpackm](#rpackm)
     * [rpackg](#rpackq)
     * [rpackscan](#rpackscan)
+* [Repository types](#repository-types)
 * [License checking](#license-checking)
 * [Third parties](#third-parties)
 * [License](#license)
@@ -156,6 +157,9 @@ rhome = /home/john/opt/R-3.2.5
 librarypath = lib64/R/library
 ```
 
+To know more about supported repository types, please read section
+[Repository types](#repository-types).
+
 In the *R-3.1.2* environment, we have enabled the *licensecheck*. This
 feature is supported by any R environment and is disabled by default. For
 more information about this feature, please refer to the dedicated section
@@ -184,7 +188,7 @@ specified *--prefix*.
 | [rpacki](#rpacki)       | Install R packages with resolved dependencies                                                        |
 | [rpackd](#rpackd)       | Download R packages and resolved dependencies (dry-run install)                                      |
 | [rpackc](#rpackc)       | Install R packages based on an existing environments (clone)                                         |
-| [rpackm](#rpackm)       | Download R packages from a specified repository (CRAN, Bioc) and upload them to Artifactory (mirror) |
+| [rpackm](#rpackm)       | Download R packages from a specified repository (CRAN, Bioc or Local) and upload them to Artifactory (mirror) |
 | [rpackg](#rpackg)       | Generate a dependencies graph                                                                        |
 | [rpackscan](#rpackscan) | Scan a repository or an R environment                                                                |
 
@@ -695,10 +699,10 @@ Mirror a particular snapshot of CRAN or a Bioconductor release.
 
 ```bash
 $ rpackm -h
-usage: rpackm [-h] [--input-repository INPUTREPO] --inputrepoparam
-              INPUTREPOPARAM --output-repository OUTPUTREPO
-              --output-repository-folder OUTPUTREPOFOLDER [--procs PROCS]
-              --config CONFIG
+usage: rpackm [-h] [--input-repository INPUTREPO]
+              [--inputrepoparam INPUTREPOPARAM] [--biocview BIOCVIEW]
+              --output-repository OUTPUTREPO --output-repository-folder
+              OUTPUTREPOFOLDER [--dest DEST] [--procs PROCS] --config CONFIG
 
 Download R packages from a specified repository (CRAN or Bioconductor) and
 upload them to Artifactory (mirror)
@@ -707,14 +711,20 @@ optional arguments:
   -h, --help            show this help message and exit
   --input-repository INPUTREPO
                         The type of public R repository to mirror, possible
-                        values: "cran" or "bioc"
+                        values: "cran", "bioc" or the name of a Local
+                        repository
   --inputrepoparam INPUTREPOPARAM
                         The release of Bioconductor or the snapshot date of
                         CRAN
+  --biocview BIOCVIEW   When mirroring Bioconductor only: specify the view:
+                        "software", "experimentData", "annotationData" or by
+                        default: "all"
   --output-repository OUTPUTREPO
                         The destination Artifactory instance name
   --output-repository-folder OUTPUTREPOFOLDER
                         The destination Artifactory repository folder name
+  --dest DEST           Path where to store downloaded packages. It must
+                        exist. A temp folder will be used otherwise.
   --procs PROCS         Number of parallel downloads and uploads, default=10
   --config CONFIG       RPackUtils configuration file
 ```
@@ -729,13 +739,73 @@ repository or folder names *CRAN_1026-05-03*.
 ```bash
 rpackm --input-repository cran --inputrepoparam 2016-05-03 \
        --output-repository myartifactory \
-       --output-repository-folder CRAN_2016-05-03
-       --config ~/rpackutils.conf
+       --output-repository-folder CRAN_2016-05-03 \
+       --config ~/rpackutils.conf \
+       --dest ~/CRAN_2016-05-03
 ```
 
 The command is similar for Bioconductor and instead of specifying a
 snapshot date, you have to specify the release you want to mirror. You can
 get a list of available releases by running the command *rpackbioc*.
+
+```bash
+rpackm --input-repository bioc --inputrepoparam 3.8 \
+       --output-repository myartifactory \
+       --output-repository-folder Bioc-3.8 \
+       --config ~/rpackutils.conf \
+       --dest ~/Bioc-3.8
+```
+
+If the process fails to download a package after 3 retries, which may
+happen while mirroring CRAN, the downloaded packages will be in the
+temporary folder or in the folder specified by *--dest*.  The command can
+be launched again, so it is recommended to specify *--dest*, since the
+folder can be reused for any subsequent run of the process.
+
+Additionally, it may be helpful to run one *rpackm* command per
+Bioconductor view with the *--biocview* parameter in case of any connection
+issue.
+
+```bash
+rpackm --input-repository bioc --inputrepoparam 3.8 \
+       --output-repository myartifactory \
+       --output-repository-folder Bioc-3.8 \
+       --config ~/rpackutils.conf \
+       --dest ~/Bioc-3.8 --biocview software
+[...]
+rpackm --input-repository bioc --inputrepoparam 3.8 \
+       --output-repository myartifactory \
+       --output-repository-folder Bioc-3.8 \
+       --config ~/rpackutils.conf \
+       --dest ~/Bioc-3.8 --biocview experimentData
+[...]
+rpackm --input-repository bioc --inputrepoparam 3.8 \
+       --output-repository myartifactory \
+       --output-repository-folder Bioc-3.8 \
+       --config ~/rpackutils.conf \
+       --dest ~/Bioc-3.8 --biocview annotationData
+[...]
+```
+
+A local repository can also be specified instead of the remote *cran* or
+*bioc* repositories. Please consider the following example:
+
+```bash
+rpackm --input-repository Downloads --output-repository myartifactory \
+       --output-repository-folder CRAN_2016-05-03 \
+       --config ~/rpackutils.conf
+```
+
+The local repository *Downloads* has to be defined in the configuration
+file.
+
+```bash
+local_repos = Downloads
+
+[Downloads]
+baseurl = /home/john/Downloads
+repos = RPackUtils
+```
 
 
 ### rpackg
@@ -851,6 +921,28 @@ like the following:
 |----------|---------|--------------------|---------------|---------|-----------------|--------------------------|----------------------|----------------------|
 | evaluate | 0.9     | MIT + file LICENSE | ALLOWED       | R       | methods,stringr | testthat,lattice,ggplot2 | True                 | True                 |
 | [...]    |         |                    |               |         |                 |                          |                      |                      |
+
+
+## Repository types
+
+The following class diagram shows the hierarchy of the repository types. We
+distinguish 2 main types:
+
+* *AbstractPackageRepository*
+* *AbstractREnvironment*
+
+The *AbstractPackageRepository* represents a folder location (file or URL)
+holding R packages, and the *AbstractREnvironment*, a folder (file) where a
+R environment is installed.
+
+*AbstractPackageRepository* is the super type of the following:
+
+* *LocalRepository*, a local folder holding R packages
+* *CRAN*, the MRAN archive on the web
+* *Bioconductor*, the Bioconductor website
+* *Artifactory*, a JFrog repository manager
+
+![Repository types](images/providers_classdiag.png)
 
 
 ## License checking

@@ -8,6 +8,15 @@
 - RPACU-35 new command to scan a repository to fetch R packages metadata
 - Clean and reformat the source code
 - Skip tests requiring any external resource when the later is unavailable
+- Add ability to choose a destination folder while mirroring, so the
+  downloaded packages are kept there and the mirror command can be launched
+  again
+- Support a local repository while mirroring
+- Document the supported repository types with a class diagram
+- The configuration sections ('artifactory_repos', 'renvironment_repos',
+  'local_repos') are not mandatory
+- RPACU-41 Check the Artifactory client implementation supports sub folders
+  as repositories
 
 0.1.6
 -----

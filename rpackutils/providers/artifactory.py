@@ -350,13 +350,24 @@ class Artifactory(AbstractPackageRepository):
         # launch the system command
         # res = subprocess.call(cmd, shell=True)
         res, out, err = Utils.subprocesscall(cmd)
+        # curl doesn't return a none-zero return code
+        # while getting any http status error code so we are checking
+        # the output content
         if res != 0:
-            error_message = 'Failed to deploy file {0}: ' \
-                            '\nstdout:{1}\nstderr:{2}' \
-                            .format(filepath, out, err)
-            logger.error(error_message)
+            logger.error('Failed to deploy file: {}'.format(filepath))
+            logger.error('COMMAND: {}'.format(cmd))
+            logger.error('STDOUT: {}'.format(out))
+            logger.error('STDERR: {}'.format(err))
             return PackStatus.DEPLOY_FAILED
-        logger.info('Successfully deployed file: {0}'.format(filepath))
+        if out is not None:
+            if b'<html>' in out or b'status' in out:
+                logger.error('Failed to deploy file: {}'.format(filepath))
+                logger.error('COMMAND: {}'.format(cmd))
+                logger.error('STDOUT: {}'.format(out))
+                logger.error('STDERR: {}'.format(err))
+                return PackStatus.DEPLOY_FAILED
+        logger.info('Successfully deployed file: {} '
+                    'to repository {}'.format(filepath, repo))
         return PackStatus.DEPLOYED
 
     def upload_multiple(self, filepaths, repo, procs=20, properties=None,
