@@ -85,6 +85,14 @@ def rpacks_mirror():
               'It must exist. A temp folder will be used otherwise.'),
     ) and None
     parser.add_argument(
+        '--keep',
+        dest='keep',
+        action='store_true',
+        default=False,
+        required=False,
+        help=('Keep downloaded files'),
+    ) and None
+    parser.add_argument(
         '--procs',
         dest='procs',
         action='store',
@@ -199,6 +207,10 @@ def rpacks_mirror():
     else:
         logger.error('No package found in the '
                      '{} repository.'.format(args.inputrepo))
-    shutil.rmtree(dest)
+    if args.keep:
+        logger.info('Downloaded packages are still in {}'.format(dest))
+    else:
+        shutil.rmtree(dest)
+        logger.info('Deleted downloaded packages in {}'.format(dest))
     endtime = time.time()
     logger.info('Time elapsed: {0:.3f} seconds.'.format(endtime - starttime))

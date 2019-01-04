@@ -702,7 +702,8 @@ $ rpackm -h
 usage: rpackm [-h] [--input-repository INPUTREPO]
               [--inputrepoparam INPUTREPOPARAM] [--biocview BIOCVIEW]
               --output-repository OUTPUTREPO --output-repository-folder
-              OUTPUTREPOFOLDER [--dest DEST] [--procs PROCS] --config CONFIG
+              OUTPUTREPOFOLDER [--dest DEST] [--keep] [--procs PROCS] --config
+              CONFIG
 
 Download R packages from a specified repository (CRAN or Bioconductor) and
 upload them to Artifactory (mirror)
@@ -725,6 +726,7 @@ optional arguments:
                         The destination Artifactory repository folder name
   --dest DEST           Path where to store downloaded packages. It must
                         exist. A temp folder will be used otherwise.
+  --keep                Keep downloaded files
   --procs PROCS         Number of parallel downloads and uploads, default=10
   --config CONFIG       RPackUtils configuration file
 ```
@@ -742,6 +744,7 @@ rpackm --input-repository cran --inputrepoparam 2016-05-03 \
        --output-repository-folder CRAN_2016-05-03 \
        --config ~/rpackutils.conf \
        --dest ~/CRAN_2016-05-03
+       --keep
 ```
 
 The command is similar for Bioconductor and instead of specifying a
@@ -754,13 +757,15 @@ rpackm --input-repository bioc --inputrepoparam 3.8 \
        --output-repository-folder Bioc-3.8 \
        --config ~/rpackutils.conf \
        --dest ~/Bioc-3.8
+       --keep
 ```
 
 If the process fails to download a package after 3 retries, which may
 happen while mirroring CRAN, the downloaded packages will be in the
-temporary folder or in the folder specified by *--dest*.  The command can
-be launched again, so it is recommended to specify *--dest*, since the
-folder can be reused for any subsequent run of the process.
+temporary folder or in the folder specified by *--dest* thanks to the
+*--keep* switch.  The command can be launched again, so it is recommended
+to specify *--keep*, since the folder can be reused for any subsequent run
+of the process.
 
 Additionally, it may be helpful to run one *rpackm* command per
 Bioconductor view with the *--biocview* parameter in case of any connection
@@ -771,19 +776,19 @@ rpackm --input-repository bioc --inputrepoparam 3.8 \
        --output-repository myartifactory \
        --output-repository-folder Bioc-3.8 \
        --config ~/rpackutils.conf \
-       --dest ~/Bioc-3.8 --biocview software
+       --dest ~/Bioc-3.8 --biocview software --keep
 [...]
 rpackm --input-repository bioc --inputrepoparam 3.8 \
        --output-repository myartifactory \
        --output-repository-folder Bioc-3.8 \
        --config ~/rpackutils.conf \
-       --dest ~/Bioc-3.8 --biocview experimentData
+       --dest ~/Bioc-3.8 --biocview experimentData --keep
 [...]
 rpackm --input-repository bioc --inputrepoparam 3.8 \
        --output-repository myartifactory \
        --output-repository-folder Bioc-3.8 \
        --config ~/rpackutils.conf \
-       --dest ~/Bioc-3.8 --biocview annotationData
+       --dest ~/Bioc-3.8 --biocview annotationData --keep
 [...]
 ```
 
