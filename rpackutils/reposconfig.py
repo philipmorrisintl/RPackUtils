@@ -110,9 +110,6 @@ class ReposConfig:
         except NoOptionError:
             pass
         except NoSectionError:
-            logger.error(
-                'The section \"{}\" is missing '
-                'in the configuration file!'.format(REPOSITORIES))
             pass
 
     def _build_artifactory_repos(self, names):
