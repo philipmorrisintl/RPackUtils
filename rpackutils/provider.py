@@ -97,7 +97,7 @@ class AbstractREnvironment(AbstractProvider):
         the Depsmanager class.
         '''
         pass
-    
+
     @abstractmethod
     def download_single(self, pack, dest):
         raise NotImplementedError(
@@ -125,9 +125,9 @@ class AbstractPackageRepository(AbstractProvider):
         Please note numtries must be >= 1.
         """
         if numtries < 1:
-            logger.warn('The \"numtries\" parameter in check_connection() '
-                        "must be >= 1. Was \"{0}\" but using 1!"
-                        .format(numtries))
+            logger.warning('The \"numtries\" parameter in check_connection() '
+                           "must be >= 1. Was \"{0}\" but using 1!"
+                           .format(numtries))
             numtries = 1
         retVal = False
         for i in range(0, numtries):

@@ -103,13 +103,13 @@ def rpacks_deps_graph():
     if repo == 'cran':
         repository = CRAN()
         if args.config is not None:
-            logger.warn('Ignoring the --conf argument '
-                        'since CRAN will be used.')
+            logger.warning('Ignoring the --conf argument '
+                           'since CRAN will be used.')
     elif repo == 'bioc':
         repository = Bioconductor()
         if args.config is not None:
-            logger.warn('Ignoring the --conf argument '
-                        'since Bioconductor will be used.')
+            logger.warning('Ignoring the --conf argument '
+                           'since Bioconductor will be used.')
     else:
         if args.config is None:
             logger.error(
@@ -171,7 +171,7 @@ def rpacks_deps_graph():
     if isinstance(repository, REnvironment) \
        or isinstance(repository, LocalRepository):
         if repoparam is not None:
-            logger.warn('Ignoring the --repoparam argument')
+            logger.warning('Ignoring the --repoparam argument')
     # traverse options (imports, depends, suggests)
     traverse_imports = ('imports' in traverse)
     traverse_depends = ('depends' in traverse)

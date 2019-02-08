@@ -138,7 +138,7 @@ class REnvironment(AbstractREnvironment):
                       .format(
                           packInfo.license,
                           packInfo.licenseclass)
-            logger.warn(message)
+            logger.warning(message)
         cmd = os.path.join(self._Rbinarypath)
         cmdargs = [cmd, 'CMD', 'INSTALL', packagepath]
         logger.info('Running: {}'.format(" ".join(cmdargs)))
@@ -185,8 +185,8 @@ class REnvironment(AbstractREnvironment):
                           .format(packInfo.license)
                 return (-1, message, message)
             if license.restricted:
-                logger.warn("The license \"{}\" is RESTRICTED"
-                            .format(packInfo.license))
+                logger.warning("The license \"{}\" is RESTRICTED"
+                               .format(packInfo.license))
         # copy the package to the dest folder
         shutil.copy(packagepath, dest)
         cmd = os.path.join(self._Rbinarypath)
@@ -214,7 +214,7 @@ class REnvironment(AbstractREnvironment):
         PackStatus.DEPLOY_FAILED if any error occured
         """
         if repo:
-            logger.warn('Ignoring the repo argument')
+            logger.warning('Ignoring the repo argument')
         if not os.path.exists(filepath):
             logger.error('Cannot access {0}'.format(filepath))
             return PackStatus.DEPLOY_FAILED
@@ -273,7 +273,7 @@ class REnvironment(AbstractREnvironment):
         PackStatus.DEPLOY_FAILED if any error occured
         """
         if repo:
-            logger.warn('Ignoring the repo argument')
+            logger.warning('Ignoring the repo argument')
         if not os.path.exists(filepath):
             logger.error('Cannot access {0}'.format(filepath))
             return PackStatus.DEPLOY_FAILED

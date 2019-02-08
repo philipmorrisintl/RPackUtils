@@ -67,11 +67,11 @@ def rpacks_mran():
         snapshots = cran.ls_snapshots(args.procs, args.rversion)
     else:
         if args.rversion is not None:
-            logger.warn('Ignoring the --Rversion parameter '
-                        'since --restore is used.')
+            logger.warning('Ignoring the --Rversion parameter '
+                           'since --restore is used.')
         if args.procs is not None:
-            logger.warn('Ignoring the --procs parameter '
-                        'since --restore is used.')
+            logger.warning('Ignoring the --procs parameter '
+                           'since --restore is used.')
         logger.info("Reading available MRAN snapshots "
                     "from {0}...".format(args.restorefromfilepath))
         snapshots = JSONSerializer.deserializefromfile(

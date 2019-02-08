@@ -31,11 +31,12 @@ from ..utils import Utils
 
 logger = logging.getLogger(__name__)
 
+
 class Artifactory(AbstractPackageRepository):
     def __init__(self, baseurl, repos, auth, verify):
         """
         Artifactory repository client.
-        
+
         :param baseurl: example 'https://artifacforyhost/artifactory'
         :param repos: list of repository names
         :param auth: username and password as ('john', 'secret')
@@ -58,9 +59,9 @@ class Artifactory(AbstractPackageRepository):
         Please note numtries must be >= 1.
         """
         if numtries < 1:
-            logger.warn('The \"numtries\" parameter in check_connection() '
-                        "must be >= 1. Was \"{0}\" but using 1!"
-                        .format(numtries))
+            logger.warning('The \"numtries\" parameter in check_connection() '
+                           "must be >= 1. Was \"{0}\" but using 1!"
+                           .format(numtries))
             numtries = 1
         retVal = False
         for i in range(0, numtries):
@@ -112,7 +113,8 @@ class Artifactory(AbstractPackageRepository):
             files = []
             for repo in self.repos:
                 matches = self.ls_repo(repo)
-                files.extend([Utils.concaturls(repo, match) for match in matches])
+                files.extend([Utils.concaturls(repo, match)
+                              for match in matches])
             return files
 
     def ls_repo(self, repo):
@@ -425,7 +427,7 @@ class Artifactory(AbstractPackageRepository):
         repo = '/'.join(pathelements[0:len(pathelements)-1])
         packagename = pathelements[len(pathelements)-1]
         return packagename, repo
-                
+
     def packinfo(self, packagename, repo=None, keeptempfiles=False):
         """
         :param packagename: can be one of "methods",
@@ -524,8 +526,8 @@ class Artifactory(AbstractPackageRepository):
                                      .format(
                                          pit['packinfo'].version,
                                          mostrecentpit['packinfo'].version))
-                        logger.warn('Keeping {} as the most recent version'
-                                    .format(mostrecentpit['packinfo'].version))
+                        logger.warning('Keeping {} as the most recent version'
+                                       .format(mostrecentpit['packinfo'].version))
                         pass
             packinfo = mostrecentpit['packinfo']
             if dest2 and os.path.exists(dest2) and not keeptempfiles:

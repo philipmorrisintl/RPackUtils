@@ -237,8 +237,8 @@ class LocalRepository(AbstractPackageRepository):
                                      .format(
                                          pi.version,
                                          packinfo.version))
-                        logger.warn('Keeping {} as the most recent version'
-                                    .format(packinfo.version))
+                        logger.warning('Keeping {} as the most recent version'
+                                       .format(packinfo.version))
                         pass
         else:
             packagepath = Utils.concatpaths(self.baseurl, tarballs[0])
