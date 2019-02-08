@@ -92,7 +92,7 @@ class License:
         """
         Allows or denies the installation
         """
-        return(self._allowed or self._restricted or self._unknown)
+        return(not self._blacklisted)
 
     @property
     def installation_warning(self):
@@ -111,13 +111,16 @@ class License:
         self._allowed = any(
             ss in self._name.upper() for ss in ALLOWED_LICENSES
         )
-        # when a reference is done to an external file, we switch to 'UNKNOWN'
-        self._unknown = 'FILE' in self._name.upper()
         # compute the license-class
         self._license_class = 'UNKNOWN'
-        if(self._allowed):
-            self._license_class = 'ALLOWED'
         if(self._blacklisted):
             self._license_class = 'BLACKLISTED'
-        if(self._restricted):
-            self._license_class = 'RESTRICTED'
+        else:
+            if(self._allowed):
+                self._license_class = 'ALLOWED'
+            if(self._restricted):
+                self._license_class = 'RESTRICTED'
+            # when a reference is done to an external file,
+            # we switch to 'UNKNOWN' unless it is blacklisted already
+            self._unknown = 'FILE' in self._name.upper()
+            self._license_class = 'UNKNOWN'

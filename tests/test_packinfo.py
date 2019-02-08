@@ -136,3 +136,19 @@ def test__parse_package_name_version():
         '/some/path/name_0.1.0.tar.gz')
     assert(name == 'name')
     assert(version == '0.1.0')
+
+
+def test__parse_license():
+    path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'resources',
+        'FooBarZoo')
+    pi = PackInfo(path)
+    print(pi.as_dict)
+    assert(pi.name == 'FooBar')
+    assert(pi.version == '0.99.1')
+    assert(pi.depends == ['R'])
+    assert(pi.imports == ['methods', 'utils', 'toto'])
+    assert(pi.suggests == ['Rtoto', 'Rtiti', 'Rtata'])
+    assert(pi.license == 'AGPL-3 | file LICENSE')
+    assert(pi.installationisallowed is False)

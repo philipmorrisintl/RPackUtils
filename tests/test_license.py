@@ -15,6 +15,8 @@ def test_check_blacklist():
     assert license.blacklisted
     license = License('AGPL v3')
     assert license.blacklisted
+    license = License('AGPL-3 | file LICENSE')
+    assert license.blacklisted
     license = License('Academic Free License v3.0')
     assert license.blacklisted
     license = License('AFL v3.0')
