@@ -1,3 +1,13 @@
+0.1.8
+-----
+
+- Add a new option to rpackm called "--keep" the keep downloaded
+  packages
+- FIX bug in computing the license class
+- FIX invalid escape sequence in regex for the CRAN provider
+- FIX DeprecationWarning: The 'warn' method is deprecated for the
+  logger class, we have to use 'warning' instead
+
 0.1.7
 -----
 

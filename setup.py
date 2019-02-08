@@ -14,7 +14,7 @@ with open('requirements.txt') as f:
     REQUIREMENTS = f.read().splitlines()
 
 setup(name='RPackUtils',
-      version='0.1.7',
+      version='0.1.8',
       description='R Package Manager',
       long_description='''R Package Dependencies Manager and Bioconductor & CRAN Mirroring Tool''',
       classifiers=[
@@ -31,15 +31,15 @@ setup(name='RPackUtils',
       author='Sylvain Gubian, Stephane Cano, PMP SA',
       author_email='DevelopmentSupport.HPC@pmi.com',
       url='https://github.com/pmpsa-hpc/RPackUtils.git',
-      keywords= ['R', 'CRAN', 'MRAN', 'Bioconductor', 'Artifactory'
-                 'dependency', 'manager', 'graph', 'network'],
+      keywords=['R', 'CRAN', 'MRAN', 'Bioconductor', 'Artifactory'
+                'dependency', 'manager', 'graph', 'network'],
       packages=find_packages(),
       include_package_data=False,
       zip_safe=False,
       install_requires=REQUIREMENTS,
       tests_require=REQUIREMENTS,
       test_suite="tests",
-      entry_points = {
+      entry_points={
           'console_scripts': [
               'rpackc = rpackutils.cli.cliClone:rpacks_clone',
               'rpacki = rpackutils.cli.cliInstall:rpacks_install',
@@ -51,6 +51,6 @@ setup(name='RPackUtils',
               'rpackg = rpackutils.cli.cliDepsGraph:rpacks_deps_graph',
               'rpackcc = rpackutils.cli.cliConfigCheck:rpacks_config_check',
               'rpackscan = rpackutils.cli.cliScan:rpacks_scan',
-        ],
+          ],
       }
-)
+      )
