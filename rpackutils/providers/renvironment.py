@@ -65,7 +65,7 @@ class REnvironment(AbstractREnvironment):
         folders = os.listdir(self._repofullpath)
         folders = [re.sub('^/', '', x) for x in folders
                    if os.path.exists(os.path.join(
-                           self._repofullpath, x, 'DESCRIPTION'))]
+                       self._repofullpath, x, 'DESCRIPTION'))]
         if not withBasePackages:
             return [x for x in folders if x not in RBasePackages.getnames()]
         else:
