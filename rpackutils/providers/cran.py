@@ -162,7 +162,7 @@ class CRAN(AbstractPackageRepository):
         r2 = requests.get(href)
         soup2 = BeautifulSoup(r2.text, 'html.parser')
         anchors2 = soup2.findAll('a')
-        regex = re.compile(".*(R-).*(\.tar\.gz)")
+        regex = re.compile(".*(R-).*(.tar.gz)")
         # example of matches:
         # ['<a href="src/base/R-3/R-3.1.1.tar.gz">R-3.1.1.tar.gz']
         matches = [m.group(0) for l in anchors2
@@ -207,7 +207,7 @@ class CRAN(AbstractPackageRepository):
         anchors = soup.findAll('a')
         allhrefs = [str(anchor['href']) for anchor in anchors][1:]
         # select tarballs only (R packages)
-        regex = re.compile(".*(\.tar\.gz)")
+        regex = re.compile(".*(.tar.gz)")
         tarballs = [m.group(0) for l in allhrefs
                     for m in [regex.search(str(l))] if m]
         if not tarballs:
