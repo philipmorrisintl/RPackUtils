@@ -85,9 +85,8 @@ class DepsManager(object):
         self._downloadfailed = []
         self._fun = fun
         self._funargs = funargs
-        assert(self._repoIsSupported(),
-               'Only Artifactory or LocalRepository '
-               'instances are supported!')
+        assert self._repoIsSupported(), 'Only Artifactory ' \
+            'or LocalRepository instances are supported!'
 
     def _repoIsSupported(self):
         return(
