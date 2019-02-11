@@ -16,7 +16,7 @@ BLACKLISTED_LICENSES = [
     'OPEN SOFTWARE',
     'NON-PROFIT',
     'REALNETWORKS',
-    'RECIPROCAL'
+    'RECIPROCAL PUBLIC'
 ]
 
 RESTRICTED_LICENSES = [
@@ -122,5 +122,6 @@ class License:
                 self._license_class = 'RESTRICTED'
             # when a reference is done to an external file,
             # we switch to 'UNKNOWN' unless it is blacklisted already
-            self._unknown = 'FILE' in self._name.upper()
-            self._license_class = 'UNKNOWN'
+            if('FILE' in self._name.upper()):
+                self._unknown = True
+                self._license_class = 'UNKNOWN'

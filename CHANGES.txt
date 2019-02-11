@@ -1,3 +1,7 @@
+0.1.9
+-----
+- FIX bug in computing the license class
+
 0.1.8
 -----
 
