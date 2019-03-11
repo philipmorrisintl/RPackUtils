@@ -30,7 +30,7 @@ setup(name='RPackUtils',
       ],
       author='Sylvain Gubian, Stephane Cano, PMP SA',
       author_email='DevelopmentSupport.HPC@pmi.com',
-      url='https://github.com/pmpsa-hpc/RPackUtils.git',
+      url='https://github.com/philipmorrisintl/RPackUtils.git',
       keywords=['R', 'CRAN', 'MRAN', 'Bioconductor', 'Artifactory'
                 'dependency', 'manager', 'graph', 'network'],
       packages=find_packages(),
