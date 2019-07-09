@@ -14,7 +14,7 @@ with open('requirements.txt') as f:
     REQUIREMENTS = f.read().splitlines()
 
 setup(name='RPackUtils',
-      version='0.1.9',
+      version='0.2.0',
       description='R Package Manager',
       long_description='''R Package Dependencies Manager and Bioconductor & CRAN Mirroring Tool''',
       classifiers=[

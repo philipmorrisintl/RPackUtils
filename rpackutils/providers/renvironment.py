@@ -33,15 +33,20 @@ class REnvironment(AbstractREnvironment):
     def __init__(self, rhome, librarypath, licensecheck=False):
         """
         Define a R environment.
+
         :param rhome: example /home/john/R-3.1.2
-        :param librarypath: example 'lib64/R/library'
+        :param librarypath: a relative path from rhome like
+            'lib64/R/library' or any absolute path
         """
         super().__init__('renvironment', rhome, librarypath)
         if not os.path.exists(rhome):
             raise FileNotFoundError(errno.ENOENT,
                                     os.strerror(errno.ENOENT),
                                     rhome)
-        self._repofullpath = Utils.concatpaths(rhome, librarypath)
+        if os.path.isabs(librarypath):
+            self._repofullpath = librarypath
+        else:
+            self._repofullpath = Utils.concatpaths(rhome, librarypath)
         if not os.path.exists(self._repofullpath):
             raise FileNotFoundError(errno.ENOENT,
                                     os.strerror(errno.ENOENT),

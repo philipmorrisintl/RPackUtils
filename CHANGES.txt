@@ -1,3 +1,9 @@
+0.2.0
+-----
+
+- RPACU-48 In he configuration file, allow the user to specify both a
+  relative and an absolute path to the R library
+
 0.1.9
 -----
 - FIX bug in computing the license class
