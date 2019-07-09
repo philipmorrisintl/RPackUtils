@@ -29,13 +29,13 @@ def test_custom_config():
     # artifactory
     assert(
         config.get("artifactory", "baseurl")
-        == "https://artifactory.local/artifactory")
+        == "https://YOUR_ARTIFACTORY_HOSTNAME/artifactory")
     assert(
         config.get("artifactory", "user")
-        == "artifactoryUser")
+        == "YOUR_ARTIFACTORY_USER")
     assert(
         config.get("artifactory", "password")
-        == "s3C437P4ssw@Rd")
+        == "YOUR_ARTIFACTORY_PASSWORD")
     assert(
         config.get("artifactory", "verify")
         == "/toto/Certificate_Chain.pem")

@@ -130,16 +130,16 @@ renvironment_repos = R-3.1.2, R-3.2.5
 local_repos = local
 
 [artifactory]
-baseurl = https://artifactory.local/artifactory
-user = artifactoryUser
-password = "s3C437P4ssw@Rd"
+baseurl = https://YOUR_ARTIFACTORY_HOSTNAME/artifactory
+user = YOUR_ARTIFACTORY_USER
+password = "YOUR_ARTIFACTORY_PASSWORD"
 verify = /toto/Certificate_Chain.pem
 repos = R-3.1.2, Bioc-3.0, R-local, R-Data-0.1
 
 [artifactorydev]
-baseurl = https://artifactorydev.local/artifactory
-user = artifactoryUserDev
-password = "s3C437P4ssw@RdDev"
+baseurl = https://YOUR_ARTIFACTORY_DEV_HOSTNAME/artifactory
+user = YOUR_ARTIFACTORY_DEV_USER
+password = "YOUR_ARTIFACTORY_DEV_PASSWORD"
 verify = /toto/Certificate_Chain_Dev.pem
 repos = R-3.1.2, Bioc-3.0, R-local, R-Data-0.1
 
@@ -361,8 +361,8 @@ $ rpackq --config="~/rpackutils.conf" \
          --packages="tmod"
 
 Building Artifactory instance "artifactory-pmi"
-Checking connection to https://rd-artifactory.app.pmi/artifactory ...
-Connection to https://rd-artifactory.app.pmi/artifactory established.
+Checking connection to https://myartifactory/artifactory ...
+Connection to https://myartifactory/artifactory established.
 -------------------------------------
 Searching for tmod in artifactory-pmi...
 -
@@ -924,7 +924,7 @@ like the following:
 
 | Name     | Version | License            | License class | Depends | Imports         | Suggests                 | Installation allowed | Installation warning |
 |----------|---------|--------------------|---------------|---------|-----------------|--------------------------|----------------------|----------------------|
-| evaluate | 0.9     | MIT + file LICENSE | ALLOWED       | R       | methods,stringr | testthat,lattice,ggplot2 | True                 | True                 |
+| evaluate | 0.9     | MIT + file LICENSE | UNKNOWN       | R       | methods,stringr | testthat,lattice,ggplot2 | True                 | True                 |
 | [...]    |         |                    |               |         |                 |                          |                      |                      |
 
 

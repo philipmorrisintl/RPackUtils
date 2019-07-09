@@ -3,6 +3,8 @@
 
 - RPACU-48 In he configuration file, allow the user to specify both a
   relative and an absolute path to the R library
+- RPACU-49 Update the credentials placeholders so that they more
+  clearly appear as placeholders
 
 0.1.9
 -----

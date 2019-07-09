@@ -69,9 +69,9 @@ def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     assert(reposconfig.local_instance('local') is not None)
     # verify artifactory instance
     artifactory = reposconfig.artifactory_instance('artifactory')
-    assert(artifactory.baseurl == 'https://artifactory.local/artifactory')
-    assert(artifactory.auth[0] == 'artifactoryUser')
-    assert(artifactory.auth[1] == 's3C437P4ssw@Rd')
+    assert(artifactory.baseurl == 'https://YOUR_ARTIFACTORY_HOSTNAME/artifactory')
+    assert(artifactory.auth[0] == 'YOUR_ARTIFACTORY_USER')
+    assert(artifactory.auth[1] == 'YOUR_ARTIFACTORY_PASSWORD')
     assert(artifactory.verify == '/toto/Certificate_Chain.pem')
     assert(len(artifactory.repos) == 4)
     assert('R-3.1.2' in artifactory.repos)
@@ -81,9 +81,9 @@ def test_reposconfig_creation(mock_cran, mock_bioc, mock_arti, mock_exists):
     # verify artifactorydev instance
     artifactorydev = reposconfig.artifactory_instance('artifactorydev')
     assert(artifactorydev.baseurl
-           == 'https://artifactorydev.local/artifactory')
-    assert(artifactorydev.auth[0] == 'artifactoryUserDev')
-    assert(artifactorydev.auth[1] == 's3C437P4ssw@RdDev')
+           == 'https://YOUR_ARTIFACTORY_DEV_HOSTNAME/artifactory')
+    assert(artifactorydev.auth[0] == 'YOUR_ARTIFACTORY_DEV_USER')
+    assert(artifactorydev.auth[1] == 'YOUR_ARTIFACTORY_DEV_PASSWORD')
     assert(artifactorydev.verify == '/toto/Certificate_Chain_Dev.pem')
     assert(len(artifactorydev.repos) == 4)
     assert('R-3.1.2' in artifactorydev.repos)

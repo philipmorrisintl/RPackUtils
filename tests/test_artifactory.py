@@ -73,7 +73,7 @@ def test_create():
 def test_get_api_url():
     arti = create()
     assert(arti._get_api_url('R-3.1.2') ==
-           'https://artifactory.local/artifactory/api/storage/R-3.1.2')
+           'https://YOUR_ARTIFACTORY_HOSTNAME/artifactory/api/storage/R-3.1.2')
 
 
 @patch('rpackutils.providers.artifactory.Artifactory._do_request')
