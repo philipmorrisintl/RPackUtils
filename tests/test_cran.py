@@ -1,9 +1,7 @@
-###################################################################
-# This program is distributed in the hope that it will be useful, #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
-# GNU General Public License for more details.                    #
-###################################################################
+#######################################
+# Copyright 2019 PMP SA.              #
+# SPDX-License-Identifier: Apache-2.0 #
+#######################################
 
 import pytest
 import os
@@ -27,11 +25,13 @@ try:
 except Exception as e:
     pass
 
+
 def cran_is_available():
     if cran is not None:
         return cran.check_connection_mran_snapshot(numtries=1)
     else:
         return False
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
@@ -47,26 +47,33 @@ def test_create():
     except Exception:
         pass
 
+
 @pytest.mark.skipif(
     not cran_is_available(),
     reason="MRAN is not available (https://mran.revolutionanalytics.com)"
 )
 def test_mran_snapshots_url():
-    assert(cran.mran_snapshots_url == 'https://mran.revolutionanalytics.com/snapshot')
+    assert(cran.mran_snapshots_url ==
+           'https://mran.revolutionanalytics.com/snapshot')
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
     reason="MRAN is not available (https://mran.revolutionanalytics.com)"
 )
 def test_get_mran_packages_url():
-    assert(cran.get_mran_packages_url('2018-02-27') == 'https://mran.revolutionanalytics.com/snapshot/2018-02-27/src/contrib/')
+    assert(cran.get_mran_packages_url('2018-02-27') ==
+           'https://mran.revolutionanalytics.com/snapshot/2018-02-27/src/contrib/')
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
     reason="MRAN is not available (https://mran.revolutionanalytics.com)"
 )
 def test_get_mran_package_url():
-    assert(cran.get_mran_package_url('2018-02-27', 'package_1.2.3.tar.gz') == 'https://mran.revolutionanalytics.com/snapshot/2018-02-27/src/contrib/package_1.2.3.tar.gz')
+    assert(cran.get_mran_package_url('2018-02-27', 'package_1.2.3.tar.gz') ==
+           'https://mran.revolutionanalytics.com/snapshot/2018-02-27/src/contrib/package_1.2.3.tar.gz')
+
 
 @pytest.mark.slow
 @pytest.mark.skipif(
@@ -82,6 +89,7 @@ def test_ls_snapshots():
     assert('3.1.2' in version2dates_r312.keys())
     assert(len(version2dates_r312['3.1.2']) == 129)
 
+
 @pytest.mark.skipif(
     not cran_is_available(),
     reason="MRAN is not available (https://mran.revolutionanalytics.com)"
@@ -92,6 +100,7 @@ def test_ls():
     assert('ggplotAssist_0.1.3.tar.gz' in files)
     assert('FHtest_1.4.tar.gz' in files)
     assert('heims_0.4.0.tar.gz' in files)
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
@@ -105,6 +114,7 @@ def test_find():
     assert(files == ['FHtest_1.4.tar.gz'])
     files = cran.find("heims*", '2018-02-27')
     assert(files == ['heims_0.4.0.tar.gz'])
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
@@ -121,6 +131,7 @@ def test_download_single():
                                   dest)
     assert(retVal == PackStatus.DOWNLOAD_FAILED)
     shutil.rmtree(dest)
+
 
 @pytest.mark.skipif(
     not cran_is_available(),
@@ -149,6 +160,7 @@ def test_download_multiple():
             )) == 1
         )
     shutil.rmtree(dest)
+
 
 @pytest.mark.skipif(
     not cran_is_available(),

@@ -1,9 +1,7 @@
-###################################################################
-# This program is distributed in the hope that it will be useful, #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
-# GNU General Public License for more details.                    #
-###################################################################
+#######################################
+# Copyright 2019 PMP SA.              #
+# SPDX-License-Identifier: Apache-2.0 #
+#######################################
 
 import pytest
 import os
@@ -18,7 +16,7 @@ from unittest.mock import patch
 from networkx.algorithms.dag import descendants
 from networkx.readwrite.gml import write_gml
 from networkx.readwrite.gml import literal_stringizer
-    
+
 from rpackutils.providers.cran import CRAN
 from rpackutils.providers.bioconductor import Bioconductor
 from rpackutils.packinfo import PackInfo

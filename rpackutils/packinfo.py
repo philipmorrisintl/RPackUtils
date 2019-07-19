@@ -1,9 +1,7 @@
-###################################################################
-# This program is distributed in the hope that it will be useful, #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
-# GNU General Public License for more details.                    #
-###################################################################
+#######################################
+# Copyright 2019 PMP SA.              #
+# SPDX-License-Identifier: Apache-2.0 #
+#######################################
 
 import os
 import errno
@@ -18,11 +16,14 @@ from .license import License
 
 logger = logging.getLogger(__name__)
 
+
 class ParsingError(RuntimeError):
     '''raise this on package filename parsing error'''
 
+
 def enum(**enums):
     return type('Enum', (), enums)
+
 
 PackStatus = enum(
     PARSED=0,
@@ -41,8 +42,9 @@ PackStatus = enum(
 # clean names.                                                      #
 #####################################################################
 
+
 class PackInfo(object):
-    
+
     def __init__(self, path):
         """
         Construct a PackInfo given a path to a R package archive tarball
@@ -75,7 +77,8 @@ class PackInfo(object):
         ispath = "/" in path
         if istarball:
             try:
-                self.name, self.version = PackInfo._parse_package_name_version(path)
+                self.name, self.version = PackInfo._parse_package_name_version(
+                    path)
             except Exception as e:
                 logger.error(
                     'Unexpected R package file name'
@@ -94,7 +97,7 @@ class PackInfo(object):
                 tarf = tarfile.open(path, 'r:gz')
                 tarf.extract(member=os.path.join(
                     self.name, 'DESCRIPTION'),
-                             path=folder)
+                    path=folder)
                 tarf.close()
                 descriptionfilepath = os.path.join(
                     folder, self.name, 'DESCRIPTION')
@@ -192,7 +195,7 @@ class PackInfo(object):
             pos = spl[1].index('.tar.gz')
         except ValueError:
             raise ParsingError(
-                    'Wrong package extention')
+                'Wrong package extention')
         version = spl[1][:pos]
         return name, version
 

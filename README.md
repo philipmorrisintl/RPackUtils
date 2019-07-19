@@ -1017,5 +1017,5 @@ the configuration file level.
 
 ## License
 
-**RPackUtils** is distributed under the [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt) license.
-Copyright (c) 2018 Gubian Sylvain, Cano Stephane, PMPSA
+**RPackUtils** is distributed under the [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt) license.
+Copyright (c) 2019 Philip Morris Products S.A.

@@ -1,9 +1,7 @@
-###################################################################
-# This program is distributed in the hope that it will be useful, #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
-# GNU General Public License for more details.                    #
-###################################################################
+#######################################
+# Copyright 2019 PMP SA.              #
+# SPDX-License-Identifier: Apache-2.0 #
+#######################################
 
 import pytest
 import os
@@ -34,7 +32,7 @@ PACKAGEPATH = os.path.join(
 
 Utils.rmtree_under(LOCALREPO_LIBS)
 #####################################################################
-# SOMW TESTS WILL BE SKIPPED IF NO INTERNET CONNECTION IS AVAILABLE #
+# SOME TESTS WILL BE SKIPPED IF NO INTERNET CONNECTION IS AVAILABLE #
 #####################################################################
 
 # CRAN
@@ -132,7 +130,7 @@ def test_download_single():
     assert(os.path.exists(
         os.path.join(destfolder,
                      'ggplot2_2.2.1.tar.gz')
-        ))
+    ))
     shutil.rmtree(destfolder)
     # test download failure, package not found
     downloadStatus = localRepo.download_single(

@@ -1,9 +1,7 @@
-###################################################################
-# This program is distributed in the hope that it will be useful, #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of  #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the    #
-# GNU General Public License for more details.                    #
-###################################################################
+#######################################
+# Copyright 2019 PMP SA.              #
+# SPDX-License-Identifier: Apache-2.0 #
+#######################################
 
 import os
 import errno
@@ -17,6 +15,7 @@ class Config:
     """
     Holds configuration file properties
     """
+
     def __init__(self, filepath):
         if not os.path.isfile(filepath):
             logger.error('Configuration file \"{0}\" not found!'

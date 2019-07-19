@@ -1,10 +1,11 @@
 0.2.0
 -----
 
-- RPACU-48 In he configuration file, allow the user to specify both a
+- RPACU-48 In the configuration file, allow the user to specify both a
   relative and an absolute path to the R library
 - RPACU-49 Update the credentials placeholders so that they more
   clearly appear as placeholders
+- RPACU-50 Switch the license from GPL v2 to Apache 2.0
 
 0.1.9
 -----
