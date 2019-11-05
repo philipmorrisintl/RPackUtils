@@ -122,10 +122,31 @@ def test_upload_single(mock_installpackage):
     # overwrite
     status = renv.upload_single(RPACKAGE, overwrite=True)
     assert(status == PackStatus.DEPLOYED)
-    # failed installation
+    # failed installation, return code 1
     mock_installpackage.return_value = (1, "not Ok", "Could not install")
     status = renv.upload_single(RPACKAGE)
     assert(status == PackStatus.DEPLOY_FAILED)
+
+
+def test_checkInstallationSuccess():
+    renv = REnvironment(RHOME, LIBRARYPATH)
+    # return code ok
+    success = renv._checkInstallationSuccess(0, "Ok", None)
+    assert(success)
+    # return code not ok
+    success = renv._checkInstallationSuccess(1, "Ok", None)
+    assert(not success)
+    # retrurn code ok with error message
+    success = renv._checkInstallationSuccess(0, "Execution halted", None)
+    assert(not success)
+    success = renv._checkInstallationSuccess(0, None, "Execution halted")
+    assert(not success)
+    success = renv._checkInstallationSuccess(0, "...", "...failed...")
+    assert(not success)
+    success = renv._checkInstallationSuccess(0, "...", "...FAILED...")
+    assert(not success)
+    success = renv._checkInstallationSuccess(0, "...", "...ERROR:...")
+    assert(not success)
 
 
 def test_packinfo():

@@ -88,6 +88,58 @@ class REnvironment(AbstractREnvironment):
         relfiles2 = [re.sub("^/", "", f) for f in relfiles]
         return relfiles2
 
+    def _displayAssumeInstallationWentWrong(self, returnCode, term):
+        logger.error(
+            "I assume the installation went wrong! "
+            "returnCode={}, \"{}\" found.".format(returnCode, term)
+        )
+
+    def _displayInstallationWentWrong(self, returnCode):
+        logger.error(
+            "The installation went wrong! "
+            "returnCode={}".format(returnCode)
+        )
+
+    def _checkInstallationSuccess(self, returnCode, out, err):
+        # we know for sure it went wrong
+        if(returnCode != 0):
+            self._displayInstallationWentWrong(returnCode)
+            return False
+        # R is sometimes not returning an error code
+        # so we check the output messages
+        if(err and "Execution halted" in err):
+            self._displayAssumeInstallationWentWrong(
+                returnCode,
+                "Execution halted"
+            )
+            return False
+        if(out and "Execution halted" in out):
+            self._displayAssumeInstallationWentWrong(
+                returnCode,
+                "Execution halted"
+            )
+            return False
+        if(err and "failed" in err):
+            self._displayAssumeInstallationWentWrong(
+                returnCode,
+                "failed"
+            )
+            return False
+        if(err and "FAILED" in err):
+            self._displayAssumeInstallationWentWrong(
+                returnCode,
+                "FAILED"
+            )
+            return False
+        if(err and "ERROR:" in err):
+            self._displayAssumeInstallationWentWrong(
+                returnCode,
+                "ERROR:"
+            )
+            return False
+        # We assume the installation was successful otherwise
+        return True
+
     def install_dryrun(self, packnode, dest, overwrite=False,
                        overwritepackages=None):
         if not isinstance(packnode, PackNode):
@@ -244,7 +296,8 @@ class REnvironment(AbstractREnvironment):
                 return PackStatus.DEPLOYED
         logger.info('Installing package')
         (res, out, err) = self._installpackage(filepath)
-        if res != 0:
+        installationSuccess = self._checkInstallationSuccess(res, out, err)
+        if not installationSuccess:
             logger.error('Installation of package {} failed!\n'
                          '\n[STDOUT BEGINS]\n{}\n[STDOUT ENDS]\n'
                          '\n[STDERR BEGINS]\n{}\n[STDERR ENDS]'
@@ -303,7 +356,8 @@ class REnvironment(AbstractREnvironment):
                 return PackStatus.DEPLOYED
         logger.info('Installing package')
         (res, out, err) = self._installpackage_dryrun(filepath, dest)
-        if res != 0:
+        installationSuccess = self._checkInstallationSuccess(res, out, err)
+        if not installationSuccess:
             logger.error('Installation of package {} failed!\n'
                          '\n[STDOUT BEGINS]\n{}\n[STDOUT ENDS]\n'
                          '\n[STDERR BEGINS]\n{}\n[STDERR ENDS]'
