@@ -14,7 +14,7 @@ class DepTree(object):
     # FUTURE: we could use multiple providers instead of a single one
     # in order ot search across several repositories
     def __init__(self, provider, lsargs=None, packinfoargs=None,
-                 imports=True, depends=True, suggests=False):
+                 imports=True, depends=True, suggests=False, linkingto=True):
         """
         Traverse Imports and Depends to build the dependency graph
         and ignores Suggests.
@@ -27,6 +27,7 @@ class DepTree(object):
         :param imports: traverse imports
         :param depends: traverse depends
         :param suggests: traverse suggests
+        :param linkingto: traverse linkingto
         """
         self._g = nx.Graph()
         self.excludes = copy.deepcopy(RBasePackages.getnames())
@@ -38,6 +39,7 @@ class DepTree(object):
         self.imports = imports
         self.depends = depends
         self.suggests = suggests
+        self.linkingto = linkingto
 
     def build(self, packagenames=None):
         """
@@ -89,6 +91,12 @@ class DepTree(object):
                         continue
                     self._add_node(sug_name)
                     self._connect(packinfo.name, sug_name, "suggests")
+            if self.linkingto and packinfo.has_linkingto:
+                for lt_name in packinfo.linkingto:
+                    if lt_name in self.excludes:
+                        continue
+                    self._add_node(lt_name)
+                    self._connect(packinfo.name, lt_name, "linkingto")
 
     def _add_to_graph(self, packinfo):
         self._g.add_node(packinfo.name, **packinfo.as_dict)

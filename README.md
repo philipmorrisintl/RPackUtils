@@ -373,7 +373,10 @@ Downloading R package: tmod_0.30.tar.gz
 Done downloading R package: tmod_0.30.tar.gz
 Package: tmod Version: 0.30 License: GPL (>= 2.0) 
 Repository path: R-3.1.2/tmod_0.30.tar.gz
-Dependencies: beeswarm,pca3d,tagcloud,XML
+Depends: R
+Imports: beeswarm,tagcloud,XML,methods,plotwidgets
+LinkingTo: 
+Suggests: testthat,knitr,rmarkdown,pca3d,limma
 -------------------------------------
 ```
 
@@ -838,9 +841,9 @@ optional arguments:
                         "annotationData". CRAN: "snapshot date".
   --packages PACKAGES   Comma separated list of root packages to create the
                         graph, by default all will be included
-  --traverse TRAVERSE   By default "imports,depends", to traverse both imports
-                        and depends to build the dependency graph. "suggests"
-                        is ignored by default.
+  --traverse TRAVERSE   By default "imports,depends,linkingto", to traverse
+                        all required packages to build the dependency
+                        graph. "suggests" is ignored by default.
   --config CONFIG       RPackUtils configuration file, required unless you use
                         CRAN or Bioconductor as repository
   --out OUT             Output file where to write the GML
@@ -850,9 +853,10 @@ The *--packages* parameter is optional: you can choose to focus on one or
 more particular packages if you like. All available packages in the
 repository will be taken into account otherwise.
 
-You can choose the list of fields from ['imports', 'depends', 'suggests']
-to take into account while building the dependency graph. By default,
-'imports' and 'depends' are used.
+You can choose the list of fields from ['imports', 'depends',
+'linkingto', 'suggests'] to take into account while building the
+dependency graph. By default, 'imports', 'depends' and 'linkingto' are
+used.
 
 Here is an example to compute the dependency graph for all vailable R
 packages from the *2016-05-03* snapshot. This snapshot contains more than
@@ -879,6 +883,7 @@ The gml file has the following attributes for each node:
 | version               | package version                              |
 | depends               | packages in depends                          |
 | imports               | packages in imports                          |
+| linkingto             | packages in linkingto                        |
 | suggests              | packages in suggests                         |
 | license               | package license                              |
 | licenseclass          | ALLOWED / RESTRICETD / BLACKLISTED / UNKNOWN |
@@ -922,10 +927,10 @@ Time elapsed: 22.923 seconds.
 The output file, is a comma-separated format (CSV) and as a table, it looks
 like the following:
 
-| Name     | Version | License            | License class | Depends | Imports         | Suggests                 | Installation allowed | Installation warning |
-|----------|---------|--------------------|---------------|---------|-----------------|--------------------------|----------------------|----------------------|
-| evaluate | 0.9     | MIT + file LICENSE | UNKNOWN       | R       | methods,stringr | testthat,lattice,ggplot2 | True                 | True                 |
-| [...]    |         |                    |               |         |                 |                          |                      |                      |
+| Name     | Version | License            | License class | Depends | Imports         | LinkingTo | Suggests                 | Installation allowed | Installation warning |
+|----------|---------|--------------------|---------------|---------|-----------------|-----------|--------------------------|----------------------|----------------------|
+| evaluate | 0.9     | MIT + file LICENSE | UNKNOWN       | R       | methods,stringr |           | testthat,lattice,ggplot2 | True                 | True                 |
+| [...]    |         |                    |               |         |                 |           |                          |                      |                      |
 
 
 ## Repository types

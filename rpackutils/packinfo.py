@@ -8,7 +8,6 @@ import errno
 import tempfile
 import tarfile
 import shutil
-import codecs
 import logging
 from .utils import Utils
 from .rbasepackages import RBasePackages
@@ -65,6 +64,7 @@ class PackInfo(object):
         self.depends = None
         self.imports = None
         self.suggests = None
+        self.linkingto = None
         self.license = None
         self.licenseclass = None
         self.installationisallowed = True
@@ -128,16 +128,20 @@ class PackInfo(object):
         return self.imports if self.imports else []
 
     @property
+    def linkingtolist(self):
+        return self.linkingto if self.linkingto else []
+
+    @property
     def suggestslist(self):
         return self.suggests if self.suggests else []
 
     def dependencies(self, withBasePackages=False):
         """
-        Returns an aggregated list of both imports and depends.
+        Returns an aggregated list of imports, depends and linkingto.
 
         :param withBasepackages: if True, remove all R base packages
         """
-        all = self.importslist + self.dependslist
+        all = self.importslist + self.dependslist + self.linkingtolist
         if not withBasePackages:
             all = [x for x in all if x not in RBasePackages.getnames()]
         return all
@@ -167,6 +171,12 @@ class PackInfo(object):
         if self.imports is None:
             return False
         return len(self.imports) > 0
+
+    @property
+    def has_linkingto(self):
+        if self.linkingto is None:
+            return False
+        return len(self.linkingto) > 0
 
     @property
     def has_suggests(self):
@@ -224,6 +234,7 @@ class PackInfo(object):
             'depends': None,
             'imports': None,
             'suggests': None,
+            'linkingto': None,
             'version': None,
             'license': None
         }
@@ -232,6 +243,7 @@ class PackInfo(object):
         self.depends = PackInfo._clean_children(d['depends'])
         self.imports = PackInfo._clean_children(d['imports'])
         self.suggests = PackInfo._clean_children(d['suggests'])
+        self.linkingto = PackInfo._clean_children(d['linkingto'])
         self.version = d['version']
         self.license = d['license']
         # compute the license-class

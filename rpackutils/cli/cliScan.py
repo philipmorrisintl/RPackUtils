@@ -92,6 +92,7 @@ def _scan_packages(repositories, out):
                     'License class': packinfo.licenseclass,
                     'Depends': ",".join(packinfo.dependslist),
                     'Imports': ",".join(packinfo.importslist),
+                    'LinkingTo': ",".join(packinfo.linkingtolist),
                     'Suggests': ",".join(packinfo.suggestslist),
                     'Installation allowed': packinfo.installation_is_allowed,
                     'Installation warning': packinfo.installation_warning

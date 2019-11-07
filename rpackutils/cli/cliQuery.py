@@ -99,6 +99,8 @@ def _query_packages(repositories, packages):
                             .format(",".join(packinfo.dependslist)))
                 logger.info('Imports: {}'
                             .format(",".join(packinfo.importslist)))
+                logger.info('LinkingTo: {}'
+                            .format(",".join(packinfo.linkingtolist)))
                 logger.info('Suggests: {}'
                             .format(",".join(packinfo.suggestslist)))
                 # logger.info('Dependencies: {0}' \

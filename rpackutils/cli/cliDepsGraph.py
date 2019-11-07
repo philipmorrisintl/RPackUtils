@@ -64,10 +64,10 @@ def rpacks_deps_graph():
         '--traverse',
         dest='traverse',
         action='store',
-        default='imports,depends',
+        default='imports,depends,linkingto',
         required=False,
-        help=('By default \"imports,depends\", to traverse both '
-              'imports and depends to build the dependency graph. '
+        help=('By default \"imports,depends,linkingto\", to traverse all '
+              'required packages to build the dependency graph. '
               '\"suggests\" is ignored by default.'),
     ) and None
     parser.add_argument(
@@ -170,17 +170,19 @@ def rpacks_deps_graph():
        or isinstance(repository, LocalRepository):
         if repoparam is not None:
             logger.warning('Ignoring the --repoparam argument')
-    # traverse options (imports, depends, suggests)
+    # traverse options (imports, depends, suggests, linkingto)
     traverse_imports = ('imports' in traverse)
     traverse_depends = ('depends' in traverse)
     traverse_suggests = ('suggests' in traverse)
+    traverse_linkingto = ('linkingto' in traverse)
     # construct the dependencies tree
     dt = DepTree(repository,
                  lsargs,
                  packinfoargs,
                  traverse_imports,
                  traverse_depends,
-                 traverse_suggests)
+                 traverse_suggests,
+                 traverse_linkingto)
     logger.info('Building the dependencies graph ...')
     dt.build(packagenames=packages)
     if len(dt._g.nodes()) < 2:

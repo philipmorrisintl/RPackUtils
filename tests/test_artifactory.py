@@ -48,6 +48,7 @@ class PackInfoMock(object):
         self.repos = None
         self.depends = None
         self.imports = None
+        self.linkingto = None
         self.suggests = None
         self.license = None
 

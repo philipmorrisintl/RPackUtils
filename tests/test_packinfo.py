@@ -150,3 +150,18 @@ def test__parse_license():
     assert(pi.suggests == ['Rtoto', 'Rtiti', 'Rtata'])
     assert(pi.license == 'AGPL-3 | file LICENSE')
     assert(pi.installationisallowed is False)
+
+
+def test__parse_linkingto():
+    path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'resources',
+        'bindrcpp')
+    pi = PackInfo(path)
+    print(pi.as_dict)
+    assert(pi.name == 'bindrcpp')
+    assert(pi.version == '0.2.2.9000')
+    assert(pi.imports == ['bindr', 'Rcpp'])
+    assert(pi.suggests == ['testthat'])
+    assert(pi.linkingto == ['plogr', 'Rcpp'])
+    assert(pi.license == 'MIT + file LICENSE')

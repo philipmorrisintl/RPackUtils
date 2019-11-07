@@ -8,6 +8,7 @@
 - RPACU-50 Switch the license from GPL v2 to Apache 2.0
 - RPACU-51 Check the output messages from stderr and stdout even when
   the R installation command returns a success code
+- RPACU-52 Fix DESCRIPTION file parsing, read the "LinkingTo" field
 
 0.1.9
 -----
