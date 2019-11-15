@@ -1,3 +1,6 @@
+RPackUtils License
+==================
+
 Copyright (c) 2019 Philip Morris Products S.A. All rights reserved.
 
 The RPackUtils software is licensed under the Apache License version
@@ -23,3 +26,61 @@ acknowledgment:
   RPackUtils is a free software code scanning tool from Philip Morris
   Products S.A. Visit https://github.com/philipmorrisintl/RPackUtils
   for support and download.
+
+
+Third-party Software Licenses
+=============================
+
+airbnb/binaryalert : Apache License 2.0
+asynctest : Apache License 2.0
+atomicwrites : MIT License
+attrs : MIT License
+BeautifulSoup4 : MIT License
+bs4 : MIT License
+cfn-certificate-provider-prebuilt : MIT License
+chardet : GNU Lesser General Public License v2.1 or later
+configparser : MIT License
+ContinuumIO/conda : BSD 3-clause "New" or "Revised" License
+decorator : BSD 3-clause "New" or "Revised" License
+idna : BSD 3-clause "New" or "Revised" License
+importlib-metadata : Apache License 2.0
+more-itertools : MIT License
+NetworkX : BSD 3-clause "New" or "Revised" License
+Packaging : (BSD 3-clause "New" or "Revised" License OR Apache License 2.0)
+pip : MIT License
+py : MIT License
+py-beautifulsoup4 : MIT License
+py-configparser : MIT License
+py-pluggy : MIT License
+Pyparsing : MIT License
+PyPy : MIT License
+pytest : MIT License
+pytest-sugar : BSD 3-clause "New" or "Revised" License
+python-certifi : ISC License
+python-certifi : Mozilla Public License 2.0
+python-magic : MIT License
+python-pluggy : MIT License
+python-wheel : MIT License
+requests : Apache License 2.0
+setuptools : MIT License
+six Compatibility Utility : MIT License
+soupsieve : MIT License
+termcolor : MIT License
+urllib3 : MIT License
+wcwidth : MIT License
+zipp : MIT License
+
+
+Details
+=======
+
+* chardet
+
+Our usage of chardet is considered as "work that uses the library",
+and hence is not considered as a derivative work under LGPL 2.1+
+licensing terms.
+
+Please consider the following discussion, esp. the statement by
+nateprewitt on Jun 12, 2018:
+
+    https://github.com/psf/requests/issues/3389

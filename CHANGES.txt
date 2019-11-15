@@ -9,6 +9,7 @@
 
 0.1.9
 -----
+
 - FIX bug in computing the license class
 - Github repository migration from pmpsa-hpc to philipmorrisintl
 
