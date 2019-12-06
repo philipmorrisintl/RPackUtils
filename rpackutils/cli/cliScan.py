@@ -70,7 +70,7 @@ def _scan_packages(repositories, out):
     # TODO: we could launch multi processes
     with open(out, 'w', newline='') as csvfile:
         fieldnames = ['Name', 'Version', 'License', 'License class',
-                      'Depends', 'Imports', 'Suggests',
+                      'Depends', 'Imports', 'LinkingTo', 'Suggests',
                       'Installation allowed', 'Installation warning']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
