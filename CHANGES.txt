@@ -1,3 +1,10 @@
+0.2.1
+-----
+
+- RPACU-54 Bug fix, custom library path not taken into account while
+  installing
+- Fix missing column 'linkingTo' for the csv file output (rpackscan)
+
 0.2.0
 -----
 

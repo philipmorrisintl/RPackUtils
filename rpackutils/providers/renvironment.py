@@ -195,7 +195,8 @@ class REnvironment(AbstractREnvironment):
                           packInfo.licenseclass)
             logger.warning(message)
         cmd = os.path.join(self._Rbinarypath)
-        cmdargs = [cmd, 'CMD', 'INSTALL', packagepath]
+        cmdargs = [cmd, 'CMD', 'INSTALL', packagepath,
+                   "--library={}".format(self._repofullpath)]
         logger.info('Running: {}'.format(" ".join(cmdargs)))
         p = subprocess.Popen(
             cmdargs,
@@ -246,7 +247,8 @@ class REnvironment(AbstractREnvironment):
         shutil.copy(packagepath, dest)
         cmd = os.path.join(self._Rbinarypath)
         destpackagepath = os.path.join(dest, os.path.basename(packagepath))
-        cmdargs = [cmd, 'CMD', 'INSTALL', destpackagepath]
+        cmdargs = [cmd, 'CMD', 'INSTALL', destpackagepath,
+                   "--library={}".format(self._repofullpath)]
         command = " ".join(cmdargs)
         # Write installation commands to the install.sh script
         scriptfilepath = os.path.join(dest, 'install.sh')
